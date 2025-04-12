@@ -9,6 +9,7 @@
 #include "Portal.h"
 #include "Coin.h"
 #include "Platform.h"
+#include "Bush.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -145,6 +146,31 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		float b = (float)atof(tokens[4].c_str());
 		int scene_id = atoi(tokens[5].c_str());
 		obj = new CPortal(x, y, r, b, scene_id);
+	}
+	case OBJECT_TYPE_BUSH:
+	{
+		float x = (float)atof(tokens[1].c_str());
+		float y = (float)atof(tokens[2].c_str());
+		int n = atoi(tokens[3].c_str());
+
+		std::vector<std::pair<float, float>> positions;
+		std::vector<int> spriteIDs;
+
+		for (int i = 0; i < n; ++i)
+		{
+			float px = (float)atof(tokens[4 + i * 2].c_str());
+			float py = (float)atof(tokens[5 + i * 2].c_str());
+			positions.push_back({ px, py });
+		}
+
+		for (int i = 0; i < n; ++i)
+		{
+			int sid = atoi(tokens[4 + n * 2 + i].c_str());
+			spriteIDs.push_back(sid);
+		}
+
+		obj = new CBush(x, y, positions, spriteIDs);
+		break;
 	}
 	break;
 
