@@ -8,6 +8,7 @@
 #include "Sprites.h"
 #include "Portal.h"
 #include "Coin.h"
+#include "Koopas.h"
 #include "Platform.h"
 
 #include "SampleKeyEventHandler.h"
@@ -145,9 +146,15 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		float b = (float)atof(tokens[4].c_str());
 		int scene_id = atoi(tokens[5].c_str());
 		obj = new CPortal(x, y, r, b, scene_id);
+		break;
 	}
-	break;
-
+	case OBJECT_TYPE_KOOPAS:
+	{
+		int isRed = atoi(tokens[3].c_str());
+		int yesWing = atoi(tokens[4].c_str());
+		obj = new CKoopas(x, y, isRed, yesWing);
+		break;
+	}
 
 	default:
 		DebugOut(L"[ERROR] Invalid object type: %d\n", object_type);
