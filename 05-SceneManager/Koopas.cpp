@@ -18,7 +18,7 @@ CKoopas::CKoopas(float x, float y, int isRed, int yesWing) : CGameObject(x, y)
 void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
 	// shell state
-	if (state == KOOPAS_STATE_SHELL || state == KOOPAS_STATE_SHELLIDLE_MOVING)
+	if (state == KOOPAS_STATE_SHELL || state == KOOPAS_STATE_SHELLIDLE_MOVING_LEFT || state == KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT)
 	{
 		left = x - KOOPAS_BBOX_WIDTH / 2;
 		top = y - KOOPAS_BBOX_SHELL_HEIGHT / 2;
@@ -51,7 +51,7 @@ void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 	}
 	else if (e->nx != 0)
 	{
-		if (state == KOOPAS_STATE_SHELLIDLE_MOVING)
+		if (state == KOOPAS_STATE_SHELLIDLE_MOVING_LEFT || state == KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT)
 		{
 			CGameObject* obj = dynamic_cast<CGameObject*>(e->obj);
 			if (obj)
@@ -113,7 +113,7 @@ void CKoopas::Render()
 	}
 
 	// shell moving state 
-	if (state == KOOPAS_STATE_SHELLIDLE_MOVING)
+	if (state == KOOPAS_STATE_SHELLIDLE_MOVING_LEFT || state == KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT)
 	{
 		if (isRed)
 			aniId = ID_ANI_RED_KOOPAS_SHELL_MOVING;
@@ -171,13 +171,18 @@ void CKoopas::SetState(int state)
 		vx = KOOPAS_WALKING_SPEED;
 		break;
 
-	case KOOPAS_STATE_SHELLIDLE_MOVING:
+	case KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT:
 		vx = KOOPAS_SHELL_SPEED;
-		ay = KOOPAS_GRAVITY;
+		//ay = KOOPAS_GRAVITY;
+		break;
+
+	case KOOPAS_STATE_SHELLIDLE_MOVING_LEFT:
+		vx = -KOOPAS_SHELL_SPEED;
+		//ay = KOOPAS_GRAVITY;
 		break;
 
 	case KOOPAS_STATE_WING:
-		//vx = KOOPAS_SHELL_SPEED;
+		vx = -KOOPAS_WALKING_SPEED;
 		//vy = -KOOPAS_JUMP_DEFLECT_SPEED;
 		break;
 	}
