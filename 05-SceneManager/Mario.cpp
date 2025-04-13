@@ -7,6 +7,7 @@
 #include "Goomba.h"
 #include "Coin.h"
 #include "Portal.h"
+#include "Koopas.h"
 
 #include "Collision.h"
 
@@ -53,6 +54,8 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithCoin(e);
 	else if (dynamic_cast<CPortal*>(e->obj))
 		OnCollisionWithPortal(e);
+	else if (dynamic_cast<CKoopas*>(e->obj))
+		OnCollisionWithKoopas(e);
 }
 
 void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
@@ -89,6 +92,54 @@ void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 	}
 }
 
+void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
+{
+	CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
+	LPGAME game = CGame::GetInstance();
+	// jump on Koopas' head to turn it be shell idle state
+
+	if (e->ny < 0)
+	{
+		if (koopas->GetState() != KOOPAS_STATE_SHELL)
+		{
+			// if koopas has wing, skrink the wing 
+			// turn to normal walking one
+			if (koopas->GetState() == KOOPAS_STATE_WING)
+				koopas->SetState(KOOPAS_STATE_WALKING_LEFT);
+			else
+				koopas->SetState(KOOPAS_STATE_SHELL);
+			//mario bounce back
+			vy = -MARIO_JUMP_DEFLECT_SPEED;
+		}
+		// if koopas is already in shell state, turn it be moving 
+		else
+		{
+			koopas->SetState(KOOPAS_STATE_SHELLIDLE_MOVING);
+			vy = -MARIO_JUMP_DEFLECT_SPEED;
+		}
+	}
+
+	// hit by koopas
+	else
+	{
+		if (untouchable == 0)
+		{
+			if (koopas->GetState() != KOOPAS_STATE_SHELL)
+			{
+				if (level > MARIO_LEVEL_SMALL)
+				{
+					level = MARIO_LEVEL_SMALL;
+					StartUntouchable();
+				}
+				else
+				{
+					DebugOut(L">>> Mario DIE >>> \n");
+					SetState(MARIO_STATE_DIE);
+				}
+			}
+		}
+	}
+}
 void CMario::OnCollisionWithCoin(LPCOLLISIONEVENT e)
 {
 	e->obj->Delete();

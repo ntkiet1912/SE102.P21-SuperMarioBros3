@@ -41,6 +41,39 @@ void CKoopas::OnNoCollision(DWORD dt)
 	y += vy * dt;
 };
 
+void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
+{
+	if (!e->obj->IsBlocking()) return;
+
+	if (e->ny != 0)
+	{
+		vy = 0;
+	}
+	else if (e->nx != 0)
+	{
+		if (state == KOOPAS_STATE_SHELLIDLE_MOVING)
+		{
+			CGameObject* obj = dynamic_cast<CGameObject*>(e->obj);
+			if (obj)
+			{
+				if (dynamic_cast<CBrick*>(obj)) return;
+
+				obj->Delete();
+				return;
+			}
+			vx = -vx;
+		}
+		if (state == KOOPAS_STATE_WALKING_LEFT)
+			SetState(KOOPAS_STATE_WALKING_RIGHT);
+		else if (state == KOOPAS_STATE_WALKING_RIGHT)
+			SetState(KOOPAS_STATE_WALKING_LEFT);
+	}
+
+}
+
+
+
+
 void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	vy += ay * dt;
@@ -116,11 +149,6 @@ void CKoopas::Render()
 	}
 	CAnimations::GetInstance()->Get(aniId)->Render(x, y);
 	RenderBoundingBox();
-	//if (aniId != -1)
-	//{
-	//	DebugOut(L"ashdfjkahsdlkf");
-	//	CAnimations::GetInstance()->Get(aniId)->Render(x, y);
-	//}
 }
 
 void CKoopas::SetState(int state)
@@ -141,6 +169,16 @@ void CKoopas::SetState(int state)
 
 	case KOOPAS_STATE_WALKING_RIGHT:
 		vx = KOOPAS_WALKING_SPEED;
+		break;
+
+	case KOOPAS_STATE_SHELLIDLE_MOVING:
+		vx = KOOPAS_SHELL_SPEED;
+		ay = KOOPAS_GRAVITY;
+		break;
+
+	case KOOPAS_STATE_WING:
+		//vx = KOOPAS_SHELL_SPEED;
+		//vy = -KOOPAS_JUMP_DEFLECT_SPEED;
 		break;
 	}
 }
