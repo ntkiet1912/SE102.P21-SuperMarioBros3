@@ -7,6 +7,7 @@ coin.txt
 goomba.txt
 cloud.txt
 bush.txt
+orange_block.txt
 #
 [OBJECTS]
 # type	x	y	extra_settings per object type
@@ -28,3 +29,7 @@ bush.txt
 #Platform
 5	8	194	16	15	32	61000	62000	63000
 
+#Block
+7	260	178	3	16	16	3	0	0	0	-16	0	-32	87000	84000	81000
+7	276	178	3	16	16	3	0	0	0	-16	0	-32	88000	85000	82000
+7	292	178	3	16	16	3	0	0	0	-16	0	-32	89000	86000	83000

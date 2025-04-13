@@ -10,6 +10,7 @@
 #include "Coin.h"
 #include "Platform.h"
 #include "Bush.h"
+#include "Block.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -170,6 +171,35 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		}
 
 		obj = new CBush(x, y, positions, spriteIDs);
+		break;
+	}
+	case OBJECT_TYPE_BLOCK:
+	{
+		float x = (float)atof(tokens[1].c_str());
+		float y = (float)atof(tokens[2].c_str());
+		float length = (float)atof(tokens[3].c_str());
+		float cellWidth = (float)atof(tokens[4].c_str());
+		float cellHeight = (float)atof(tokens[5].c_str());
+
+		int n = atoi(tokens[6].c_str());
+
+		std::vector<std::pair<float, float>> positions;
+		std::vector<int> spriteIDs;
+
+		for (int i = 0; i < n; ++i)
+		{
+			float px = (float)atof(tokens[7 + i * 2].c_str());
+			float py = (float)atof(tokens[8 + i * 2].c_str());
+			positions.push_back({ px, py });
+		}
+
+		for (int i = 0; i < n; ++i)
+		{
+			int sid = atoi(tokens[7 + n * 2 + i].c_str());
+			spriteIDs.push_back(sid);
+		}
+
+		obj = new CBlock(x, y,length ,cellWidth , cellHeight ,positions, spriteIDs );
 		break;
 	}
 	break;
