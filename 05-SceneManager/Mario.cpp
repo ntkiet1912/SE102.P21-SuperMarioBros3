@@ -135,7 +135,7 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 			//compare mario->x and koopas->x
 			if (this->x < x)
 				koopas->SetState(KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT);
-			else if (this->x > x)
+			else if (this->x >= x)
 				koopas->SetState(KOOPAS_STATE_SHELLIDLE_MOVING_LEFT);
 
 			vy = -MARIO_JUMP_DEFLECT_SPEED;

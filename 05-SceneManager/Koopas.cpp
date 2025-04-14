@@ -2,6 +2,9 @@
 #include "Debug.h"
 #include "Brick.h"
 #include "Goomba.h"
+#include "Portal.h"
+#include "Platform.h"
+#include "Coin.h"
 CKoopas::CKoopas(float x, float y, int isRed, int yesWing) : CGameObject(x, y)
 {
 	this->ax = 0;
@@ -9,6 +12,8 @@ CKoopas::CKoopas(float x, float y, int isRed, int yesWing) : CGameObject(x, y)
 	die_start = -1;
 	this->isRed = isRed;
 	this->yesWing = yesWing;
+	isShellIdle = false;
+	isRegen = false;
 	if (yesWing)
 		SetState(KOOPAS_STATE_WING);
 	else
@@ -43,35 +48,91 @@ void CKoopas::OnNoCollision(DWORD dt)
 
 void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 {
-	if (!e->obj->IsBlocking()) return;
+	//if (!e->obj->IsBlocking()) return;
+
 
 	if (e->ny != 0)
 	{
 		vy = 0;
 	}
+	if (dynamic_cast<CCoin*>(e->obj)) return;
+
 	else if (e->nx != 0)
 	{
-		if (state == KOOPAS_STATE_SHELLIDLE_MOVING_LEFT || state == KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT)
-		{
-			CGameObject* obj = dynamic_cast<CGameObject*>(e->obj);
-			if (obj)
-			{
-				if (dynamic_cast<CBrick*>(obj)) return;
-
-				obj->Delete();
-				return;
-			}
-			vx = -vx;
-		}
 		if (state == KOOPAS_STATE_WALKING_LEFT)
 			SetState(KOOPAS_STATE_WALKING_RIGHT);
 		else if (state == KOOPAS_STATE_WALKING_RIGHT)
 			SetState(KOOPAS_STATE_WALKING_LEFT);
 	}
+	//else if (e->nx != 0)
+	//{
+	//	if (state == KOOPAS_STATE_SHELLIDLE_MOVING_LEFT || state == KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT)
+	//	{
+	//		CGameObject* obj = dynamic_cast<CGameObject*>(e->obj);
+	//		if (obj)
+	//		{
+	//			if (dynamic_cast<CBrick*>(obj)) return;
 
+	//			obj->Delete();
+	//			return;
+	//		}
+	//		vx = -vx;
+	//	}
+	//	if (state == KOOPAS_STATE_WALKING_LEFT)
+	//		SetState(KOOPAS_STATE_WALKING_RIGHT);
+	//	else if (state == KOOPAS_STATE_WALKING_RIGHT)
+	//		SetState(KOOPAS_STATE_WALKING_LEFT);
+	//}
+
+	if (dynamic_cast<CGoomba*>(e->obj))
+		OnCollisionWithGoomba(e);
+	else if (dynamic_cast<CPlatform*>(e->obj))
+		OnCollisionWithPlatform(e);
+
+}
+void CKoopas::OnCollisionWithPlatform(LPCOLLISIONEVENT e)
+{
+	CPlatform* platform = dynamic_cast<CPlatform*>(e->obj);
+	if (isRed)
+	{
+		// platform rounding box
+		float top, left, bottom, right;
+		platform->GetBoundingBox(left, top, right, bottom);
+		// position of Koopas
+		float x, y;
+		this->GetPosition(x, y);
+
+		if (e->ny < 0) // on platform
+		{
+			// if reached the bound of platform
+			if (x + KOOPAS_BBOX_WIDTH / 2 > right)
+			{
+				if (state == KOOPAS_STATE_WALKING_RIGHT)
+					SetState(KOOPAS_STATE_WALKING_LEFT);
+				else if (state == KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT)
+					SetState(KOOPAS_STATE_SHELLIDLE_MOVING_LEFT);
+			}
+			else if (x - KOOPAS_BBOX_WIDTH / 2 < left)
+			{
+				if (state == KOOPAS_STATE_WALKING_LEFT)
+					SetState(KOOPAS_STATE_WALKING_RIGHT);
+				else if (state == KOOPAS_STATE_SHELLIDLE_MOVING_LEFT)
+					SetState(KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT);
+			}
+		}
+	}
 }
 
 
+void CKoopas::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
+{
+	CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
+	if (state == KOOPAS_STATE_SHELLIDLE_MOVING_LEFT || state == KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT)
+	{
+		if (e->nx != 0)
+			goomba->SetState(GOOMBA_STATE_DIE);
+	}
+}
 
 
 void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -82,19 +143,20 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if ((state == KOOPAS_STATE_SHELL) && (GetTickCount64() - shellIdle_start > KOOPAS_SHELL_TIMEOUT))
 	{
 		SetState(KOOPAS_STATE_SHELL);
+		//isRegen = true;
 	}
-	else if (state == KOOPAS_STATE_WALKING_LEFT)
-	{
-		SetState(KOOPAS_STATE_WALKING_LEFT);
-	}
-	else if (state == KOOPAS_STATE_WALKING_RIGHT)
-	{
-		SetState(KOOPAS_STATE_WALKING_RIGHT);
-	}
-	else if (state == KOOPAS_STATE_WING)
-	{
-		SetState(KOOPAS_STATE_WING);
-	}
+	//else if (state == KOOPAS_STATE_WALKING_LEFT)
+	//{
+	//	SetState(KOOPAS_STATE_WALKING_LEFT);
+	//}
+	//else if (state == KOOPAS_STATE_WALKING_RIGHT)
+	//{
+	//	SetState(KOOPAS_STATE_WALKING_RIGHT);
+	//}
+	//else if (state == KOOPAS_STATE_WING)
+	//{
+	//	SetState(KOOPAS_STATE_WING);
+	//}
 	CGameObject::Update(dt, coObjects);
 	CCollision::GetInstance()->Process(this, dt, coObjects);
 }
@@ -106,10 +168,18 @@ void CKoopas::Render()
 	// shell state
 	if (state == KOOPAS_STATE_SHELL)
 	{
+
 		if (isRed)
-			aniId = ID_ANI_RED_KOOPAS_SHELL;
+			if (isRegen)
+				
+				aniId = ID_ANI_RED_KOOPAS_SHELL_REGEN;
+			else
+				aniId = ID_ANI_RED_KOOPAS_SHELL;
 		else
-			aniId = ID_ANI_GREEN_KOOPAS_SHELL;
+			if (isRegen)
+				aniId = ID_ANI_GREEN_KOOPAS_SHELL_REGEN;
+			else
+				aniId = ID_ANI_GREEN_KOOPAS_SHELL;
 	}
 
 	// shell moving state 
@@ -160,29 +230,40 @@ void CKoopas::SetState(int state)
 		shellIdle_start = GetTickCount64();
 		vx = 0;
 		vy = 0;
+		isShellIdle = true;
+
 		//ay = 0;
 		break;
 
 	case KOOPAS_STATE_WALKING_LEFT:
 		vx = -KOOPAS_WALKING_SPEED;
+		isShellIdle = false;
+
 		break;
 
 	case KOOPAS_STATE_WALKING_RIGHT:
 		vx = KOOPAS_WALKING_SPEED;
+		isShellIdle = false;
+
 		break;
 
 	case KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT:
 		vx = KOOPAS_SHELL_SPEED;
+		isShellIdle = true;
+
 		//ay = KOOPAS_GRAVITY;
 		break;
 
 	case KOOPAS_STATE_SHELLIDLE_MOVING_LEFT:
 		vx = -KOOPAS_SHELL_SPEED;
+		isShellIdle = true;
+
 		//ay = KOOPAS_GRAVITY;
 		break;
 
 	case KOOPAS_STATE_WING:
 		vx = -KOOPAS_WALKING_SPEED;
+		isShellIdle = false;
 		//vy = -KOOPAS_JUMP_DEFLECT_SPEED;
 		break;
 	}
