@@ -148,7 +148,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		int scene_id = atoi(tokens[5].c_str());
 		obj = new CPortal(x, y, r, b, scene_id);
 	}
-	case OBJECT_TYPE_BUSH:
+	case OBJECT_TYPE_DECORATION:
 	{
 		float x = (float)atof(tokens[1].c_str());
 		float y = (float)atof(tokens[2].c_str());

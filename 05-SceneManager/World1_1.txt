@@ -9,12 +9,13 @@ cloud.txt
 bush.txt
 orange_block.txt
 blue_block.txt
+block_shadow.txt
 #
 [OBJECTS]
 # type	x	y	extra_settings per object type
-# type: 0 = Mario , 1 = Brick, 2 = Goomba, 3 = Koopas , 6 = bush
+# type: 0 = Mario , 1 = Brick, 2 = Goomba, 3 = Koopas , 6 = Decoration
 # See OBJECT_TYPE constants in AssetIDs.h
-#Bush	
+#Decoration	
 6	25	178	3	0	0	0	-16	0	-32	73000	73000	71000
 6	41	178	4	0	0	0	-16	0	-32	0	-48	77000	76000	75000	71000
 6	57	178	4	0	0	0	-16	0	-32	0	-48	77000	75000	74000	72000
@@ -24,7 +25,6 @@ blue_block.txt
 6	121	178	3	0	0	0	-16	0	-32	77000	76000	72000
 6	137	178	2	0	0	0	-16	74000	72000
 6	180	178	3	0	0	16	0	32	0	78000	78000	78000
-
 
 #Platform
 5	8	194	16	15	32	61000	62000	63000
@@ -37,6 +37,11 @@ blue_block.txt
 7	276	178	3	16	16	3	0	0	0	-16	0	-32	88000	85000	82000
 7	292	178	3	16	16	3	0	0	0	-16	0	-32	89000	86000	83000
 
+#Block_Shadow
+6	304	182	5	0	0	0	-8	0	-16	0	-24	0	-32	103000	102000	102000	102000	101000
+6	336	182	9	0	0	0	-8	0	-16	0	-24	0	-32	0	-40	0	-48	0	-56	0	-64	103000	102000	102000	102000	102000	102000	102000	102000	101000
+
 #Mario
 0	100	10
+
 
