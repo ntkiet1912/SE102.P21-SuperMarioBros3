@@ -1,4 +1,4 @@
-#include "Bush.h"
+#include "Decoration.h"
 
 #include "Sprite.h"
 #include "Sprites.h"
@@ -6,7 +6,7 @@
 #include "Textures.h"
 #include "Game.h"
 
-void CBush::Render()
+void CDecoration::Render()
 {
 	CSprites* s = CSprites::GetInstance();
 	for (size_t i = 0; i < positions.size(); ++i)

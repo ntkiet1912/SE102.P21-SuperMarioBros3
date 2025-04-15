@@ -9,7 +9,7 @@
 #include "Portal.h"
 #include "Coin.h"
 #include "Platform.h"
-#include "Bush.h"
+#include "Decoration.h"
 #include "Block.h"
 
 #include "SampleKeyEventHandler.h"
@@ -170,7 +170,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			spriteIDs.push_back(sid);
 		}
 
-		obj = new CBush(x, y, positions, spriteIDs);
+		obj = new CDecoration(x, y, positions, spriteIDs);
 		break;
 	}
 	case OBJECT_TYPE_BLOCK:

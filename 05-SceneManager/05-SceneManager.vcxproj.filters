@@ -75,7 +75,7 @@
     <ClCompile Include="Portal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Bush.cpp">
+    <ClCompile Include="Decoration.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Block.cpp">
@@ -152,7 +152,7 @@
     <ClInclude Include="Portal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Bush.h">
+    <ClInclude Include="Decoration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Block.h">
