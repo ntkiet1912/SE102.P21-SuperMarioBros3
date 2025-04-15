@@ -44,7 +44,13 @@ void CBlock::GetBoundingBox(float& l, float& t, float& r, float& b)
 	float cellWidth_div_2 = this->cellWidth / 2;
 	float totalHeight = this->cellHeight * this->length;
 
-	l = x - cellWidth_div_2;                
-	r = x + cellWidth_div_2;                
-	t = y - totalHeight + this->cellHeight/2;                
-	b = y + totalHeight;                
+	l = x - cellWidth_div_2;
+	r = x + cellWidth_div_2;
+	t = y - totalHeight + this->cellHeight / 2;
+	b = y + totalHeight;
+}
+
+int CBlock::IsDirectionColliable(float nx, float ny) {
+	if (nx == 0 && ny == -1) return 1;
+	else return 0;
+}
