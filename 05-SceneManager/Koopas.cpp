@@ -57,6 +57,10 @@ void CKoopas::OnNoCollision(DWORD dt)
 
 void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 {
+	if (e->ny != 0 && e->obj->IsBlocking())
+	{
+		vy = 0;
+	}
 	if (e->nx != 0 && e->obj->IsBlocking())
 	{
 		if (state == KOOPAS_STATE_WALKING_RIGHT)
@@ -68,10 +72,7 @@ void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 		else if (state == KOOPAS_STATE_SHELLIDLE_MOVING_LEFT)
 			SetState(KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT);
 	}
-	if (e->ny != 0)
-	{
-		vy = 0;
-	}
+
 	if (dynamic_cast<CCoin*>(e->obj)) return;
 
 	// collide with Block brick
@@ -132,15 +133,17 @@ void CKoopas::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 	if (!isShellIdle) return;
 	else
 	{
-		CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
-		if (e->nx != 0)
+		CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);	
+		if (e->nx != 0 || e->ny !=0)
 		{
 			if (state == KOOPAS_STATE_SHELLIDLE_MOVING_LEFT || state == KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT)
 			{
-				if (!koopas->isShellIdle)
-					koopas->SetState(KOOPAS_STATE_WALK_DIE_BY_COLLISION_WITH_KOOPAS);
-				else
-					koopas->SetState(KOOPAS_STATE_SHELL_DIE_BY_COLLISION_WITH_KOOPAS);
+				koopas->SetState(KOOPAS_STATE_SHELL_DIE_BY_COLLISION_WITH_KOOPAS);
+				if(e->nx > 0)
+					koopas->vx = -KOOPAS_VX_DIE_SPEED;
+				else 
+					koopas->vx = KOOPAS_VX_DIE_SPEED;
+
 			}
 		}
 
@@ -152,15 +155,6 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	vy += ay * dt;
 	vx += ax * dt;
-
-	// die by collide with koopas shell moving
-	if (((state == KOOPAS_STATE_WALK_DIE_BY_COLLISION_WITH_KOOPAS) ||
-		(state == KOOPAS_STATE_SHELL_DIE_BY_COLLISION_WITH_KOOPAS)) &&
-		(GetTickCount64() - die_start > 1500))
-	{
-		isDeleted = true;
-		return;
-	}
 
 	if (state == KOOPAS_STATE_WING)
 	{
@@ -176,11 +170,21 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			if (GetTickCount64() - flying_start > 1000)
 			{
 				vy = 0;
-				isFlyingUp = false; 
+				isFlyingUp = false;
 			}
 		}
 		ay = KOOPAS_GRAVITY_FLYING;
 	}
+	// die by collide with koopas shell moving
+	if (((state == KOOPAS_STATE_WALK_DIE_BY_COLLISION_WITH_KOOPAS) ||
+		(state == KOOPAS_STATE_SHELL_DIE_BY_COLLISION_WITH_KOOPAS)) &&
+		(GetTickCount64() - die_start > 1500))
+	{
+		isDeleted = true;
+		return;
+	}
+
+
 	CGameObject::Update(dt, coObjects);
 	CCollision::GetInstance()->Process(this, dt, coObjects);
 }
@@ -242,14 +246,14 @@ void CKoopas::Render()
 			aniId = ID_ANI_GREEN_KOOPAS_WING;
 	}
 
-	if (state == KOOPAS_STATE_WALK_DIE_BY_COLLISION_WITH_KOOPAS)
-	{
-		//DebugOut(L"ok");
-		if (isRed)
-			aniId = ID_ANI_RED_KOOPAS_WALK_DIE_BY_COLLISION;
-		else
-			aniId = ID_ANI_GREEN_KOOPAS_WALK_DIE_BY_COLLISION;
-	}
+	//if (state == KOOPAS_STATE_WALK_DIE_BY_COLLISION_WITH_KOOPAS)
+	//{
+	//	//DebugOut(L"ok");
+	//	if (isRed)
+	//		aniId = ID_ANI_RED_KOOPAS_WALK_DIE_BY_COLLISION;
+	//	else
+	//		aniId = ID_ANI_GREEN_KOOPAS_WALK_DIE_BY_COLLISION;
+	//}
 
 	if (state == KOOPAS_STATE_SHELL_DIE_BY_COLLISION_WITH_KOOPAS)
 	{
@@ -309,10 +313,9 @@ void CKoopas::SetState(int state)
 		isShellIdle = false;
 		break;
 
-	case KOOPAS_STATE_WALK_DIE_BY_COLLISION_WITH_KOOPAS:
+	//case KOOPAS_STATE_WALK_DIE_BY_COLLISION_WITH_KOOPAS:
 	case KOOPAS_STATE_SHELL_DIE_BY_COLLISION_WITH_KOOPAS:
 		die_start = GetTickCount64();
-		vx = -vx;
 		vy = -KOOPAS_DYING_SPEED;
 		ay = KOOPAS_GRAVITY_DYING;
 		break;
