@@ -24,7 +24,7 @@ CKoopas::CKoopas(float x, float y, int isRed, int yesWing) : CGameObject(x, y)
 void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
 	// shell state
-	if (state == KOOPAS_STATE_SHELL || state == KOOPAS_STATE_SHELLIDLE_MOVING_LEFT || state == KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT)
+	if (isShellIdle)
 	{
 		left = x - KOOPAS_BBOX_WIDTH / 2;
 		top = y - KOOPAS_BBOX_SHELL_HEIGHT / 2;
@@ -35,9 +35,16 @@ void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& botto
 	else if (die_start)
 	{
 		left = 0;
-		top =0;
-		right =0;
-		bottom =0;
+		top = 0;
+		right = 0;
+		bottom = 0;
+	}
+	else if (state == KOOPAS_STATE_REGEN)
+	{
+		left = x - KOOPAS_BBOX_REGEN_WIDTH / 2;
+		top = y - KOOPAS_BBOX_HEIGHT / 2;
+		right = left + KOOPAS_BBOX_REGEN_WIDTH;
+		bottom = top + KOOPAS_BBOX_HEIGHT;
 	}
 	// normal state
 	else
@@ -47,6 +54,7 @@ void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& botto
 		right = left + KOOPAS_BBOX_WIDTH;
 		bottom = top + KOOPAS_BBOX_HEIGHT;
 	}
+	
 }
 
 void CKoopas::OnNoCollision(DWORD dt)
@@ -127,7 +135,7 @@ void CKoopas::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 		if (e->nx != 0)
 			goomba->SetState(GOOMBA_STATE_DIE);
 	}
-}
+}   
 void CKoopas::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 {
 	if (!isShellIdle) return;
@@ -149,8 +157,6 @@ void CKoopas::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 
 	}
 }
-
-
 void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	vy += ay * dt;
@@ -183,8 +189,15 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		isDeleted = true;
 		return;
 	}
-
-
+	if (state == KOOPAS_STATE_SHELL && GetTickCount64() - regen_start > 5000)
+	{
+		SetState(KOOPAS_STATE_REGEN);
+	}
+	if (state == KOOPAS_STATE_REGEN && GetTickCount64() - realRegen_start > 1000)
+	{
+		y -= (KOOPAS_BBOX_HEIGHT - KOOPAS_BBOX_SHELL_HEIGHT) / 2;
+		SetState(KOOPAS_STATE_WALKING_LEFT);
+	}
 	CGameObject::Update(dt, coObjects);
 	CCollision::GetInstance()->Process(this, dt, coObjects);
 }
@@ -262,6 +275,13 @@ void CKoopas::Render()
 		else
 			aniId = ID_ANI_GREEN_KOOPAS_SHELL_DIE_BY_COLLISION;
 	}
+	if (state == KOOPAS_STATE_REGEN)
+	{
+		if (isRed)
+			aniId = ID_ANI_RED_KOOPAS_SHELL_REGEN;
+		else
+			aniId = ID_ANI_GREEN_KOOPAS_SHELL_REGEN;
+	}
 	CAnimations::GetInstance()->Get(aniId)->Render(x, y);
 	RenderBoundingBox();
 }
@@ -272,14 +292,19 @@ void CKoopas::SetState(int state)
 	switch (state)
 	{
 	case KOOPAS_STATE_SHELL:
-		shellIdle_start = GetTickCount64();
+		regen_start = GetTickCount64();
 		vx = 0;
 		vy = 0;
 		isShellIdle = true;
 
 		//ay = 0;
 		break;
-
+	case KOOPAS_STATE_REGEN:
+		vx = 0;
+		vy = 0;
+		realRegen_start = GetTickCount64();
+		break;
+		
 	case KOOPAS_STATE_WALKING_LEFT:
 		vx = -KOOPAS_WALKING_SPEED;
 		isShellIdle = false;

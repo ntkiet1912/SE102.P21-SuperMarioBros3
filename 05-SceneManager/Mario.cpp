@@ -96,8 +96,8 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 {
 	CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
 	LPGAME game = CGame::GetInstance();
-	// jump on Koopas' head to turn it be shell idle state
 
+	// jump on Koopas' head to turn it be shell idle state
 	if (e->ny < 0)
 	{
 		if (koopas->GetState() != KOOPAS_STATE_SHELL)
@@ -116,10 +116,10 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 		{
 
 			/*	ALERT !!!
-					we dont use e->nx < 0 || e->nx > 0 because 
-					when we hit koopas with e->ny < 0 , most of the time, 
+					we dont use e->nx < 0 || e->nx > 0 because
+					when we hit koopas with e->ny < 0 , most of the time,
 					the e->nx will be == 0
-				
+
 				if (e->nx < 0)
 					koopas->SetState(KOOPAS_STATE_SHELLIDLE_MOVING_LEFT);
 				else if (e->nx > 0)
@@ -143,6 +143,14 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 		}
 	}
 	// hit by koopas
+	else if (e->nx != 0 && koopas->GetState() == KOOPAS_STATE_SHELL)
+	{
+		if (e->nx > 0)
+			koopas->SetState(KOOPAS_STATE_SHELLIDLE_MOVING_LEFT);
+		else if (e->nx < 0) koopas->SetState(KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT);
+		SetState(MARIO_STATE_KICK);
+		kick_flag = true;
+	}
 	else
 	{
 		if (untouchable == 0)
@@ -180,7 +188,23 @@ void CMario::OnCollisionWithPortal(LPCOLLISIONEVENT e)
 int CMario::GetAniIdSmall()
 {
 	int aniId = -1;
-	if (!isOnPlatform)
+	
+	
+	if (kick_flag)
+	{
+		// $$$$$ delay time for the kick animation 
+		if (GetTickCount64() - kick_start < 200)
+		{
+			if (vx > 0) 
+				aniId = ID_ANI_MARIO_SMALL_KICK_RIGHT;
+			else if (vx < 0) 
+				aniId = ID_ANI_MARIO_SMALL_KICK_LEFT;
+		}
+		else 
+			kick_flag = false;
+	}
+
+	else if (!isOnPlatform)
 	{
 		if (abs(ax) == MARIO_ACCEL_RUN_X)
 		{
@@ -242,7 +266,20 @@ int CMario::GetAniIdSmall()
 int CMario::GetAniIdBig()
 {
 	int aniId = -1;
-	if (!isOnPlatform)
+	if (kick_flag)
+	{
+		// $$$$$ delay time for the kick animation 
+		if (GetTickCount64() - kick_start < 50)
+		{
+			if (vx > 0) 
+				aniId = ID_ANI_MARIO_KICK_RIGHT;
+			else if (vx < 0) 
+				aniId = ID_ANI_MARIO_KICK_LEFT;
+		}
+		else
+			kick_flag = false;
+	}
+	else if (!isOnPlatform)
 	{
 		if (abs(ax) == MARIO_ACCEL_RUN_X)
 		{
@@ -291,6 +328,7 @@ int CMario::GetAniIdBig()
 				else if (ax == -MARIO_ACCEL_WALK_X)
 					aniId = ID_ANI_MARIO_WALKING_LEFT;
 			}
+
 
 	if (aniId == -1) aniId = ID_ANI_MARIO_IDLE_RIGHT;
 
@@ -390,6 +428,9 @@ void CMario::SetState(int state)
 		vy = -MARIO_JUMP_DEFLECT_SPEED;
 		vx = 0;
 		ax = 0;
+		break;
+	case MARIO_STATE_KICK:
+		kick_start = GetTickCount64();
 		break;
 	}
 

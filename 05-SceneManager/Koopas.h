@@ -14,6 +14,7 @@
 #define KOOPAS_BBOX_WIDTH 16
 #define KOOPAS_BBOX_HEIGHT 26
 #define KOOPAS_BBOX_SHELL_HEIGHT 16
+#define KOOPAS_BBOX_REGEN_WIDTH 18
 
 #define KOOPAS_SHELL_TIMEOUT 1000 
 
@@ -25,6 +26,7 @@
 #define KOOPAS_STATE_WING 1005
 #define KOOPAS_STATE_WALK_DIE_BY_COLLISION_WITH_KOOPAS 1006
 #define KOOPAS_STATE_SHELL_DIE_BY_COLLISION_WITH_KOOPAS 1007
+#define KOOPAS_STATE_REGEN 1008
 
 
 #define ID_ANI_RED_KOOPAS_WALKING_LEFT 20001
@@ -49,11 +51,12 @@
 class CKoopas : public CGameObject
 {
 protected:
-	ULONGLONG shellIdle_start;
 	bool isShellIdle;
 
 	ULONGLONG die_start;
 	ULONGLONG flying_start;
+	ULONGLONG regen_start;
+	ULONGLONG realRegen_start;
 
 	int isRed;
 	int yesWing;
