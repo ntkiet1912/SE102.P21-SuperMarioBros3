@@ -3,7 +3,7 @@
 
 #include "Animation.h"
 #include "Animations.h"
-
+#include "Koopas.h"
 #include "debug.h"
 
 #define MARIO_WALKING_SPEED		0.1f
@@ -126,10 +126,13 @@ class CMario : public CGameObject
 	ULONGLONG kick_start;
 	bool kick_flag;
 
+	bool canHold;
+	bool isHolding;
 	void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
 	void OnCollisionWithCoin(LPCOLLISIONEVENT e);
 	void OnCollisionWithPortal(LPCOLLISIONEVENT e);
 	void OnCollisionWithKoopas(LPCOLLISIONEVENT e);
+	void kickShell(CKoopas* koopas);
 
 	int GetAniIdBig();
 	int GetAniIdSmall();
@@ -147,6 +150,12 @@ public:
 		untouchable_start = -1;
 		isOnPlatform = false;
 		coin = 0;
+
+		kick_flag = false;
+		kick_start = -1;
+		
+		canHold = false;
+		isHolding = false;
 	}
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();
@@ -166,4 +175,10 @@ public:
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount64(); }
 
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
+
+	void canHoldShell() { canHold = true;}
+	void canNotHoldShell() { canHold = false; }
+	float getVx() { return vx; }
+	int getLevel() { return level; }
+
 };

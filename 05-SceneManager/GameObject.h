@@ -24,7 +24,7 @@ protected:
 	float vx;
 	float vy;
 
-	int nx;	 
+	int nx;
 
 	int state;
 
@@ -71,4 +71,5 @@ public:
 	~CGameObject();
 
 	static bool IsDeleted(const LPGAMEOBJECT &o) { return o->isDeleted; }
+	int getNx() { return nx; }
 };

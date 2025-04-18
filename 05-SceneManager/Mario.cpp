@@ -1,4 +1,4 @@
-#include <algorithm>
+﻿#include <algorithm>
 #include "debug.h"
 
 #include "Mario.h"
@@ -92,12 +92,25 @@ void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 	}
 }
 
+void CMario::kickShell(CKoopas* koopas)
+{
+	float koopasX, koopasY;
+	koopas->GetPosition(koopasX, koopasY);
+
+	if (this->x > koopasX)
+		koopas->SetState(KOOPAS_STATE_SHELLIDLE_MOVING_LEFT);
+	else
+		koopas->SetState(KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT);
+
+	kick_flag = true;
+	SetState(MARIO_STATE_KICK);
+}
+
 void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 {
 	CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
 	LPGAME game = CGame::GetInstance();
 
-	// jump on Koopas' head to turn it be shell idle state
 	if (e->ny < 0)
 	{
 		if (koopas->GetState() != KOOPAS_STATE_SHELL)
@@ -142,35 +155,51 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 
 		}
 	}
-	// hit by koopas
-	else if (e->nx != 0 && koopas->GetState() == KOOPAS_STATE_SHELL)
+	else if (e->nx != 0)
 	{
-		if (e->nx > 0)
-			koopas->SetState(KOOPAS_STATE_SHELLIDLE_MOVING_LEFT);
-		else if (e->nx < 0) koopas->SetState(KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT);
-		SetState(MARIO_STATE_KICK);
-		kick_flag = true;
-	}
-	else
-	{
-		if (untouchable == 0)
+		if (koopas->GetState() == KOOPAS_STATE_SHELL)
 		{
-			if (koopas->GetState() != KOOPAS_STATE_SHELL)
+			// allow player to hold koopas shell
+			if (canHold && !isHolding)
 			{
-				if (level > MARIO_LEVEL_SMALL)
-				{
-					level = MARIO_LEVEL_SMALL;
-					StartUntouchable();
-				}
-				else
-				{
-					DebugOut(L">>> Mario DIE >>> \n");
-					SetState(MARIO_STATE_DIE);
-				}
+				isHolding = true;
+				koopas->setIsHeld(true);
+				koopas->setIsReleased(false);
+			}
+			// release the shell
+			else if (!canHold && isHolding) 
+			{
+				isHolding = false;
+				koopas->setIsHeld(false);
+				koopas->setIsReleased(true);
+				kickShell(koopas);
+				kick_flag = true;
+				SetState(MARIO_STATE_KICK);
+			}
+			// not hold then kick
+			else if (!canHold && !isHolding)
+			{
+				kickShell(koopas);
+			}
+		}
+		//hit by koopas 
+		else if (koopas->GetState() != KOOPAS_STATE_SHELL && untouchable == 0)
+		{
+
+			if (level > MARIO_LEVEL_SMALL)
+			{
+				level = MARIO_LEVEL_SMALL;
+				StartUntouchable();
+			}
+			else
+			{
+				SetState(MARIO_STATE_DIE);
 			}
 		}
 	}
 }
+
+
 void CMario::OnCollisionWithCoin(LPCOLLISIONEVENT e)
 {
 	e->obj->Delete();
@@ -188,19 +217,19 @@ void CMario::OnCollisionWithPortal(LPCOLLISIONEVENT e)
 int CMario::GetAniIdSmall()
 {
 	int aniId = -1;
-	
-	
+
+
 	if (kick_flag)
 	{
 		// $$$$$ delay time for the kick animation 
 		if (GetTickCount64() - kick_start < 200)
 		{
-			if (vx > 0) 
+			if (vx > 0)
 				aniId = ID_ANI_MARIO_SMALL_KICK_RIGHT;
-			else if (vx < 0) 
+			else if (vx < 0)
 				aniId = ID_ANI_MARIO_SMALL_KICK_LEFT;
 		}
-		else 
+		else
 			kick_flag = false;
 	}
 
@@ -271,9 +300,9 @@ int CMario::GetAniIdBig()
 		// $$$$$ delay time for the kick animation 
 		if (GetTickCount64() - kick_start < 50)
 		{
-			if (vx > 0) 
+			if (vx > 0)
 				aniId = ID_ANI_MARIO_KICK_RIGHT;
-			else if (vx < 0) 
+			else if (vx < 0)
 				aniId = ID_ANI_MARIO_KICK_LEFT;
 		}
 		else

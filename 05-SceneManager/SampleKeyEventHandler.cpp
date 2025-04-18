@@ -1,4 +1,4 @@
-#include "SampleKeyEventHandler.h"
+﻿#include "SampleKeyEventHandler.h"
 
 #include "debug.h"
 #include "Game.h"
@@ -31,6 +31,10 @@ void CSampleKeyHandler::OnKeyDown(int KeyCode)
 	case DIK_R: // reset
 		//Reload();
 		break;
+	case DIK_A:
+		mario->canHoldShell();
+
+		break;
 	}
 }
 
@@ -47,6 +51,10 @@ void CSampleKeyHandler::OnKeyUp(int KeyCode)
 	case DIK_DOWN:
 		mario->SetState(MARIO_STATE_SIT_RELEASE);
 		break;
+	case DIK_A:
+		mario->canNotHoldShell();
+
+		break;
 	}
 }
 
@@ -58,14 +66,18 @@ void CSampleKeyHandler::KeyState(BYTE *states)
 	if (game->IsKeyDown(DIK_RIGHT))
 	{
 		if (game->IsKeyDown(DIK_A))
+		{
 			mario->SetState(MARIO_STATE_RUNNING_RIGHT);
+		}
 		else
 			mario->SetState(MARIO_STATE_WALKING_RIGHT);
 	}
 	else if (game->IsKeyDown(DIK_LEFT))
 	{
 		if (game->IsKeyDown(DIK_A))
+		{
 			mario->SetState(MARIO_STATE_RUNNING_LEFT);
+		}
 		else
 			mario->SetState(MARIO_STATE_WALKING_LEFT);
 	}

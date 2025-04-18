@@ -5,6 +5,11 @@
 #include "Portal.h"
 #include "Platform.h"
 #include "Coin.h"
+#include "Game.h"
+#include "PlayScene.h"
+
+
+
 CKoopas::CKoopas(float x, float y, int isRed, int yesWing) : CGameObject(x, y)
 {
 	this->ax = 0;
@@ -27,7 +32,7 @@ void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& botto
 	if (isShellIdle)
 	{
 		left = x - KOOPAS_BBOX_WIDTH / 2;
-		top = y - KOOPAS_BBOX_SHELL_HEIGHT / 2;
+		top = (y - KOOPAS_BBOX_SHELL_HEIGHT / 2);
 		right = left + KOOPAS_BBOX_WIDTH;
 		bottom = top + KOOPAS_BBOX_SHELL_HEIGHT;
 	}
@@ -39,6 +44,7 @@ void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& botto
 		right = 0;
 		bottom = 0;
 	}
+
 	else if (state == KOOPAS_STATE_REGEN)
 	{
 		left = x - KOOPAS_BBOX_REGEN_WIDTH / 2;
@@ -54,7 +60,7 @@ void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& botto
 		right = left + KOOPAS_BBOX_WIDTH;
 		bottom = top + KOOPAS_BBOX_HEIGHT;
 	}
-	
+
 }
 
 void CKoopas::OnNoCollision(DWORD dt)
@@ -135,21 +141,21 @@ void CKoopas::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 		if (e->nx != 0)
 			goomba->SetState(GOOMBA_STATE_DIE);
 	}
-}   
+}
 void CKoopas::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 {
 	if (!isShellIdle) return;
 	else
 	{
-		CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);	
-		if (e->nx != 0 || e->ny !=0)
+		CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
+		if (e->nx != 0 || e->ny != 0)
 		{
 			if (state == KOOPAS_STATE_SHELLIDLE_MOVING_LEFT || state == KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT)
 			{
 				koopas->SetState(KOOPAS_STATE_SHELL_DIE_BY_COLLISION_WITH_KOOPAS);
-				if(e->nx > 0)
+				if (e->nx > 0)
 					koopas->vx = -KOOPAS_VX_DIE_SPEED;
-				else 
+				else
 					koopas->vx = KOOPAS_VX_DIE_SPEED;
 
 			}
@@ -192,16 +198,56 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (state == KOOPAS_STATE_SHELL && GetTickCount64() - regen_start > 5000)
 	{
 		SetState(KOOPAS_STATE_REGEN);
+		ay = KOOPAS_GRAVITY;
+
 	}
 	if (state == KOOPAS_STATE_REGEN && GetTickCount64() - realRegen_start > 1000)
 	{
 		y -= (KOOPAS_BBOX_HEIGHT - KOOPAS_BBOX_SHELL_HEIGHT) / 2;
 		SetState(KOOPAS_STATE_WALKING_LEFT);
 	}
+
+	if (isHeld && state == KOOPAS_STATE_SHELL)
+	{
+		ay = 0;
+		vx = 0;
+		vy = 0;
+		CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
+		float mx, my;
+		mario->GetPosition(mx, my);
+
+		if (mario->getNx() == 1)
+			if (mario->getLevel() != 1)
+				this->x = mx + 15;
+			else
+				this->x = mx + 15;
+		else if (mario->getVx() <= 0)
+			if (mario->getLevel() != 1)
+				this->x = mx - 15;
+			else
+				this->x = mx - 14;
+		this->y = my - 2;
+
+
+	}
+	else if (isReleased)
+	{
+		isReleased = false;
+
+		CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
+		float mx, my;
+		mario->GetPosition(mx, my);
+		ay = KOOPAS_GRAVITY;
+
+		if (mx > this->x)
+			SetState(KOOPAS_STATE_SHELLIDLE_MOVING_LEFT);
+		else
+			SetState(KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT);
+	}
+
 	CGameObject::Update(dt, coObjects);
 	CCollision::GetInstance()->Process(this, dt, coObjects);
 }
-
 
 void CKoopas::Render()
 {
@@ -292,19 +338,23 @@ void CKoopas::SetState(int state)
 	switch (state)
 	{
 	case KOOPAS_STATE_SHELL:
-		regen_start = GetTickCount64();
+		regen_start = GetTickCount64();	// time to go to phase 2: leg appear
 		vx = 0;
 		vy = 0;
 		isShellIdle = true;
-
+		isHeld = false;
+		isReleased = false;
 		//ay = 0;
 		break;
 	case KOOPAS_STATE_REGEN:
 		vx = 0;
 		vy = 0;
-		realRegen_start = GetTickCount64();
+		isHeld = false;
+		isReleased = false;
+		isShellIdle = true;
+		realRegen_start = GetTickCount64(); // time to go to phase 3: Koopas reborn
 		break;
-		
+
 	case KOOPAS_STATE_WALKING_LEFT:
 		vx = -KOOPAS_WALKING_SPEED;
 		isShellIdle = false;
@@ -332,13 +382,13 @@ void CKoopas::SetState(int state)
 		break;
 
 	case KOOPAS_STATE_WING:
-		// not done yet 
+
 		vx = -KOOPAS_WALKING_SPEED;
 		flying_start = GetTickCount64();
 		isShellIdle = false;
 		break;
 
-	//case KOOPAS_STATE_WALK_DIE_BY_COLLISION_WITH_KOOPAS:
+		//case KOOPAS_STATE_WALK_DIE_BY_COLLISION_WITH_KOOPAS:
 	case KOOPAS_STATE_SHELL_DIE_BY_COLLISION_WITH_KOOPAS:
 		die_start = GetTickCount64();
 		vy = -KOOPAS_DYING_SPEED;
@@ -347,3 +397,11 @@ void CKoopas::SetState(int state)
 	}
 }
 
+void CKoopas::setIsHeld(bool isHeld)
+{
+	this->isHeld = isHeld;
+}
+void CKoopas::setIsReleased(bool isReleased)
+{
+	this->isReleased = isReleased;
+}

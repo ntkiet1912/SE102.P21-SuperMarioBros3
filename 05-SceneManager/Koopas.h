@@ -28,6 +28,8 @@
 #define KOOPAS_STATE_SHELL_DIE_BY_COLLISION_WITH_KOOPAS 1007
 #define KOOPAS_STATE_REGEN 1008
 
+//#define KOOPAS_STATE_IS_HELD 1009
+
 
 #define ID_ANI_RED_KOOPAS_WALKING_LEFT 20001
 #define ID_ANI_RED_KOOPAS_WALKING_RIGHT 20002
@@ -66,6 +68,8 @@ protected:
 	float ax;
 	float ay;
 
+	bool isHeld = false;
+	bool isReleased = false;
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	virtual void Render();
@@ -83,4 +87,6 @@ protected:
 public:
 	CKoopas(float x, float y, int isRed, int yesWing);
 	virtual void SetState(int state);
+	void setIsHeld(bool isHeld);
+	void setIsReleased(bool isHeld);
 };
