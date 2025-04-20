@@ -39,6 +39,8 @@ HOW TO INSTALL Microsoft.DXSDK.D3DX
 #include "Coin.h"
 #include "Platform.h"
 #include "Decoration.h"
+#include "Block.h"
+#include "Pipe.h"
 
 #include "SampleKeyEventHandler.h"
 

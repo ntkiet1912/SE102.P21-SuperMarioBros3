@@ -7,6 +7,7 @@
 #include "Goomba.h"
 #include "Coin.h"
 #include "Portal.h"
+#include "FirePiranha.h"
 
 #include "Collision.h"
 
@@ -53,6 +54,13 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithCoin(e);
 	else if (dynamic_cast<CPortal*>(e->obj))
 		OnCollisionWithPortal(e);
+	else if (dynamic_cast<CFirePiranha*>(e->obj))
+		OnCollisionWithFirePiranha(e);
+}
+
+void CMario::OnCollisionWithFirePiranha(LPCOLLISIONEVENT e) 
+{
+	SetState(MARIO_STATE_DIE);
 }
 
 void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)

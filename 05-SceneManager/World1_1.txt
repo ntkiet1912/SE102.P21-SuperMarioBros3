@@ -10,6 +10,8 @@ bush.txt
 orange_block.txt
 blue_block.txt
 block_shadow.txt
+pipe.txt
+fire_piranha.txt
 #
 [OBJECTS]
 # type	x	y	extra_settings per object type
@@ -40,6 +42,15 @@ block_shadow.txt
 #Block_Shadow
 6	304	182	5	0	0	0	-8	0	-16	0	-24	0	-32	103000	102000	102000	102000	101000
 6	336	182	9	0	0	0	-8	0	-16	0	-24	0	-32	0	-40	0	-48	0	-56	0	-64	103000	102000	102000	102000	102000	102000	102000	102000	101000
+
+
+
+#Pipe
+8	370	178	3	16	16	3	0	0	0	-16	0	-32	113000	113000	111000
+8	386	178	3	16	16	3	0	0	0	-16	0	-32	114000	114000	112000
+
+#FIRE_PIRANHA
+9	378	155
 
 #Mario
 0	100	10
