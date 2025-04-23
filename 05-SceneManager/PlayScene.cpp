@@ -10,6 +10,10 @@
 #include "Coin.h"
 #include "Koopas.h"
 #include "Platform.h"
+#include "Decoration.h"
+#include "Block.h"
+#include "Pipe.h"
+#include "FirePiranha.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -120,7 +124,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(x,y); break;
 	case OBJECT_TYPE_BRICK: obj = new CBrick(x,y); break;
 	case OBJECT_TYPE_COIN: obj = new CCoin(x, y); break;
-
+	case OBJECT_TYPE_FIRE_PIRANHA: obj = new CFirePiranha(x, y); break;
 	case OBJECT_TYPE_PLATFORM:
 	{
 
@@ -148,6 +152,43 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj = new CPortal(x, y, r, b, scene_id);
 		break;
 	}
+	case OBJECT_TYPE_DECORATION:
+	{
+		float x = (float)atof(tokens[1].c_str());
+		float y = (float)atof(tokens[2].c_str());
+		int n = atoi(tokens[3].c_str());
+
+		std::vector<std::pair<float, float>> positions;
+		std::vector<int> spriteIDs;
+
+		for (int i = 0; i < n; ++i)
+		{
+			float px = (float)atof(tokens[4 + i * 2].c_str());
+			float py = (float)atof(tokens[5 + i * 2].c_str());
+			positions.push_back({ px, py });
+		}
+
+		for (int i = 0; i < n; ++i)
+		{
+			int sid = atoi(tokens[4 + n * 2 + i].c_str());
+			spriteIDs.push_back(sid);
+		}
+
+		obj = new CDecoration(x, y, positions, spriteIDs);
+		break;
+	}
+	case OBJECT_TYPE_BLOCK:
+	{
+		float x = (float)atof(tokens[1].c_str());
+		float y = (float)atof(tokens[2].c_str());
+		float length = (float)atof(tokens[3].c_str());
+		float cellWidth = (float)atof(tokens[4].c_str());
+		float cellHeight = (float)atof(tokens[5].c_str());
+
+		int n = atoi(tokens[6].c_str());
+
+		std::vector<std::pair<float, float>> positions;
+		std::vector<int> spriteIDs;
 	case OBJECT_TYPE_KOOPAS:
 	{
 		int isRed = atoi(tokens[3].c_str());
@@ -155,6 +196,49 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj = new CKoopas(x, y, isRed, yesWing);
 		break;
 	}
+
+		for (int i = 0; i < n; ++i)
+		{
+			float px = (float)atof(tokens[7 + i * 2].c_str());
+			float py = (float)atof(tokens[8 + i * 2].c_str());
+			positions.push_back({ px, py });
+		}
+
+		for (int i = 0; i < n; ++i)
+		{
+			int sid = atoi(tokens[7 + n * 2 + i].c_str());
+			spriteIDs.push_back(sid);
+		}
+
+		obj = new CBlock(x, y,length ,cellWidth , cellHeight ,positions, spriteIDs );
+		break;
+	}
+	case OBJECT_TYPE_PIPE:
+	{
+		float x = (float)atof(tokens[1].c_str());
+		float y = (float)atof(tokens[2].c_str());
+		int length = atoi(tokens[3].c_str());
+		float cellWidth = (float)atof(tokens[4].c_str());
+		float cellHeight = (float)atof(tokens[5].c_str());
+		int n = atoi(tokens[6].c_str());
+		std::vector<std::pair<float, float>> positions;
+		std::vector<int> spriteIDs;
+		for (int i = 0; i < n; ++i)
+		{
+			float px = (float)atof(tokens[7 + i * 2].c_str());
+			float py = (float)atof(tokens[8 + i * 2].c_str());
+			positions.push_back({ px, py });
+		}
+		for (int i = 0; i < n; ++i)
+		{
+			int sid = atoi(tokens[7 + n * 2 + i].c_str());
+			spriteIDs.push_back(sid);
+		}
+		obj = new CPipe(x, y, length, cellWidth, cellHeight, positions, spriteIDs);
+		break;
+	}
+	break;
+
 
 	default:
 		DebugOut(L"[ERROR] Invalid object type: %d\n", object_type);
@@ -270,6 +354,7 @@ void CPlayScene::Update(DWORD dt)
 	CGame::GetInstance()->SetCamPos(cx, 0.0f /*cy*/);
 
 	PurgeDeletedObjects();
+
 }
 
 void CPlayScene::Render()
