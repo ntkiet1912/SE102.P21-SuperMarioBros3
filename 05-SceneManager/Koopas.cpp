@@ -67,6 +67,8 @@ void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 	{
 		vy = 0;
 	}
+
+	// collide with block like brick or lucky box
 	if (e->nx != 0 && e->obj->IsBlocking())
 	{
 		if (state == KOOPAS_STATE_WALKING_RIGHT)
@@ -80,9 +82,6 @@ void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 	}
 
 	if (dynamic_cast<CCoin*>(e->obj)) return;
-
-	// collide with Block brick
-
 	if (dynamic_cast<CGoomba*>(e->obj))
 		OnCollisionWithGoomba(e);
 	else if (dynamic_cast<CPlatform*>(e->obj))
@@ -110,15 +109,11 @@ void CKoopas::OnCollisionWithPlatform(LPCOLLISIONEVENT e)
 			{
 				if (state == KOOPAS_STATE_WALKING_RIGHT)
 					SetState(KOOPAS_STATE_WALKING_LEFT);
-				else if (state == KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT)
-					SetState(KOOPAS_STATE_SHELLIDLE_MOVING_LEFT);
 			}
 			else if (x - KOOPAS_BBOX_WIDTH / 2 < left)
 			{
 				if (state == KOOPAS_STATE_WALKING_LEFT)
 					SetState(KOOPAS_STATE_WALKING_RIGHT);
-				else if (state == KOOPAS_STATE_SHELLIDLE_MOVING_LEFT)
-					SetState(KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT);
 			}
 		}
 	}
