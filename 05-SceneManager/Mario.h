@@ -64,6 +64,10 @@
 #define ID_ANI_MARIO_KICK_LEFT 1010
 #define ID_ANI_MARIO_KICK_RIGHT 1011
 
+#define ID_ANI_MARIO_STANDING_HOLDSHELL_LEFT 1020
+#define ID_ANI_MARIO_STANDING_HOLDSHELL_RIGHT 1021
+#define ID_ANI_MARIO_RUNNING_HOLDSHELL_LEFT 1025
+#define ID_ANI_MARIO_RUNNING_HOLDSHELL_RIGHT 1026
 // SMALL MARIO
 #define ID_ANI_MARIO_SMALL_IDLE_RIGHT 1100
 #define ID_ANI_MARIO_SMALL_IDLE_LEFT 1102
@@ -87,6 +91,10 @@
 #define ID_ANI_MARIO_SMALL_KICK_LEFT 1610
 #define ID_ANI_MARIO_SMALL_KICK_RIGHT 1611
 
+#define ID_ANI_MARIO_SMALL_STANDING_HOLDSHELL_LEFT 1620
+#define ID_ANI_MARIO_SMALL_STANDING_HOLDSHELL_RIGHT 1621
+#define ID_ANI_MARIO_SMALL_RUNNING_HOLDSHELL_LEFT 1625
+#define ID_ANI_MARIO_SMALL_RUNNING_HOLDSHELL_RIGHT 1626
 #pragma endregion
 
 #define GROUND_Y 160.0f
@@ -101,6 +109,11 @@
 #define MARIO_BIG_BBOX_HEIGHT 24
 #define MARIO_BIG_SITTING_BBOX_WIDTH  14
 #define MARIO_BIG_SITTING_BBOX_HEIGHT 16
+#define MARIO_BIG_KICKING_BBOX_WIDTH  19
+
+#define MARIO_BIG_HOLDSHELL_BBOX_WIDTH  16
+#define MARIO_BIG_HOLDSHELL_BBOX_HEIGHT  24
+
 
 #define MARIO_SIT_HEIGHT_ADJUST ((MARIO_BIG_BBOX_HEIGHT-MARIO_BIG_SITTING_BBOX_HEIGHT)/2)
 
@@ -128,14 +141,18 @@ class CMario : public CGameObject
 
 	bool canHold;
 	bool isHolding;
+	CKoopas* heldKoopas;
+
+
 	void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
 	void OnCollisionWithCoin(LPCOLLISIONEVENT e);
 	void OnCollisionWithPortal(LPCOLLISIONEVENT e);
 	void OnCollisionWithKoopas(LPCOLLISIONEVENT e);
-	void kickShell(CKoopas* koopas);
+	void kickShell(CKoopas*& koopas);
 
 	int GetAniIdBig();
 	int GetAniIdSmall();
+
 
 public:
 	CMario(float x, float y) : CGameObject(x, y)
@@ -156,6 +173,7 @@ public:
 		
 		canHold = false;
 		isHolding = false;
+		heldKoopas = nullptr;
 	}
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();
@@ -176,9 +194,13 @@ public:
 
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 
-	void canHoldShell() { canHold = true;}
-	void canNotHoldShell() { canHold = false; }
+	void setCanHold(bool canHold) { this->canHold = canHold; }
+	void setIsHolding(bool isHolding) { this->isHolding = isHolding; }
 	float getVx() { return vx; }
 	int getLevel() { return level; }
+	void setLevel(int lv) { this->level = lv; }
+	bool getIsHolding() { return isHolding; }
+	bool getCanHold() { return canHold; }
+	void PositionHeldKoopas(LPGAMEOBJECT);
 
 };

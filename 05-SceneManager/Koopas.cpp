@@ -28,7 +28,6 @@ CKoopas::CKoopas(float x, float y, int isRed, int yesWing) : CGameObject(x, y)
 
 void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
-	// shell state
 	if (isShellIdle)
 	{
 		left = x - KOOPAS_BBOX_WIDTH / 2;
@@ -45,13 +44,6 @@ void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& botto
 		bottom = 0;
 	}
 
-	else if (state == KOOPAS_STATE_REGEN)
-	{
-		left = x - KOOPAS_BBOX_REGEN_WIDTH / 2;
-		top = y - KOOPAS_BBOX_HEIGHT / 2;
-		right = left + KOOPAS_BBOX_REGEN_WIDTH;
-		bottom = top + KOOPAS_BBOX_HEIGHT;
-	}
 	// normal state
 	else
 	{
@@ -167,7 +159,6 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	vy += ay * dt;
 	vx += ax * dt;
-
 	if (state == KOOPAS_STATE_WING)
 	{
 		if (!isFlyingUp)
@@ -187,6 +178,20 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		}
 		ay = KOOPAS_GRAVITY_FLYING;
 	}
+
+	// (*) when is held, set the ay = 0 to make sure that they are not dropping while holding
+	if (isHeld && (state == KOOPAS_STATE_SHELL || state == KOOPAS_STATE_REGEN))
+	{
+		ay = 0;
+		vx = 0;
+		vy = 0;
+	}
+	// from the (*). when releasing, give the ay back.
+	else if (isReleased)
+	{
+		isReleased = false;
+		ay = KOOPAS_GRAVITY_FLYING;
+	}
 	// die by collide with koopas shell moving
 	if (((state == KOOPAS_STATE_WALK_DIE_BY_COLLISION_WITH_KOOPAS) ||
 		(state == KOOPAS_STATE_SHELL_DIE_BY_COLLISION_WITH_KOOPAS)) &&
@@ -195,56 +200,41 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		isDeleted = true;
 		return;
 	}
+	// first stage: from shell with no legs to shell with legs 
 	if (state == KOOPAS_STATE_SHELL && GetTickCount64() - regen_start > 5000)
 	{
 		SetState(KOOPAS_STATE_REGEN);
 		ay = KOOPAS_GRAVITY;
-
 	}
+
+	// second stage: from shell with legs to walking state 
+
 	if (state == KOOPAS_STATE_REGEN && GetTickCount64() - realRegen_start > 1000)
 	{
 		y -= (KOOPAS_BBOX_HEIGHT - KOOPAS_BBOX_SHELL_HEIGHT) / 2;
-		SetState(KOOPAS_STATE_WALKING_LEFT);
-	}
-
-	if (isHeld && state == KOOPAS_STATE_SHELL)
-	{
-		ay = 0;
-		vx = 0;
-		vy = 0;
 		CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
-		float mx, my;
-		mario->GetPosition(mx, my);
 
-		if (mario->getNx() == 1)
-			if (mario->getLevel() != 1)
-				this->x = mx + 15;
-			else
-				this->x = mx + 15;
-		else if (mario->getVx() <= 0)
-			if (mario->getLevel() != 1)
-				this->x = mx - 15;
-			else
-				this->x = mx - 14;
-		this->y = my - 2;
-
-
-	}
-	else if (isReleased)
-	{
-		isReleased = false;
-
-		CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
-		float mx, my;
-		mario->GetPosition(mx, my);
-		ay = KOOPAS_GRAVITY;
-
-		if (mx > this->x)
-			SetState(KOOPAS_STATE_SHELLIDLE_MOVING_LEFT);
+		if (mario->getX() < x)
+			SetState(KOOPAS_STATE_WALKING_LEFT);
 		else
-			SetState(KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT);
-	}
+			SetState(KOOPAS_STATE_WALKING_RIGHT);
 
+		// and if player is holding the shell while it's on real Regen time
+		// when the koopas stay back to the walking state, player will get dmg
+		if (mario->getIsHolding())
+		{
+			if (mario->getLevel() > MARIO_LEVEL_SMALL)
+			{
+				mario->setLevel(MARIO_LEVEL_SMALL);
+				mario->StartUntouchable();
+			}
+			else
+			{
+				mario->SetState(MARIO_STATE_DIE);
+			}
+		}
+		mario->setIsHolding(false);
+	}
 	CGameObject::Update(dt, coObjects);
 	CCollision::GetInstance()->Process(this, dt, coObjects);
 }
@@ -344,13 +334,14 @@ void CKoopas::SetState(int state)
 		isShellIdle = true;
 		isHeld = false;
 		isReleased = false;
+		ay = KOOPAS_GRAVITY;
 		//ay = 0;
 		break;
 	case KOOPAS_STATE_REGEN:
 		vx = 0;
 		vy = 0;
-		isHeld = false;
-		isReleased = false;
+		ay = KOOPAS_GRAVITY;
+
 		isShellIdle = true;
 		realRegen_start = GetTickCount64(); // time to go to phase 3: Koopas reborn
 		break;
@@ -358,12 +349,13 @@ void CKoopas::SetState(int state)
 	case KOOPAS_STATE_WALKING_LEFT:
 		vx = -KOOPAS_WALKING_SPEED;
 		isShellIdle = false;
-
+		ay = KOOPAS_GRAVITY;
 		break;
 
 	case KOOPAS_STATE_WALKING_RIGHT:
 		vx = KOOPAS_WALKING_SPEED;
 		isShellIdle = false;
+		ay = KOOPAS_GRAVITY;
 
 		break;
 
@@ -371,14 +363,14 @@ void CKoopas::SetState(int state)
 		vx = KOOPAS_SHELL_SPEED;
 		isShellIdle = true;
 
-		//ay = KOOPAS_GRAVITY;
+		ay = KOOPAS_GRAVITY;
 		break;
 
 	case KOOPAS_STATE_SHELLIDLE_MOVING_LEFT:
 		vx = -KOOPAS_SHELL_SPEED;
 		isShellIdle = true;
 
-		//ay = KOOPAS_GRAVITY;
+		ay = KOOPAS_GRAVITY;
 		break;
 
 	case KOOPAS_STATE_WING:
@@ -397,11 +389,3 @@ void CKoopas::SetState(int state)
 	}
 }
 
-void CKoopas::setIsHeld(bool isHeld)
-{
-	this->isHeld = isHeld;
-}
-void CKoopas::setIsReleased(bool isReleased)
-{
-	this->isReleased = isReleased;
-}

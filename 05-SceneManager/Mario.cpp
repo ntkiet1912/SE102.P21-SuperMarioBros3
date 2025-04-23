@@ -15,17 +15,48 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	vy += ay * dt;
 	vx += ax * dt;
-
 	if (abs(vx) > abs(maxVx)) vx = maxVx;
 
-	// reset untouchable timer if untouchable time has passed
+	// Update heldKoopas' position
+	if (heldKoopas && canHold && isHolding)
+	{
+		PositionHeldKoopas(heldKoopas);
+	}
+	// when releasing A key, and player is holding koopas, kick it 
+	else if (heldKoopas && !canHold && isHolding)
+	{
+		isHolding = false;
+		PositionHeldKoopas(heldKoopas);
+		heldKoopas->setIsHeld(false);
+		heldKoopas->setIsReleased(true);
+		kickShell(heldKoopas);
+		heldKoopas = nullptr;
+	}
+
 	if (GetTickCount64() - untouchable_start > MARIO_UNTOUCHABLE_TIME)
 	{
 		untouchable_start = 0;
 		untouchable = 0;
 	}
-
 	CCollision::GetInstance()->Process(this, dt, coObjects);
+}
+
+void CMario::PositionHeldKoopas(LPGAMEOBJECT koopas)
+{
+	// if mario state != small, then the offset is different a bit.
+	float offsetX, offsetY;
+	if (level != 1)
+	{
+		offsetX = 11.5f;
+		offsetY = -2.0f;
+	}
+	else
+	{
+		offsetX = 11.0f;
+		offsetY = 2.0f;
+	}
+	offsetX = (nx > 0 ? offsetX : -offsetX);
+	koopas->SetPosition(x + offsetX, y - offsetY);
 }
 
 void CMario::OnNoCollision(DWORD dt)
@@ -92,25 +123,19 @@ void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 	}
 }
 
-void CMario::kickShell(CKoopas* koopas)
+void CMario::kickShell(CKoopas*& koopas)
 {
-	float koopasX, koopasY;
-	koopas->GetPosition(koopasX, koopasY);
-
-	if (this->x > koopasX)
+	if (nx < 0)
 		koopas->SetState(KOOPAS_STATE_SHELLIDLE_MOVING_LEFT);
 	else
 		koopas->SetState(KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT);
-
 	kick_flag = true;
 	SetState(MARIO_STATE_KICK);
 }
-
 void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 {
 	CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
 	LPGAME game = CGame::GetInstance();
-
 	if (e->ny < 0)
 	{
 		if (koopas->GetState() != KOOPAS_STATE_SHELL)
@@ -119,13 +144,14 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 			// turn to normal walking one
 			if (koopas->GetState() == KOOPAS_STATE_WING)
 				koopas->SetState(KOOPAS_STATE_WALKING_LEFT);
+			//from the walk one to the shell
 			else
 				koopas->SetState(KOOPAS_STATE_SHELL);
 			//mario bounce back
 			vy = -MARIO_JUMP_DEFLECT_SPEED;
 		}
 		// if koopas is already in shell state, turn it be moving 
-		else if (koopas->GetState() == KOOPAS_STATE_SHELL)
+		else if (koopas->GetState() == KOOPAS_STATE_SHELL || koopas->GetState() == KOOPAS_STATE_REGEN)
 		{
 
 			/*	ALERT !!!
@@ -157,48 +183,44 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 	}
 	else if (e->nx != 0)
 	{
-		if (koopas->GetState() == KOOPAS_STATE_SHELL)
+		if (koopas->GetState() == KOOPAS_STATE_SHELL || koopas->GetState() == KOOPAS_STATE_REGEN)
 		{
-			// allow player to hold koopas shell
+			// holding shell
 			if (canHold && !isHolding)
 			{
 				isHolding = true;
-				koopas->setIsHeld(true);
-				koopas->setIsReleased(false);
+				heldKoopas = koopas;
+				heldKoopas->setIsHeld(true);
+				heldKoopas->setIsReleased(false);
 			}
-			// release the shell
-			else if (!canHold && isHolding) 
-			{
-				isHolding = false;
-				koopas->setIsHeld(false);
-				koopas->setIsReleased(true);
-				kickShell(koopas);
-				kick_flag = true;
-				SetState(MARIO_STATE_KICK);
-			}
-			// not hold then kick
-			else if (!canHold && !isHolding)
-			{
-				kickShell(koopas);
-			}
-		}
-		//hit by koopas 
-		else if (koopas->GetState() != KOOPAS_STATE_SHELL && untouchable == 0)
-		{
+			// let the hold and release A key in Update because when holding 
+			// two obj are not collide anymore, so put them in update is good
 
-			if (level > MARIO_LEVEL_SMALL)
+			
+			// kick it when not holding A key
+ 			else if (!canHold && !isHolding)
 			{
-				level = MARIO_LEVEL_SMALL;
-				StartUntouchable();
-			}
-			else
-			{
-				SetState(MARIO_STATE_DIE);
+				kickShell(koopas);
 			}
 		}
+		else
+		{
+			if (untouchable == 0)
+			{
+				if (level > MARIO_LEVEL_SMALL)
+				{
+					level = MARIO_LEVEL_SMALL;
+					StartUntouchable();
+				}
+				else
+				{
+					SetState(MARIO_STATE_DIE);
+				}
+			}
+		}
+
 	}
 }
-
 
 void CMario::OnCollisionWithCoin(LPCOLLISIONEVENT e)
 {
@@ -224,15 +246,31 @@ int CMario::GetAniIdSmall()
 		// $$$$$ delay time for the kick animation 
 		if (GetTickCount64() - kick_start < 200)
 		{
-			if (vx > 0)
+			if (nx > 0)
 				aniId = ID_ANI_MARIO_SMALL_KICK_RIGHT;
-			else if (vx < 0)
+			else if (nx < 0)
 				aniId = ID_ANI_MARIO_SMALL_KICK_LEFT;
 		}
 		else
 			kick_flag = false;
 	}
-
+	else if (isHolding && canHold)
+	{
+		if (vx == 0)
+		{
+			if (nx > 0)
+				aniId = ID_ANI_MARIO_SMALL_STANDING_HOLDSHELL_RIGHT;
+			else
+				aniId = ID_ANI_MARIO_SMALL_STANDING_HOLDSHELL_LEFT;
+		}
+		else
+		{
+			if (nx > 0)
+				aniId = ID_ANI_MARIO_SMALL_RUNNING_HOLDSHELL_RIGHT;
+			else
+				aniId = ID_ANI_MARIO_SMALL_RUNNING_HOLDSHELL_LEFT;
+		}
+	}
 	else if (!isOnPlatform)
 	{
 		if (abs(ax) == MARIO_ACCEL_RUN_X)
@@ -298,15 +336,32 @@ int CMario::GetAniIdBig()
 	if (kick_flag)
 	{
 		// $$$$$ delay time for the kick animation 
-		if (GetTickCount64() - kick_start < 50)
+		if (GetTickCount64() - kick_start < 200)
 		{
-			if (vx > 0)
+			if (nx > 0)
 				aniId = ID_ANI_MARIO_KICK_RIGHT;
-			else if (vx < 0)
+			else if (nx < 0)
 				aniId = ID_ANI_MARIO_KICK_LEFT;
 		}
 		else
 			kick_flag = false;
+	}
+	else if (isHolding && canHold)
+	{
+		if (vx == 0)
+		{
+			if (nx >= 0)
+				aniId = ID_ANI_MARIO_STANDING_HOLDSHELL_RIGHT;
+			else
+				aniId = ID_ANI_MARIO_STANDING_HOLDSHELL_LEFT;
+		}
+		else
+		{
+			if (nx >= 0)
+				aniId = ID_ANI_MARIO_RUNNING_HOLDSHELL_RIGHT;
+			else
+				aniId = ID_ANI_MARIO_RUNNING_HOLDSHELL_LEFT;
+		}
 	}
 	else if (!isOnPlatform)
 	{

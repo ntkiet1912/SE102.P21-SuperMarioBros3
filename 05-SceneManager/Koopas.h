@@ -70,6 +70,7 @@ protected:
 
 	bool isHeld = false;
 	bool isReleased = false;
+
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	virtual void Render();
@@ -87,6 +88,6 @@ protected:
 public:
 	CKoopas(float x, float y, int isRed, int yesWing);
 	virtual void SetState(int state);
-	void setIsHeld(bool isHeld);
-	void setIsReleased(bool isHeld);
+	void setIsHeld(bool isHeld) { this->isHeld = isHeld; }
+	void setIsReleased(bool isHeld) { this->isReleased = isReleased; }
 };
