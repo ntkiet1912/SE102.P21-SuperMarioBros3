@@ -189,13 +189,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 		std::vector<std::pair<float, float>> positions;
 		std::vector<int> spriteIDs;
-	case OBJECT_TYPE_KOOPAS:
-	{
-		int isRed = atoi(tokens[3].c_str());
-		int yesWing = atoi(tokens[4].c_str());
-		obj = new CKoopas(x, y, isRed, yesWing);
-		break;
-	}
+	
 
 		for (int i = 0; i < n; ++i)
 		{
@@ -211,6 +205,13 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		}
 
 		obj = new CBlock(x, y,length ,cellWidth , cellHeight ,positions, spriteIDs );
+		break;
+	}
+	case OBJECT_TYPE_KOOPAS:
+	{
+		int isRed = atoi(tokens[3].c_str());
+		int yesWing = atoi(tokens[4].c_str());
+		obj = new CKoopas(x, y, isRed, yesWing);
 		break;
 	}
 	case OBJECT_TYPE_PIPE:

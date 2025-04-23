@@ -13,6 +13,7 @@ block_shadow.txt
 pipe.txt
 fire_piranha.txt
 FireBullet.txt
+Koopas.txt
 #
 [OBJECTS]
 # type	x	y	extra_settings per object type
@@ -52,6 +53,9 @@ FireBullet.txt
 
 #FIRE_PIRANHA
 9	378	155
+
+#Koopas
+3	300	150	1	0
 
 #Mario
 0	100	10

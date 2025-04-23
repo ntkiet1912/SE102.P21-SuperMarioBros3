@@ -93,6 +93,8 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 	{
 		OnCollisionWithFireBullet(e);
 	}
+	else if (dynamic_cast<CKoopas*>(e->obj))
+		OnCollisionWithKoopas(e);
 		
 }
 
@@ -106,8 +108,7 @@ void CMario::OnCollisionWithFireBullet(LPCOLLISIONEVENT e)
 	DebugOut(L"[INFO] Mario hit by bullet!\n");
 	SetState(MARIO_STATE_DIE);
 	e->obj->Delete();
-	else if (dynamic_cast<CKoopas*>(e->obj))
-		OnCollisionWithKoopas(e);
+
 }
 
 void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
