@@ -12,6 +12,7 @@ blue_block.txt
 block_shadow.txt
 pipe.txt
 fire_piranha.txt
+FireBullet.txt
 #
 [OBJECTS]
 # type	x	y	extra_settings per object type

@@ -8,6 +8,7 @@
 #include "Coin.h"
 #include "Portal.h"
 #include "FirePiranha.h"
+#include "FireBullet.h"
 
 #include "Collision.h"
 
@@ -56,11 +57,23 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithPortal(e);
 	else if (dynamic_cast<CFirePiranha*>(e->obj))
 		OnCollisionWithFirePiranha(e);
+	else if (dynamic_cast<CFireBullet*>(e->obj))
+	{
+		OnCollisionWithFireBullet(e);
+	}
+		
 }
 
 void CMario::OnCollisionWithFirePiranha(LPCOLLISIONEVENT e) 
 {
 	SetState(MARIO_STATE_DIE);
+}
+
+void CMario::OnCollisionWithFireBullet(LPCOLLISIONEVENT e)
+{
+	DebugOut(L"[INFO] Mario hit by bullet!\n");
+	SetState(MARIO_STATE_DIE);
+	e->obj->Delete();
 }
 
 void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)

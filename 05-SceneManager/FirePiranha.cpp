@@ -6,6 +6,7 @@
 #include "Textures.h"
 #include "Animations.h"
 #include "AssetIDs.h"
+#include "FireBullet.h"
 
 CFirePiranha::CFirePiranha(float x, float y) : CGameObject(x, y)
 {
@@ -14,6 +15,7 @@ CFirePiranha::CFirePiranha(float x, float y) : CGameObject(x, y)
 	direction = -1;
 	facingVertical = -1;
 	state = -1; 
+	hasFired = false; // Chưa bắn
 	stateTimer = GetTickCount64();
 }
 
@@ -35,7 +37,7 @@ bool CFirePiranha::IsPlayerTooClose()
 
 	float playerX, playerY;
 	player->GetPosition(playerX, playerY);
-	return abs(playerX - x) < 50 && abs(playerY - y) < 50;
+	return abs(playerX - x) < 30 && abs(playerY - y) < 50;
 }
 
 void CFirePiranha::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -69,18 +71,21 @@ void CFirePiranha::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	case PIRANHA_STATE_FIRE_UP_RIGHT:
 	case PIRANHA_STATE_FIRE_DOWN_LEFT:
 	case PIRANHA_STATE_FIRE_DOWN_RIGHT:
-		if (GetTickCount64() - stateTimer >= PIRANHA_FIRE_DELAY)
+		if (!hasFired) {
+			Fire();
+			hasFired = true; 
+		}
+		if (GetTickCount64() - stateTimer >= PIRANHA_RISE_DELAY)
 		{
-			Fire(); 
-
-			
 			y += PIRANHA_RISE_SPEED * dt;
 
 			if (y >= startY)
 			{
 				y = startY;
+				hasFired = false; 
 				SetState(-1); 
 			}
+
 		}
 		break;
 	}
@@ -103,7 +108,21 @@ void CFirePiranha::UpdateDirection()
 
 void CFirePiranha::Fire()
 {
-	// Tạo viên đạn hoặc hiệu ứng fire tại đây nếu có
+	CPlayScene* scene = dynamic_cast<CPlayScene*>(CGame::GetInstance()->GetCurrentScene());
+	if (scene == nullptr) return;
+
+	LPGAMEOBJECT player = scene->GetPlayer();
+	if (player == nullptr) return;
+
+	float playerX, playerY;
+	player->GetPosition(playerX, playerY);
+
+	float enemyX, enemyY;
+	this->GetPosition(enemyX, enemyY);
+
+	LPGAMEOBJECT fireBullet = new CFireBullet(enemyX, enemyY, playerX, playerY);
+
+	((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->AddObject(fireBullet);
 	DebugOut(L"[Piranha] Fire!\n");
 }
 
@@ -144,4 +163,5 @@ void CFirePiranha::Render()
 	{
 		CSprites::GetInstance()->Get(spriteId)->Draw(x, y);
 	}
+	RenderBoundingBox();
 }

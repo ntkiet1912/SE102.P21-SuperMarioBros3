@@ -8,7 +8,8 @@
 
 #define PIRANHA_RISE_SPEED 0.02f
 #define PIRANHA_FIRE_DELAY 500	
-#define PIRANHA_HIDE_DELAY 1500
+#define PIRANHA_HIDE_DELAY 2000
+#define PIRANHA_RISE_DELAY 2000
 #define PIRANHA_MAX_RISE 33.0f
 
 #define PIRANHA_STATE_FIRE_UP_LEFT 100
@@ -24,6 +25,7 @@ protected:
 	ULONGLONG stateTimer;
 	int direction;
 	int facingVertical;
+	bool hasFired = false;
 
 	void UpdateDirection();
 	void Fire();
