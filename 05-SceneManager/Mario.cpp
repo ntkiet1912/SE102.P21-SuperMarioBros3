@@ -13,6 +13,7 @@
 
 #include "Collision.h"
 #include "LuckyBlock.h"
+#include "UpgradeMarioLevel.h"
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
@@ -98,6 +99,8 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithKoopas(e);
 	else if (dynamic_cast<CLuckyBlock*>(e->obj))
 		OnCollisionWithLuckyBlock(e);
+	else if (dynamic_cast<CUpgradeLevel*>(e->obj))
+		OnCollisionWithUpgradingItem(e);
 }
 
 void CMario::OnCollisionWithFirePiranha(LPCOLLISIONEVENT e) 
@@ -266,6 +269,26 @@ void CMario::OnCollisionWithLuckyBlock(LPCOLLISIONEVENT e)
 		lb->setIsHit(true);
 	}
 }
+
+void CMario::OnCollisionWithUpgradingItem(LPCOLLISIONEVENT e)
+{
+	if (e->nx != 0 || e->ny != 0)
+	{
+		CMushroom* mushroom = dynamic_cast<CMushroom*>(e->obj);
+		CLeaf* leaf = dynamic_cast<CLeaf*>(e->obj);
+		if (level == 1 && mushroom)
+		{
+			SetLevel(2);
+		}
+		else if (level == 2 && leaf)
+		{
+			DebugOut(L"level 3\n");
+			//SetLevel(3);
+		}
+		e->obj->Delete();
+	}
+}
+
 //
 // Get animation ID for small Mario
 //

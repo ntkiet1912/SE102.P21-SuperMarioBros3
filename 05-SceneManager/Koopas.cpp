@@ -7,6 +7,7 @@
 #include "Coin.h"
 #include "Game.h"
 #include "PlayScene.h"
+#include "LuckyBlock.h"
 
 
 
@@ -88,6 +89,8 @@ void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithPlatform(e);
 	else if ((dynamic_cast<CKoopas*>(e->obj)))
 		OnCollisionWithKoopas(e);
+	else if (dynamic_cast<CLuckyBlock*>(e->obj))
+		OnCollisionWithLuckyBlock(e);
 
 }
 void CKoopas::OnCollisionWithPlatform(LPCOLLISIONEVENT e)
@@ -150,6 +153,19 @@ void CKoopas::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 
 	}
 }
+
+void CKoopas::OnCollisionWithLuckyBlock(LPCOLLISIONEVENT e)
+{
+	CLuckyBlock* lb = dynamic_cast<CLuckyBlock*>(e->obj);
+	if (state == KOOPAS_STATE_SHELLIDLE_MOVING_LEFT || state == KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT)
+	{
+		if (e->nx != 0)
+		{
+			lb->setIsHit(true);
+		}
+	}
+}
+
 void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	vy += ay * dt;

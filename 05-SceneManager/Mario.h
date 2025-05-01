@@ -153,6 +153,7 @@ class CMario : public CGameObject
 	void kickShell(CKoopas*& koopas);
 
 	void OnCollisionWithLuckyBlock(LPCOLLISIONEVENT e);
+	void OnCollisionWithUpgradingItem(LPCOLLISIONEVENT e);
 	//void OnCollisionWithLuckyUpgrade(LPCOLLISIONEVENT e);
 
 	int GetAniIdBig();

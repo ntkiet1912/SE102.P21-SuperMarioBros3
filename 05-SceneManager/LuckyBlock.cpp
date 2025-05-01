@@ -1,6 +1,8 @@
 #include "LuckyBlock.h"
 #include "debug.h"
-
+#include "Mario.h"
+#include "PlayScene.h"
+#include "UpgradeMarioLevel.h"
 void CLuckyBlock::Render()
 {
 	int aniId;
@@ -11,13 +13,17 @@ void CLuckyBlock::Render()
 	CAnimations::GetInstance()->Get(aniId)->Render(x, y);
 	RenderBoundingBox();
 }
-
+void CLuckyBlock::OnNoCollision(DWORD dt)
+{
+	x += vx * dt;
+	y += vy * dt;
+};
 void CLuckyBlock::GetBoundingBox(float& l, float& t, float& r, float& b)
 {
 	l = x - LUCKYBLOCK_BBOX_WIDTH / 2;
-	t = y - LUCKYBLOCK_BBOX_HEIGHT / 2;
+	t = y - LUCKYBLOCK_BBOX_HEIGHT / 2 + 1;
 	r = l + LUCKYBLOCK_BBOX_WIDTH;
-	b = t + LUCKYBLOCK_BBOX_HEIGHT;
+	b = t + LUCKYBLOCK_BBOX_HEIGHT + 1;
 }
 void CLuckyBlock::SetState(int state)
 {
@@ -34,15 +40,6 @@ void CLuckyBlock::SetState(int state)
 		break;
 	}
 }
-void CLuckyBlock::OnCollisionWith(LPCOLLISIONEVENT e)
-{
-	//if (e->ny != 0)
-	//{
-	//	isEmpty = true;
-	//}
-}
-
-
 void CLuckyBlock::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	vy += ay * dt;
@@ -56,6 +53,7 @@ void CLuckyBlock::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		vy = -LUCKYBOX_VY;
 		isHit = false;
 		isEmpty = true;
+		spawnItem();
 	}
 	else if (y >= initY)
 	{
@@ -66,8 +64,37 @@ void CLuckyBlock::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	CGameObject::Update(dt, coObjects);
 	CCollision::GetInstance()->Process(this, dt, coObjects);
 }
-void CLuckyBlock::OnNoCollision(DWORD dt)
+
+void CLuckyBlock::spawnItem()
 {
-	x += vx * dt;
-	y += vy * dt;
-};
+
+	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
+	CGameObject* item = nullptr;
+	switch (containItemIndex)
+	{
+	case ITEM_UPGRADELEVEL:
+		if (mario->getLevel() == 1)
+		{
+			if (mario->getX() > this->x)
+			{
+				item = new CMushroom(x, y, true); 
+			}
+			else
+			{
+				item = new CMushroom(x, y, false);
+
+			}
+		}
+		else if (mario->getLevel() >= 1)
+		{
+			item = new CLeaf(x, y);
+		}
+		break;
+	}
+	if (item)
+	{
+		// call current scene to add item to Objects
+		CScene* scene = CGame::GetInstance()->GetCurrentScene();
+		((CPlayScene*)scene)->AddObject(item);
+	}
+}

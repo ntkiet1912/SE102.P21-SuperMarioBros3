@@ -6,12 +6,13 @@
 #define ID_ANI_LUCKY_BLOCK_NORMAL -3000
 #define ID_ANI_LUCKY_BLOCK_EMPTY -3001
 #define LUCKYBLOCK_WIDTH 16
-#define LUCKYBLOCK_BBOX_WIDTH 12
-#define LUCKYBLOCK_BBOX_HEIGHT 16
+#define LUCKYBLOCK_BBOX_WIDTH 14
+#define LUCKYBLOCK_BBOX_HEIGHT 15
 
 #define LUCKYBOX_VY 0.17f
 #define LUCKYBLOCK_NORMAL 2000
 #define LUCKYBLOCK_EMPTY 2001
+#define ITEM_UPGRADELEVEL 1
 class CLuckyBlock :
 	public CGameObject
 {
@@ -22,11 +23,11 @@ protected:
 	bool isEmpty;
 	ULONGLONG bouncingTime;
 	bool isHit;
-	virtual void OnCollisionWith(LPCOLLISIONEVENT e);
+	void spawnItem();
 public:
 	CLuckyBlock(float x, float y) : CGameObject(x, y)
 	{
-		containItemIndex = -1;
+		containItemIndex = 1;
 		isEmpty = false;
 		bouncingTime = -1;
 		initY = y;
