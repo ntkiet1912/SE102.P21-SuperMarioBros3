@@ -160,6 +160,7 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Goomba.cpp" />
     <ClCompile Include="Koopas.cpp" />
+    <ClCompile Include="LuckyBlock.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mario.cpp" />
     <ClCompile Include="Pipe.cpp" />
@@ -191,6 +192,7 @@
     <ClInclude Include="Goomba.h" />
     <ClInclude Include="KeyEventHandler.h" />
     <ClInclude Include="Koopas.h" />
+    <ClInclude Include="LuckyBlock.h" />
     <ClInclude Include="Mario.h" />
     <ClInclude Include="Platform.h" />
     <ClInclude Include="PlayScene.h" />

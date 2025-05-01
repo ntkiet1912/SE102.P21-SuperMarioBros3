@@ -14,6 +14,7 @@
 #include "Block.h"
 #include "Pipe.h"
 #include "FirePiranha.h"
+#include "LuckyBlock.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -236,6 +237,12 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			spriteIDs.push_back(sid);
 		}
 		obj = new CPipe(x, y, length, cellWidth, cellHeight, positions, spriteIDs);
+		break;
+	}
+	case OBJECT_TYPE_LUCKYBLOCK:
+	{
+		DebugOut(L"x = %f, y = %f\n", x, y);
+		obj = new CLuckyBlock(x, y);
 		break;
 	}
 	break;

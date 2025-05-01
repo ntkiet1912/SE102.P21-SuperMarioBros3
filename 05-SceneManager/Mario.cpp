@@ -12,6 +12,7 @@
 #include "Koopas.h"
 
 #include "Collision.h"
+#include "LuckyBlock.h"
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
@@ -95,7 +96,8 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 	}
 	else if (dynamic_cast<CKoopas*>(e->obj))
 		OnCollisionWithKoopas(e);
-		
+	else if (dynamic_cast<CLuckyBlock*>(e->obj))
+		OnCollisionWithLuckyBlock(e);
 }
 
 void CMario::OnCollisionWithFirePiranha(LPCOLLISIONEVENT e) 
@@ -254,6 +256,15 @@ void CMario::OnCollisionWithPortal(LPCOLLISIONEVENT e)
 {
 	CPortal* p = (CPortal*)e->obj;
 	CGame::GetInstance()->InitiateSwitchScene(p->GetSceneId());
+}
+
+void CMario::OnCollisionWithLuckyBlock(LPCOLLISIONEVENT e)
+{
+	CLuckyBlock* lb =dynamic_cast<CLuckyBlock*>(e->obj);
+	if (e->ny > 0)
+	{
+		lb->setIsHit(true);
+	}
 }
 //
 // Get animation ID for small Mario
