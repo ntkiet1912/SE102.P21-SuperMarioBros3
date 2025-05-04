@@ -3,6 +3,7 @@
 #include "Mario.h"
 #include "PlayScene.h"
 #include "UpgradeMarioLevel.h"
+#include "Coin.h"
 void CLuckyBlock::Render()
 {
 	int aniId;
@@ -17,7 +18,7 @@ void CLuckyBlock::OnNoCollision(DWORD dt)
 {
 	x += vx * dt;
 	y += vy * dt;
-};
+}
 void CLuckyBlock::GetBoundingBox(float& l, float& t, float& r, float& b)
 {
 	l = x - LUCKYBLOCK_BBOX_WIDTH / 2;
@@ -67,7 +68,6 @@ void CLuckyBlock::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 void CLuckyBlock::spawnItem()
 {
-
 	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
 	CGameObject* item = nullptr;
 	switch (containItemIndex)
@@ -75,6 +75,8 @@ void CLuckyBlock::spawnItem()
 	case ITEM_UPGRADELEVEL:
 		if (mario->getLevel() == 1)
 		{
+			// mushroom always want to move to the opposite side of Mario 
+			// so new variable spawnAndMoveToLeft is added
 			if (mario->getX() > this->x)
 			{
 				item = new CMushroom(x, y, true); 
@@ -85,12 +87,16 @@ void CLuckyBlock::spawnItem()
 
 			}
 		}
-		else if (mario->getLevel() >= 1)
+		else if (mario->getLevel() > 1)
 		{
 			item = new CLeaf(x, y);
 		}
 		break;
+	case ITEM_COIN:
+		item = new CCoinFromLuckyBlock(x, y - 8);
+		break;
 	}
+
 	if (item)
 	{
 		// call current scene to add item to Objects

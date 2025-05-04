@@ -13,6 +13,7 @@
 #define LUCKYBLOCK_NORMAL 2000
 #define LUCKYBLOCK_EMPTY 2001
 #define ITEM_UPGRADELEVEL 1
+#define ITEM_COIN 2
 class CLuckyBlock :
 	public CGameObject
 {

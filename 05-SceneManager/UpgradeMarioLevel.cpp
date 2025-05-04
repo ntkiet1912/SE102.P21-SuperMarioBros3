@@ -1,25 +1,7 @@
 #include "UpgradeMarioLevel.h"
+#include "debug.h"
 
-void CUpgradeLevel::OnNoCollision(DWORD dt)
-{
-	x += vx * dt;
-	y += vy * dt;
-}
 
-void CUpgradeLevel::OnCollisionWith(LPCOLLISIONEVENT e)
-{
-	if (!e->obj->IsBlocking()) return;
-	//if (dynamic_cast<CGoomba*>(e->obj)) return;
-
-	if (e->ny != 0)
-	{
-		vy = 0;
-	}
-	else if (e->nx != 0)
-	{
-		vx = -vx;
-	}
-}
 
 // find that mushroom's and the leaf's boundingbox are not the same so seperate them into 2 function
 void CMushroom::GetBoundingBox(float& l, float& t, float& r, float& b)
@@ -34,7 +16,7 @@ CMushroom::CMushroom(float x, float y, bool spawnAndMoveToLeft) :CUpgradeLevel(x
 	this->spawnAndMoveToLeft = spawnAndMoveToLeft;
 	ax = 0;
 	ay = 0;
-	vy = -0.035f;
+	vy = MUSHROOM_SPAWNING_SPEED_VY;
 	spawnY = y - 16;
 }
 void CMushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -45,12 +27,11 @@ void CMushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (y <= spawnY)
 	{
 		if (spawnAndMoveToLeft)
-			vx = -0.06f;
-		else vx = 0.06f;
+			vx = -MUSHROOM_MOVING_SPEED;
+		else vx = MUSHROOM_MOVING_SPEED;
 
-		ax = 0;
-		ay = UPGRADE_LEVEL_GRAVITY;
-		vy = 0.02f;
+		vy = MUSHROOM_SPEED_VY;
+		ay = MUSHROOM_GRAVITY;
 		spawnY = -999;
 	}
 	CGameObject::Update(dt, coObjects);
@@ -64,7 +45,26 @@ void CMushroom::Render()
 	RenderBoundingBox();
 }
 
+void CMushroom::OnNoCollision(DWORD dt)
+{
+	x += vx * dt;
+	y += vy * dt;
+}
 
+void CMushroom::OnCollisionWith(LPCOLLISIONEVENT e)
+{
+	if (!e->obj->IsBlocking()) return;
+
+
+	if (e->ny != 0)
+	{
+		vy = 0;
+	}
+	else if (e->nx != 0)
+	{
+		vx = -vx;
+	}
+}
 // find that mushroom's and the leaf's boundingbox are not the same so seperate them into 2 function
 void CLeaf::GetBoundingBox(float& l, float& t, float& r, float& b)
 {
@@ -75,13 +75,47 @@ void CLeaf::GetBoundingBox(float& l, float& t, float& r, float& b)
 }
 CLeaf::CLeaf(float x, float y) : CUpgradeLevel(x, y)
 {
+	boundOfMovingMaxToTheLeft = x - 24;
+	boundOfMovingMaxToTheRight = x + 24;
 	ax = 0;
-	ay = UPGRADE_LEVEL_GRAVITY;
+	ay = 0;
+
+	// when luckybox is hit, the leaf will bounce to the sky
+	vy = LEAF_SPAWNING_SPEED_VY;
+	spawnY = y - 48;
 }
 void CLeaf::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	vx += ax * dt;
 	vy += ay * dt;
+	// completely spawned
+	if (y <= spawnY)
+	{
+		spawnY =  -999;
+		vy = 0;
+		ay = LEAF_GRAVITY;
+		ax = LEAF_ACCELARATION;
+		vx = LEAF_MOVING_SPEED;
+	}
+	// bound right -> make it go back to the left 
+	if (x >= boundOfMovingMaxToTheRight)
+	{
+		ax = -LEAF_ACCELARATION;
+		ay = LEAF_GRAVITY;
+
+		vx = -LEAF_MOVING_SPEED;
+		nx = -1;
+		vy = 0;
+	}
+	// bound left -> make it go back to the right
+	else if (x <= boundOfMovingMaxToTheLeft)
+	{
+		vx = LEAF_MOVING_SPEED;
+		vy = 0;
+		ay = LEAF_GRAVITY;
+		nx = 1;
+		ax = LEAF_ACCELARATION;
+	}
 	CGameObject::Update(dt, coObjects);
 	CCollision::GetInstance()->Process(this, dt, coObjects);
 
@@ -95,3 +129,16 @@ void CLeaf::Render()
 	CAnimations::GetInstance()->Get(aniId)->Render(x, y);
 	RenderBoundingBox();
 }
+
+void CLeaf::OnNoCollision(DWORD dt)
+{
+	x += vx * dt;
+	y += vy * dt;
+}
+
+void CLeaf::OnCollisionWith(LPCOLLISIONEVENT e)
+{
+	if (e->obj->IsBlocking())
+		return;
+}
+

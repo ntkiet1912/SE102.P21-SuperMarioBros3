@@ -9,18 +9,28 @@
 #define LEFT_BBOX_HEIGHT 14
 #define LEFT_BBOX_WIDTH 16
 
-#define UPGRADE_LEVEL_GRAVITY 0.0006f
-#define UPGRADE_LEVEL_SPEED 0.05f
+#define MUSHROOM_GRAVITY 0.0006f
+#define MUSHROOM_MOVING_SPEED 0.06f
+#define MUSHROOM_SPAWNING_SPEED_VY -0.035f
+#define MUSHROOM_SPEED_VY 0.02f
+
+#define LEAF_GRAVITY 0.0001f
+#define LEAF_MOVING_SPEED 0.02f
+
+#define LEAF_ACCELARATION 0.00035f
+#define LEAF_SPAWNING_SPEED_VY -0.135f
+
+#
 class CUpgradeLevel :
 	public CGameObject
 {
 protected:
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) = 0;
 	virtual void Render() = 0;
-	virtual int IsCollidable() { return 1; };
+	virtual int IsCollidable() { return 1; }
 	virtual int IsBlocking() { return 0; }
-	virtual void OnNoCollision(DWORD dt);
-	virtual void OnCollisionWith(LPCOLLISIONEVENT e);
+	virtual void OnNoCollision(DWORD dt) = 0;
+	virtual void OnCollisionWith(LPCOLLISIONEVENT e) = 0;
 
 public:
 	CUpgradeLevel(float x, float y) : CGameObject(x, y) {}
@@ -41,6 +51,8 @@ protected:
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	virtual void Render();
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
+	virtual void OnNoCollision(DWORD dt);
+	virtual void OnCollisionWith(LPCOLLISIONEVENT e);
 public:
 	CMushroom(float x, float y, bool spawnAndMoveToLeft);
 };
@@ -50,9 +62,19 @@ class CLeaf : public CUpgradeLevel
 protected:
 	float ax;
 	float ay;
+	float boundOfMovingMaxToTheRight;
+	float boundOfMovingMaxToTheLeft;
+	float spawnY;
+
+	virtual int IsCollidable() { return 0; }
+	virtual int IsBlocking() { return 0; }
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	virtual void Render();
+	virtual void OnNoCollision(DWORD dt);
+	virtual void OnCollisionWith(LPCOLLISIONEVENT e);
+
+
 public:
 	CLeaf(float x, float y);
 };

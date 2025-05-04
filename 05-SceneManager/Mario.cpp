@@ -274,18 +274,22 @@ void CMario::OnCollisionWithUpgradingItem(LPCOLLISIONEVENT e)
 {
 	if (e->nx != 0 || e->ny != 0)
 	{
-		CMushroom* mushroom = dynamic_cast<CMushroom*>(e->obj);
-		CLeaf* leaf = dynamic_cast<CLeaf*>(e->obj);
-		if (level == 1 && mushroom)
+
+		if (level == 1 && dynamic_cast<CMushroom*>(e->obj))
 		{
 			SetLevel(2);
+			e->obj->Delete();
 		}
-		else if (level == 2 && leaf)
+		else if (level == 2 && dynamic_cast<CLeaf*>(e->obj))
 		{
 			DebugOut(L"level 3\n");
 			//SetLevel(3);
+			e->obj->Delete();
 		}
-		e->obj->Delete();
+		//else
+		//{
+		//	score += 1000;
+		//}
 	}
 }
 
