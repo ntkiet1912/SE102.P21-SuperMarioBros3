@@ -241,8 +241,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	}
 	case OBJECT_TYPE_LUCKYBLOCK:
 	{
-		DebugOut(L"x = %f, y = %f\n", x, y);
-		obj = new CLuckyBlock(x, y);
+		int containItemIndex = atoi(tokens[3].c_str());
+		obj = new CLuckyBlock(x, y, containItemIndex);
 		break;
 	}
 	break;

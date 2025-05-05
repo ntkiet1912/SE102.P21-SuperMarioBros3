@@ -79,11 +79,11 @@ void CLuckyBlock::spawnItem()
 			// so new variable spawnAndMoveToLeft is added
 			if (mario->getX() > this->x)
 			{
-				item = new CMushroom(x, y, true); 
+				item = new CMushroomUpgradingMarioLevel(x, y, true);
 			}
 			else
 			{
-				item = new CMushroom(x, y, false);
+				item = new CMushroomUpgradingMarioLevel(x, y, false);
 
 			}
 		}
@@ -94,6 +94,16 @@ void CLuckyBlock::spawnItem()
 		break;
 	case ITEM_COIN:
 		item = new CCoinFromLuckyBlock(x, y - 8);
+		break;
+	case ITEM_1UP:
+		if (mario->getX() > this->x)
+		{
+			item = new CMushroom1UP(x, y, true);
+		}
+		else
+		{
+			item = new CMushroom1UP(x, y, false);
+		}
 		break;
 	}
 

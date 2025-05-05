@@ -1,71 +1,5 @@
 #include "UpgradeMarioLevel.h"
 #include "debug.h"
-
-
-
-// find that mushroom's and the leaf's boundingbox are not the same so seperate them into 2 function
-void CMushroom::GetBoundingBox(float& l, float& t, float& r, float& b)
-{
-	l = x - MUSHROOM_BBOX_WIDTH / 2;
-	r = x + MUSHROOM_BBOX_WIDTH / 2;
-	t = y - MUSHROOM_BBOX_HEIGHT / 2;
-	b = y + MUSHROOM_BBOX_HEIGHT / 2;
-}
-CMushroom::CMushroom(float x, float y, bool spawnAndMoveToLeft) :CUpgradeLevel(x, y)
-{
-	this->spawnAndMoveToLeft = spawnAndMoveToLeft;
-	ax = 0;
-	ay = 0;
-	vy = MUSHROOM_SPAWNING_SPEED_VY;
-	spawnY = y - 16;
-}
-void CMushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
-{
-	vx += ax * dt;
-	vy += ay * dt;
-
-	if (y <= spawnY)
-	{
-		if (spawnAndMoveToLeft)
-			vx = -MUSHROOM_MOVING_SPEED;
-		else vx = MUSHROOM_MOVING_SPEED;
-
-		vy = MUSHROOM_SPEED_VY;
-		ay = MUSHROOM_GRAVITY;
-		spawnY = -999;
-	}
-	CGameObject::Update(dt, coObjects);
-	CCollision::GetInstance()->Process(this, dt, coObjects);
-}
-
-void CMushroom::Render()
-{
-	int aniId = ID_ANI_MUSHROOM;
-	CAnimations::GetInstance()->Get(aniId)->Render(x, y);
-	RenderBoundingBox();
-}
-
-void CMushroom::OnNoCollision(DWORD dt)
-{
-	x += vx * dt;
-	y += vy * dt;
-}
-
-void CMushroom::OnCollisionWith(LPCOLLISIONEVENT e)
-{
-	if (!e->obj->IsBlocking()) return;
-
-
-	if (e->ny != 0)
-	{
-		vy = 0;
-	}
-	else if (e->nx != 0)
-	{
-		vx = -vx;
-	}
-}
-// find that mushroom's and the leaf's boundingbox are not the same so seperate them into 2 function
 void CLeaf::GetBoundingBox(float& l, float& t, float& r, float& b)
 {
 	l = x - LEFT_BBOX_WIDTH / 2;
@@ -120,7 +54,6 @@ void CLeaf::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	CCollision::GetInstance()->Process(this, dt, coObjects);
 
 }
-
 void CLeaf::Render()
 {
 	int aniId;
@@ -142,3 +75,68 @@ void CLeaf::OnCollisionWith(LPCOLLISIONEVENT e)
 		return;
 }
 
+void CMushroom::GetBoundingBox(float& l, float& t, float& r, float& b)
+{
+	l = x - MUSHROOM_BBOX_WIDTH / 2;
+	r = x + MUSHROOM_BBOX_WIDTH / 2;
+	t = y - MUSHROOM_BBOX_HEIGHT / 2;
+	b = y + MUSHROOM_BBOX_HEIGHT / 2;
+}
+CMushroom::CMushroom(float x, float y, bool spawnAndMoveToLeft) :CUpgradeLevel(x, y)
+{
+	this->spawnAndMoveToLeft = spawnAndMoveToLeft;
+	ax = 0;
+	ay = 0;
+	vy = MUSHROOM_SPAWNING_SPEED_VY;
+	spawnY = y - 16;
+}
+void CMushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
+{
+	vx += ax * dt;
+	vy += ay * dt;
+
+	if (y <= spawnY)
+	{
+		if (spawnAndMoveToLeft)
+			vx = -MUSHROOM_MOVING_SPEED;
+		else vx = MUSHROOM_MOVING_SPEED;
+
+		vy = MUSHROOM_SPEED_VY;
+		ay = MUSHROOM_GRAVITY;
+		spawnY = -999;
+	}
+	CGameObject::Update(dt, coObjects);
+	CCollision::GetInstance()->Process(this, dt, coObjects);
+}
+
+void CMushroom::OnNoCollision(DWORD dt)
+{
+	x += vx * dt;
+	y += vy * dt;
+}
+
+void CMushroom::OnCollisionWith(LPCOLLISIONEVENT e)
+{
+	if (!e->obj->IsBlocking()) return;
+	if (e->ny != 0)
+	{
+		vy = 0;
+	}
+	else if (e->nx != 0)
+	{
+		vx = -vx;
+	}
+}
+void CMushroom1UP::Render()
+{
+	int aniId = ID_ANI_MUSHROOM1UP;
+	CAnimations::GetInstance()->Get(aniId)->Render(x, y);
+	RenderBoundingBox();
+}
+
+void CMushroomUpgradingMarioLevel::Render()
+{
+	int aniId = ID_ANI_MUSHROOM;
+	CAnimations::GetInstance()->Get(aniId)->Render(x, y);
+	RenderBoundingBox();
+}

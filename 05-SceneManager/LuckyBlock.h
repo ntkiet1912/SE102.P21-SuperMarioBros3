@@ -14,6 +14,8 @@
 #define LUCKYBLOCK_EMPTY 2001
 #define ITEM_UPGRADELEVEL 1
 #define ITEM_COIN 2
+#define ITEM_1UP 3
+
 class CLuckyBlock :
 	public CGameObject
 {
@@ -26,9 +28,14 @@ protected:
 	bool isHit;
 	void spawnItem();
 public:
-	CLuckyBlock(float x, float y) : CGameObject(x, y)
+	CLuckyBlock(float x, float y, int containItemIndex) : CGameObject(x, y)
 	{
-		containItemIndex = 1;
+		// avoiding error when file scene__.txt not including enough arguments
+		if(containItemIndex > 0)
+			this->containItemIndex = containItemIndex;
+		else 
+			this->containItemIndex = 2;
+
 		isEmpty = false;
 		bouncingTime = -1;
 		initY = y;
