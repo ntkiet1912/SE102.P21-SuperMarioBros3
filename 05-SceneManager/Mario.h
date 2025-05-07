@@ -95,6 +95,40 @@
 #define ID_ANI_MARIO_SMALL_STANDING_HOLDSHELL_RIGHT 1621
 #define ID_ANI_MARIO_SMALL_RUNNING_HOLDSHELL_LEFT 1625
 #define ID_ANI_MARIO_SMALL_RUNNING_HOLDSHELL_RIGHT 1626
+
+// MARIO WITH TAIL
+#define ID_ANI_MARIO_WITH_TAIL_IDLE_RIGHT -400
+#define ID_ANI_MARIO_WITH_TAIL_IDLE_LEFT -401
+
+#define ID_ANI_MARIO_WITH_TAIL_WALKING_RIGHT -500
+#define ID_ANI_MARIO_WITH_TAIL_WALKING_LEFT -501
+
+#define ID_ANI_MARIO_WITH_TAIL_RUNNING_RIGHT -600
+#define ID_ANI_MARIO_WITH_TAIL_RUNNING_LEFT -601 
+
+#define ID_ANI_MARIO_WITH_TAIL_JUMP_WALK_RIGHT -700
+#define ID_ANI_MARIO_WITH_TAIL_JUMP_WALK_LEFT -701
+#define ID_ANI_MARIO_WITH_TAIL_JUMP_WALK_RIGHT_RELEASE -710
+#define ID_ANI_MARIO_WITH_TAIL_JUMP_WALK_LEFT_RELEASE -711
+#define ID_ANI_MARIO_WITH_TAIL_JUMP_RUN_RIGHT -800
+#define ID_ANI_MARIO_WITH_TAIL_JUMP_RUN_LEFT -801
+
+#define ID_ANI_MARIO_WITH_TAIL_SIT_RIGHT -900
+#define ID_ANI_MARIO_WITH_TAIL_SIT_LEFT -901
+
+#define ID_ANI_MARIO_WITH_TAIL_BRACE_RIGHT -1000
+#define ID_ANI_MARIO_WITH_TAIL_BRACE_LEFT -1001
+
+#define ID_ANI_MARIO_WITH_TAIL_DIE -999
+
+#define ID_ANI_MARIO_WITH_TAIL_KICK_LEFT -1010
+#define ID_ANI_MARIO_WITH_TAIL_KICK_RIGHT -1011
+
+#define ID_ANI_MARIO_WITH_TAIL_STANDING_HOLDSHELL_LEFT -1020
+#define ID_ANI_MARIO_WITH_TAIL_STANDING_HOLDSHELL_RIGHT -1021
+#define ID_ANI_MARIO_WITH_TAIL_RUNNING_HOLDSHELL_LEFT -1025
+#define ID_ANI_MARIO_WITH_TAIL_RUNNING_HOLDSHELL_RIGHT -1026
+
 #pragma endregion
 
 #define GROUND_Y 160.0f
@@ -104,6 +138,7 @@
 
 #define	MARIO_LEVEL_SMALL	1
 #define	MARIO_LEVEL_BIG		2
+#define	MARIO_LEVEL_WITH_TAIL	3
 
 #define MARIO_BIG_BBOX_WIDTH  14
 #define MARIO_BIG_BBOX_HEIGHT 24
@@ -143,7 +178,7 @@ class CMario : public CGameObject
 	bool isHolding;
 	CKoopas* heldKoopas;
 
-
+	bool canSit;
 	void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
 	void OnCollisionWithCoin(LPCOLLISIONEVENT e);
 	void OnCollisionWithPortal(LPCOLLISIONEVENT e);
@@ -156,7 +191,7 @@ class CMario : public CGameObject
 	void OnCollisionWithUpgradingItem(LPCOLLISIONEVENT e);
 	int GetAniIdBig();
 	int GetAniIdSmall();
-
+	int GetAniIdWithTail();
 
 public:
 	CMario(float x, float y) : CGameObject(x, y)
@@ -166,7 +201,7 @@ public:
 		ax = 0.0f;
 		ay = MARIO_GRAVITY; 
 
-		level = MARIO_LEVEL_BIG;
+		level = MARIO_LEVEL_WITH_TAIL;
 		untouchable = 0;
 		untouchable_start = -1;
 		isOnPlatform = false;
@@ -188,7 +223,7 @@ public:
 		return (state != MARIO_STATE_DIE); 
 	}
 
-	int IsBlocking() { return (state != MARIO_STATE_DIE && untouchable==0); }
+	int IsBlocking() { return 0; }
 
 	void OnNoCollision(DWORD dt);
 	void OnCollisionWith(LPCOLLISIONEVENT e);
@@ -206,5 +241,6 @@ public:
 	bool getIsHolding() { return isHolding; }
 	bool getCanHold() { return canHold; }
 	void PositionHeldKoopas(LPGAMEOBJECT);
-
+	void setCanSit(int cs) { this->canSit = cs; }
+	bool getCanSit() { return canSit; }
 };

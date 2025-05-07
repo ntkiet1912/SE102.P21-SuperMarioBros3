@@ -42,6 +42,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		untouchable_start = 0;
 		untouchable = 0;
 	}
+	CGameObject::Update(dt, coObjects);
 	CCollision::GetInstance()->Process(this, dt, coObjects);
 }
 
@@ -103,7 +104,7 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithUpgradingItem(e);
 }
 
-void CMario::OnCollisionWithFirePiranha(LPCOLLISIONEVENT e) 
+void CMario::OnCollisionWithFirePiranha(LPCOLLISIONEVENT e)
 {
 	SetState(MARIO_STATE_DIE);
 }
@@ -135,7 +136,12 @@ void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 		{
 			if (goomba->GetState() != GOOMBA_STATE_DIE)
 			{
-				if (level > MARIO_LEVEL_SMALL)
+				if (level == MARIO_LEVEL_WITH_TAIL)
+				{
+					level = MARIO_LEVEL_BIG;
+					StartUntouchable();
+				}
+				else if (level == MARIO_LEVEL_BIG)
 				{
 					level = MARIO_LEVEL_SMALL;
 					StartUntouchable();
@@ -163,7 +169,28 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 {
 	CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
 	LPGAME game = CGame::GetInstance();
-	if (e->ny < 0)
+	if (e->ny > 0)
+	{
+		if (untouchable == 0)
+		{
+			if (level == MARIO_LEVEL_WITH_TAIL)
+			{
+				level = MARIO_LEVEL_BIG;
+				StartUntouchable();
+			}
+			else if (level == MARIO_LEVEL_BIG)
+			{
+				level = MARIO_LEVEL_SMALL;
+				StartUntouchable();
+			}
+			else
+			{
+				DebugOut(L">>> Mario DIE >>> \n");
+				SetState(MARIO_STATE_DIE);
+			}
+		}
+	}
+	else if (e->ny < 0)
 	{
 		if (koopas->GetState() != KOOPAS_STATE_SHELL)
 		{
@@ -223,24 +250,30 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 			// let the hold and release A key in Update because when holding 
 			// two obj are not collide anymore, so put them in update is good
 
-			
+
 			// kick it when not holding A key
- 			else if (!canHold && !isHolding)
+			else if (!canHold && !isHolding)
 			{
 				kickShell(koopas);
 			}
 		}
-		else
-		{
+		else 
+		{ 
 			if (untouchable == 0)
 			{
-				if (level > MARIO_LEVEL_SMALL)
+				if (level == MARIO_LEVEL_WITH_TAIL)
+				{
+					level = MARIO_LEVEL_BIG;
+					StartUntouchable();
+				}
+				else if (level == MARIO_LEVEL_BIG)
 				{
 					level = MARIO_LEVEL_SMALL;
 					StartUntouchable();
 				}
 				else
 				{
+					DebugOut(L">>> Mario DIE >>> \n");
 					SetState(MARIO_STATE_DIE);
 				}
 			}
@@ -263,7 +296,7 @@ void CMario::OnCollisionWithPortal(LPCOLLISIONEVENT e)
 
 void CMario::OnCollisionWithLuckyBlock(LPCOLLISIONEVENT e)
 {
-	CLuckyBlock* lb =dynamic_cast<CLuckyBlock*>(e->obj);
+	CLuckyBlock* lb = dynamic_cast<CLuckyBlock*>(e->obj);
 	if (e->ny > 0)
 	{
 		lb->setIsHit(true);
@@ -274,7 +307,7 @@ void CMario::OnCollisionWithUpgradingItem(LPCOLLISIONEVENT e)
 {
 	if (e->nx != 0 || e->ny != 0)
 	{
-		if(dynamic_cast<CMushroom1UP*>(e->obj))
+		if (dynamic_cast<CMushroom1UP*>(e->obj))
 		{
 			DebugOut(L"Life++\n");
 			e->obj->Delete();
@@ -284,10 +317,11 @@ void CMario::OnCollisionWithUpgradingItem(LPCOLLISIONEVENT e)
 			SetLevel(2);
 			e->obj->Delete();
 		}
-		else if (level == 2 && dynamic_cast<CLeaf*>(e->obj))
+		else if (level >= 2 && dynamic_cast<CLeaf*>(e->obj))
 		{
-			DebugOut(L"level 3\n");
-			//SetLevel(3);
+			//if (level == 3) point += 1000;
+			//else SetLevel(3);
+			SetLevel(3);
 			e->obj->Delete();
 		}
 	}
@@ -472,10 +506,123 @@ int CMario::GetAniIdBig()
 				else if (ax == -MARIO_ACCEL_WALK_X)
 					aniId = ID_ANI_MARIO_WALKING_LEFT;
 			}
+	if (aniId == -1)
+	{
+		if (nx >= 0)
+			aniId = ID_ANI_MARIO_IDLE_RIGHT;
+		else
+			aniId = ID_ANI_MARIO_IDLE_LEFT;
+	}
+	return aniId;
+}
+int CMario::GetAniIdWithTail()
+{
+	int aniId = -1;
+	if (kick_flag)
+	{
+		// $$$$$ delay time for the kick animation 
+		if (GetTickCount64() - kick_start < 200)
+		{
+			if (nx > 0)
+				aniId = ID_ANI_MARIO_WITH_TAIL_KICK_RIGHT;
+			else if (nx < 0)
+				aniId = ID_ANI_MARIO_WITH_TAIL_KICK_LEFT;
+		}
+		else
+			kick_flag = false;
+	}
+	else if (isHolding && canHold)
+	{
+		if (vx == 0)
+		{
+			if (nx >= 0)
+				aniId = ID_ANI_MARIO_WITH_TAIL_STANDING_HOLDSHELL_RIGHT;
+			else
+				aniId = ID_ANI_MARIO_WITH_TAIL_STANDING_HOLDSHELL_LEFT;
+		}
+		else
+		{
+			if (nx >= 0)
+				aniId = ID_ANI_MARIO_WITH_TAIL_RUNNING_HOLDSHELL_RIGHT;
+			else
+				aniId = ID_ANI_MARIO_WITH_TAIL_RUNNING_HOLDSHELL_LEFT;
+		}
+	}
+	else if (!isOnPlatform)
+	{
+		/*
+			animation for tail is seperated into 2 part:
+			+ first is flying up : the tail is "normal" : paralel with the ground
+			+ second is dropping down: the tail resisted by air resistance
+					-> make it flies up a bit : bend as a parabol
+		*/
+		if (abs(ax) == MARIO_ACCEL_RUN_X)
+		{
+			if (nx >= 0)
+				aniId = ID_ANI_MARIO_WITH_TAIL_JUMP_RUN_RIGHT;
+			else
+				aniId = ID_ANI_MARIO_WITH_TAIL_JUMP_RUN_LEFT;
+		}
+		else
+		{
+			// fly
+			if (vy < 0)
+			{
+				if (nx >= 0)
+					aniId = ID_ANI_MARIO_WITH_TAIL_JUMP_WALK_RIGHT;
+				else
+					aniId = ID_ANI_MARIO_WITH_TAIL_JUMP_WALK_LEFT;
+			}
+			// drop
+			else
+			{
+				if (nx >= 0)
+					aniId = ID_ANI_MARIO_WITH_TAIL_JUMP_WALK_RIGHT_RELEASE;
+				else
+					aniId = ID_ANI_MARIO_WITH_TAIL_JUMP_WALK_LEFT_RELEASE;
+			}
+		}
+	}
+	else if (isSitting)
+	{
+		if (nx > 0)
+			aniId = ID_ANI_MARIO_WITH_TAIL_SIT_RIGHT;
+		else
+			aniId = ID_ANI_MARIO_WITH_TAIL_SIT_LEFT;
+	}
+	else if (vx == 0)
+	{
+		if (nx > 0)
+			aniId = ID_ANI_MARIO_WITH_TAIL_IDLE_RIGHT;
+		else
+			aniId = ID_ANI_MARIO_WITH_TAIL_IDLE_LEFT;
+	}
+	else if (vx > 0)
+	{
+		if (ax < 0)
+			aniId = ID_ANI_MARIO_WITH_TAIL_BRACE_RIGHT;
+		else if (ax == MARIO_ACCEL_RUN_X)
+			aniId = ID_ANI_MARIO_WITH_TAIL_RUNNING_RIGHT;
+		else if (ax == MARIO_ACCEL_WALK_X)
+			aniId = ID_ANI_MARIO_WITH_TAIL_WALKING_RIGHT;
+	}
+	else // vx < 0
+	{
+		if (ax > 0)
+			aniId = ID_ANI_MARIO_WITH_TAIL_BRACE_LEFT;
+		else if (ax == -MARIO_ACCEL_RUN_X)
+			aniId = ID_ANI_MARIO_WITH_TAIL_RUNNING_LEFT;
+		else if (ax == -MARIO_ACCEL_WALK_X)
+			aniId = ID_ANI_MARIO_WITH_TAIL_WALKING_LEFT;
+	}
 
-
-	if (aniId == -1) aniId = ID_ANI_MARIO_IDLE_RIGHT;
-
+	if (aniId == -1)
+	{
+		if (nx >= 0)
+			aniId = ID_ANI_MARIO_WITH_TAIL_IDLE_RIGHT;
+		else
+			aniId = ID_ANI_MARIO_WITH_TAIL_IDLE_LEFT;
+	}
 	return aniId;
 }
 
@@ -490,7 +637,8 @@ void CMario::Render()
 		aniId = GetAniIdBig();
 	else if (level == MARIO_LEVEL_SMALL)
 		aniId = GetAniIdSmall();
-
+	else if (level == MARIO_LEVEL_WITH_TAIL)
+		aniId = GetAniIdWithTail();
 	animations->Get(aniId)->Render(x, y);
 
 	//RenderBoundingBox();
@@ -583,7 +731,7 @@ void CMario::SetState(int state)
 
 void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
-	if (level == MARIO_LEVEL_BIG)
+	if (level == MARIO_LEVEL_BIG || level == MARIO_LEVEL_WITH_TAIL)
 	{
 		if (isSitting)
 		{

@@ -13,7 +13,7 @@
 
 #define KOOPAS_BBOX_WIDTH 16
 #define KOOPAS_BBOX_HEIGHT 26
-#define KOOPAS_BBOX_SHELL_HEIGHT 16
+#define KOOPAS_BBOX_SHELL_HEIGHT 15
 #define KOOPAS_BBOX_REGEN_WIDTH 18
 
 #define KOOPAS_SHELL_TIMEOUT 1000 
@@ -81,10 +81,10 @@ protected:
 	virtual void OnCollisionWith(LPCOLLISIONEVENT e);
 
 	void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
-	void OnCollisionWithPlatform(LPCOLLISIONEVENT e);
+	//void OnCollisionWithPlatform(LPCOLLISIONEVENT e);
 	void OnCollisionWithKoopas(LPCOLLISIONEVENT e);
 	void OnCollisionWithLuckyBlock(LPCOLLISIONEVENT e);
-
+	bool IsTherePlatformAhead(vector<LPGAMEOBJECT>* coObjects);
 
 public:
 	CKoopas(float x, float y, int isRed, int yesWing);

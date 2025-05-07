@@ -22,9 +22,9 @@ void CLuckyBlock::OnNoCollision(DWORD dt)
 void CLuckyBlock::GetBoundingBox(float& l, float& t, float& r, float& b)
 {
 	l = x - LUCKYBLOCK_BBOX_WIDTH / 2;
-	t = y - LUCKYBLOCK_BBOX_HEIGHT / 2 + 1;
+	t = y - LUCKYBLOCK_BBOX_HEIGHT / 2 ;
 	r = l + LUCKYBLOCK_BBOX_WIDTH;
-	b = t + LUCKYBLOCK_BBOX_HEIGHT + 1;
+	b = t + LUCKYBLOCK_BBOX_HEIGHT;
 }
 void CLuckyBlock::SetState(int state)
 {
