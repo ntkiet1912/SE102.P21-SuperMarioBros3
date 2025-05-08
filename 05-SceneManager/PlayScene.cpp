@@ -245,6 +245,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj = new CLuckyBlock(x, y, containItemIndex);
 		break;
 	}
+	case OBJECT_TYPE_RED_GOOMBA: obj = new CRedGoomba(x, y); break;
 	break;
 
 
@@ -334,15 +335,15 @@ void CPlayScene::Update(DWORD dt)
 {
 	// We know that Mario is the first object in the list hence we won't add him into the colliable object list
 	// TO-DO: This is a "dirty" way, need a more organized way 
-
 	vector<LPGAMEOBJECT> coObjects;
 	for (size_t i = 1; i < objects.size(); i++)
 	{
 		coObjects.push_back(objects[i]);
 	}
-
+	player->Update(dt, &coObjects);
 	for (size_t i = 0; i < objects.size(); i++)
 	{
+		if (dynamic_cast<CMario*>(objects[i])) continue;
 		objects[i]->Update(dt, &coObjects);
 	}
 

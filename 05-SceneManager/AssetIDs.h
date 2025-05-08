@@ -26,7 +26,7 @@
 #define OBJECT_TYPE_PORTAL	50
 
 #define OBJECT_TYPE_LUCKYBLOCK -1
-
+#define OBJECT_TYPE_RED_GOOMBA	-2
 
 #pragma region MARIO 
 

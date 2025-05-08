@@ -11,7 +11,7 @@
 #define KOOPAS_GRAVITY_FLYING 0.002f
 
 
-#define KOOPAS_BBOX_WIDTH 16
+#define KOOPAS_BBOX_WIDTH 16	
 #define KOOPAS_BBOX_HEIGHT 26
 #define KOOPAS_BBOX_SHELL_HEIGHT 15
 #define KOOPAS_BBOX_REGEN_WIDTH 18
@@ -72,7 +72,6 @@ protected:
 	bool isReleased = false;
 
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
-	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	virtual void Render();
 
 	virtual int IsCollidable() { return 1; };
@@ -87,6 +86,7 @@ protected:
 	bool IsTherePlatformAhead(vector<LPGAMEOBJECT>* coObjects);
 
 public:
+	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	CKoopas(float x, float y, int isRed, int yesWing);
 	virtual void SetState(int state);
 	void setIsHeld(bool isHeld) { this->isHeld = isHeld; }

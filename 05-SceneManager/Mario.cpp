@@ -17,16 +17,13 @@
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-	vy += ay * dt;
-	vx += ax * dt;
-	if (abs(vx) > abs(maxVx)) vx = maxVx;
-
 	// Update heldKoopas' position
+	// move to here to optimize koopas' shell movement more smooth 
+	// but can't be like real game 100%
 	if (heldKoopas && canHold && isHolding)
 	{
 		PositionHeldKoopas(heldKoopas);
 	}
-	// when releasing A key, and player is holding koopas, kick it 
 	else if (heldKoopas && !canHold && isHolding)
 	{
 		isHolding = false;
@@ -36,6 +33,19 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		kickShell(heldKoopas);
 		heldKoopas = nullptr;
 	}
+	vx += ax * dt;
+	vy += ay * dt;
+	if (abs(vx) > abs(maxVx))
+	{
+		vx = maxVx;
+		if (vx > 0)
+			DebugOut(L" +reach max speed = %f\n", vx);
+		else
+			DebugOut(L" -reach max speed= %f\n", vx);
+	}
+
+	// when releasing A key, and player is holding koopas, kick it 
+
 
 	if (GetTickCount64() - untouchable_start > MARIO_UNTOUCHABLE_TIME)
 	{
@@ -50,9 +60,14 @@ void CMario::PositionHeldKoopas(LPGAMEOBJECT koopas)
 {
 	// if mario state != small, then the offset is different a bit.
 	float offsetX, offsetY;
-	if (level != 1)
+	if (level == MARIO_LEVEL_BIG)
 	{
-		offsetX = 11.5f;
+		offsetX = 11.0f;
+		offsetY = -2.0f;
+	}
+	else if (level == MARIO_LEVEL_WITH_TAIL)
+	{
+		offsetX = 15.0f;
 		offsetY = -2.0f;
 	}
 	else
@@ -122,13 +137,18 @@ void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 	CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
 
 	// jump on top >> kill Goomba and deflect a bit 
-	if (e->ny < 0)
+	if (e->ny < 0 && goomba->GetState() != GOOMBA_STATE_DIE)
 	{
-		if (goomba->GetState() != GOOMBA_STATE_DIE)
+		CRedGoomba* redGoomba = dynamic_cast<CRedGoomba*>(goomba);
+		if (redGoomba && redGoomba->GetState() == GOOMBA_STATE_YES_WING)
+		{
+			redGoomba->SetState(GOOMBA_STATE_NO_WING);
+		}
+		else
 		{
 			goomba->SetState(GOOMBA_STATE_DIE);
-			vy = -MARIO_JUMP_DEFLECT_SPEED;
 		}
+		vy = -MARIO_JUMP_DEFLECT_SPEED;
 	}
 	else // hit by Goomba
 	{
@@ -192,20 +212,8 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 	}
 	else if (e->ny < 0)
 	{
-		if (koopas->GetState() != KOOPAS_STATE_SHELL)
-		{
-			// if koopas has wing, skrink the wing 
-			// turn to normal walking one
-			if (koopas->GetState() == KOOPAS_STATE_WING)
-				koopas->SetState(KOOPAS_STATE_WALKING_LEFT);
-			//from the walk one to the shell
-			else
-				koopas->SetState(KOOPAS_STATE_SHELL);
-			//mario bounce back
-			vy = -MARIO_JUMP_DEFLECT_SPEED;
-		}
 		// if koopas is already in shell state, turn it be moving 
-		else if (koopas->GetState() == KOOPAS_STATE_SHELL || koopas->GetState() == KOOPAS_STATE_REGEN)
+		if (koopas->GetState() == KOOPAS_STATE_SHELL || koopas->GetState() == KOOPAS_STATE_REGEN)
 		{
 
 			/*	ALERT !!!
@@ -234,6 +242,19 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 			vy = -MARIO_JUMP_DEFLECT_SPEED;
 
 		}
+		else if (koopas->GetState() != KOOPAS_STATE_SHELL)
+		{
+			// if koopas has wing, skrink the wing 
+			// turn to normal walking one
+			if (koopas->GetState() == KOOPAS_STATE_WING)
+				koopas->SetState(KOOPAS_STATE_WALKING_LEFT);
+			//from the walk one to the shell
+			else
+				koopas->SetState(KOOPAS_STATE_SHELL);
+			//mario bounce back
+			vy = -MARIO_JUMP_DEFLECT_SPEED;
+		}
+
 	}
 	else if (e->nx != 0)
 	{
@@ -257,8 +278,8 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 				kickShell(koopas);
 			}
 		}
-		else 
-		{ 
+		else
+		{
 			if (untouchable == 0)
 			{
 				if (level == MARIO_LEVEL_WITH_TAIL)
@@ -459,7 +480,8 @@ int CMario::GetAniIdBig()
 	}
 	else if (!isOnPlatform)
 	{
-		if (abs(ax) == MARIO_ACCEL_RUN_X)
+		// when reach max speed -> jump_run
+		if (abs(vx) == MARIO_RUNNING_SPEED)
 		{
 			if (nx >= 0)
 				aniId = ID_ANI_MARIO_JUMP_RUN_RIGHT;
@@ -533,20 +555,31 @@ int CMario::GetAniIdWithTail()
 	}
 	else if (isHolding && canHold)
 	{
-		if (vx == 0)
+		if (vy != 0)
 		{
 			if (nx >= 0)
-				aniId = ID_ANI_MARIO_WITH_TAIL_STANDING_HOLDSHELL_RIGHT;
+				aniId = ID_ANI_MARIO_WITH_TAIL_JUMP_HOLDSHELL_RIGHT;
 			else
-				aniId = ID_ANI_MARIO_WITH_TAIL_STANDING_HOLDSHELL_LEFT;
+				aniId = ID_ANI_MARIO_WITH_TAIL_JUMP_HOLDSHELL_LEFT;
 		}
 		else
 		{
-			if (nx >= 0)
-				aniId = ID_ANI_MARIO_WITH_TAIL_RUNNING_HOLDSHELL_RIGHT;
+			if (vx == 0)
+			{
+				if (nx >= 0)
+					aniId = ID_ANI_MARIO_WITH_TAIL_STANDING_HOLDSHELL_RIGHT;
+				else
+					aniId = ID_ANI_MARIO_WITH_TAIL_STANDING_HOLDSHELL_LEFT;
+			}
 			else
-				aniId = ID_ANI_MARIO_WITH_TAIL_RUNNING_HOLDSHELL_LEFT;
+			{
+				if (nx >= 0)
+					aniId = ID_ANI_MARIO_WITH_TAIL_RUNNING_HOLDSHELL_RIGHT;
+				else
+					aniId = ID_ANI_MARIO_WITH_TAIL_RUNNING_HOLDSHELL_LEFT;
+			}
 		}
+
 	}
 	else if (!isOnPlatform)
 	{
@@ -555,13 +588,26 @@ int CMario::GetAniIdWithTail()
 			+ first is flying up : the tail is "normal" : paralel with the ground
 			+ second is dropping down: the tail resisted by air resistance
 					-> make it flies up a bit : bend as a parabol
+
 		*/
-		if (abs(ax) == MARIO_ACCEL_RUN_X)
+		if (abs(vx) == MARIO_RUNNING_SPEED)
 		{
-			if (nx >= 0)
-				aniId = ID_ANI_MARIO_WITH_TAIL_JUMP_RUN_RIGHT;
+			if (vy < 0)
+			{
+				if (nx >= 0)
+					aniId = ID_ANI_MARIO_WITH_TAIL_JUMP_RUN_RIGHT;
+				else
+					aniId = ID_ANI_MARIO_WITH_TAIL_JUMP_RUN_LEFT;
+			}
+			// drop
 			else
-				aniId = ID_ANI_MARIO_WITH_TAIL_JUMP_RUN_LEFT;
+			{
+				if (nx >= 0)
+					aniId = ID_ANI_MARIO_WITH_TAIL_JUMP_RUN_RIGHT_RELEASE;
+				else
+					aniId = ID_ANI_MARIO_WITH_TAIL_JUMP_RUN_LEFT_RELEASE;
+			}
+
 		}
 		else
 		{

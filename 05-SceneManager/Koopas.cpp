@@ -129,7 +129,7 @@ void CKoopas::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 	if (state == KOOPAS_STATE_SHELLIDLE_MOVING_LEFT || state == KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT)
 	{
 		if (e->nx != 0)
-			goomba->SetState(GOOMBA_STATE_DIE);
+			goomba->SetState(GOOMBA_STATE_DIE_BY_COLLISION);
 	}
 }
 void CKoopas::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
@@ -174,6 +174,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// when outta block, he will "turn back"
 	if (isRed && (state == KOOPAS_STATE_WALKING_LEFT || state == KOOPAS_STATE_WALKING_RIGHT))
 	{
+
 		if (!IsTherePlatformAhead(coObjects))
 		{
 			if (state == KOOPAS_STATE_WALKING_LEFT)
@@ -248,14 +249,19 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		// when the koopas stay back to the walking state, player will get dmg
 		if (mario->getIsHolding())
 		{
-			if (mario->getLevel() > MARIO_LEVEL_SMALL)
+			if (mario->getLevel() == MARIO_LEVEL_WITH_TAIL)
 			{
-				mario->setLevel(MARIO_LEVEL_SMALL);
+				mario->SetLevel(MARIO_LEVEL_BIG);
+				mario->StartUntouchable();
+			}
+			else if (mario->getLevel() == MARIO_LEVEL_BIG)
+			{
+				mario->SetLevel(MARIO_LEVEL_SMALL);
 				mario->StartUntouchable();
 			}
 			else
 			{
-				mario->SetState(MARIO_STATE_DIE);
+				mario->SetLevel(MARIO_STATE_DIE);
 			}
 		}
 		mario->setIsHolding(false);
@@ -420,10 +426,10 @@ bool CKoopas::IsTherePlatformAhead(vector<LPGAMEOBJECT>* coObjects)
 	float checkX, checkY;
 	if (vx > 0)
 		// check to the right 
-		checkX = x + KOOPAS_BBOX_WIDTH / 2;
+		checkX = x + KOOPAS_BBOX_WIDTH / 8;
 	else
 		// to the left 
-		checkX = x - KOOPAS_BBOX_WIDTH / 2;
+		checkX = x - KOOPAS_BBOX_WIDTH / 8;
 	// check under koopas' feet 
 	checkY = y + KOOPAS_BBOX_HEIGHT / 2 + 2;
 
