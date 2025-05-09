@@ -331,6 +331,16 @@ void CPlayScene::Load()
 	DebugOut(L"[INFO] Done loading scene  %s\n", sceneFilePath);
 }
 
+bool isInCamera(float x, float y, float width = 80.0f, float height = 80.0f)
+{
+	float camX, camY;
+	CGame::GetInstance()->GetCamPos(camX, camY);
+	float screenW = CGame::GetInstance()->GetBackBufferWidth();
+	float screenH = CGame::GetInstance()->GetBackBufferHeight();
+
+	return (x > camX - width && x < camX + screenW && y < camY + screenH && y > camY - height);
+	//return !(x + width < camX || x > camX + screenW || y + height < camY || y > camY + screenH);
+}
 void CPlayScene::Update(DWORD dt)
 {
 	// We know that Mario is the first object in the list hence we won't add him into the colliable object list
@@ -344,7 +354,14 @@ void CPlayScene::Update(DWORD dt)
 	for (size_t i = 0; i < objects.size(); i++)
 	{
 		if (dynamic_cast<CMario*>(objects[i])) continue;
-		objects[i]->Update(dt, &coObjects);
+
+		float x, y;
+		objects[i]->GetPosition(x, y);
+
+		if (isInCamera(x, y))
+		{
+			objects[i]->Update(dt, &coObjects);
+		}
 	}
 
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)

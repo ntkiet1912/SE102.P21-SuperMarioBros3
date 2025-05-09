@@ -8,6 +8,7 @@
 #include "Game.h"
 #include "PlayScene.h"
 #include "LuckyBlock.h"
+#include "Block.h"
 
 
 
@@ -261,7 +262,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 			else
 			{
-				mario->SetLevel(MARIO_STATE_DIE);
+				mario->SetState(MARIO_STATE_DIE);
 			}
 		}
 		mario->setIsHolding(false);
@@ -436,7 +437,7 @@ bool CKoopas::IsTherePlatformAhead(vector<LPGAMEOBJECT>* coObjects)
 	// scan all the objects to find koopa isOnplatform
 	for (LPGAMEOBJECT obj : *coObjects)
 	{
-		if (dynamic_cast<CBrick*>(obj) || dynamic_cast<CLuckyBlock*>(obj))
+		if (dynamic_cast<CBrick*>(obj) || dynamic_cast<CLuckyBlock*>(obj) || dynamic_cast<CBlock*>(obj) || dynamic_cast<CPlatform*>(obj))
 		{
 			float l, t, r, b;
 			obj->GetBoundingBox(l, t, r, b);

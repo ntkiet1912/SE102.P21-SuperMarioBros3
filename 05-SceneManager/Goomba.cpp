@@ -19,9 +19,9 @@ void CGoomba::GetBoundingBox(float& left, float& top, float& right, float& botto
 	else
 	{
 		left = x - GOOMBA_BBOX_WIDTH / 2;
-		top = y - GOOMBA_BBOX_HEIGHT / 2;
+		top = y - GOOMBA_BBOX_HEIGHT / 2 + 2;
 		right = left + GOOMBA_BBOX_WIDTH;
-		bottom = top + GOOMBA_BBOX_HEIGHT;
+		bottom = y + GOOMBA_BBOX_HEIGHT / 2;
 	}
 }
 

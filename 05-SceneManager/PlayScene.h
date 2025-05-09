@@ -6,6 +6,7 @@
 #include "Brick.h"
 #include "Mario.h"
 #include "Goomba.h"
+#include "EnemyInfo.h"
 //#include "Koopas.h"
 
 
@@ -25,6 +26,9 @@ protected:
 
 	void LoadAssets(LPCWSTR assetFile);
 	
+	// use for spawning enemy when mario's cam is near 
+	// or delete enemy when cam is far enough
+	vector<CEnemySpawnInfo*> enemySpawns;
 public: 
 	CPlayScene(int id, LPCWSTR filePath);
 

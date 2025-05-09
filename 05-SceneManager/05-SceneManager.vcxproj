@@ -154,6 +154,7 @@
     <ClCompile Include="Coin.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="debug.cpp" />
+    <ClCompile Include="EnemyInfo.cpp" />
     <ClCompile Include="FireBullet.cpp" />
     <ClCompile Include="FirePiranha.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -186,6 +187,7 @@
     <ClInclude Include="Coin.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="debug.h" />
+    <ClInclude Include="EnemyInfo.h" />
     <ClInclude Include="FireBullet.h" />
     <ClInclude Include="FirePiranha.h" />
     <ClInclude Include="Game.h" />
