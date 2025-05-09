@@ -22,3 +22,4 @@ height	240
 30	textures\enemies_extension.png
 40	textures\Tiles.png
 50	textures\enemies_Koopa_Extension.png
+60	textures\misc2.png
