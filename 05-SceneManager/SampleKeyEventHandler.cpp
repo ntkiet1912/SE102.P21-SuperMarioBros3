@@ -12,11 +12,15 @@ void CSampleKeyHandler::OnKeyDown(int KeyCode)
 	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
 	switch (KeyCode)
 	{
+	case DIK_RIGHT:
+	case DIK_LEFT:
+		mario->setCanSit(false);
+		break;
 	case DIK_DOWN:
 
 		// make sure that when holding shell
 		// big mario can't sit -> lead to wrong logic
-		if (!mario->getIsHolding())
+		if (!mario->getIsHolding() && mario->getCanSit())
 		{
 			mario->SetState(MARIO_STATE_SIT);
 		}
@@ -38,8 +42,8 @@ void CSampleKeyHandler::OnKeyDown(int KeyCode)
 		break;
 	case DIK_A:
 		mario->setCanHold(true);
-
 		break;
+
 	}
 }
 
@@ -58,6 +62,10 @@ void CSampleKeyHandler::OnKeyUp(int KeyCode)
 		break;
 	case DIK_A:
 		mario->setCanHold(false);
+		break;
+	case DIK_RIGHT:
+	case DIK_LEFT:
+		mario->setCanSit(true);
 		break;
 	}
 }
@@ -86,5 +94,8 @@ void CSampleKeyHandler::KeyState(BYTE* states)
 			mario->SetState(MARIO_STATE_WALKING_LEFT);
 	}
 	else
+	{
 		mario->SetState(MARIO_STATE_IDLE);
+		mario->setCanSit(true);
+	}
 }
