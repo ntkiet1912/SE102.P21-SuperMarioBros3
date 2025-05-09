@@ -14,6 +14,7 @@ pipe.txt
 fire_piranha.txt
 FireBullet.txt
 Koopas.txt
+cloud_new.txt
 #
 [OBJECTS]
 # type	x	y	extra_settings per object type
@@ -29,6 +30,8 @@ Koopas.txt
 6	121	178	3	0	0	0	-16	0	-32	77000	76000	72000
 6	137	178	2	0	0	0	-16	74000	72000
 6	180	178	3	0	0	16	0	32	0	78000	78000	78000
+6	150	50	1	0	0	142000
+6	350	40	1	0	0	141000
 
 #Platform
 5	8	194	16	15	32	61000	62000	63000
