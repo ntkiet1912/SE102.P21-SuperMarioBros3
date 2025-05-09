@@ -99,6 +99,15 @@
     <ClCompile Include="LuckyBlock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="UpgradeMarioLevel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InvisibleBlock.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InvisibleBlock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
@@ -186,6 +195,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LuckyBlock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UpgradeMarioLevel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
