@@ -54,7 +54,7 @@ void CFireBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 void CFireBullet::Render()
 {
     CAnimations::GetInstance()->Get(ID_ANI_FIRE_BULLET)->Render(x, y);
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 //void CFireBullet::OnNoCollision(DWORD dt)
 //{

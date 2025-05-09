@@ -163,5 +163,5 @@ void CFirePiranha::Render()
 	{
 		CSprites::GetInstance()->Get(spriteId)->Draw(x, y);
 	}
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
