@@ -107,6 +107,10 @@ luckyblock.txt
 
 
 #Mario
-0	600	10
+0	800	10
 
-
+#Koopas
+3	620	120	1	0
+#InvisibleBlock
+10	712	179	3	16	16
+10	616	162	7	16	16

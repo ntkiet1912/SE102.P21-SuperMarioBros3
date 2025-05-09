@@ -15,6 +15,7 @@
 #include "Pipe.h"
 #include "FirePiranha.h"
 #include "LuckyBlock.h"
+#include "InvisibleBlock.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -206,6 +207,16 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		}
 
 		obj = new CBlock(x, y,length ,cellWidth , cellHeight ,positions, spriteIDs );
+		break;
+	}
+	case OBJECT_TYPE_INVISIBLE_BLOCK:
+	{
+		float x = (float)atof(tokens[1].c_str());
+		float y = (float)atof(tokens[2].c_str());
+		int length = atoi(tokens[3].c_str());
+		float cellWidth = (float)atof(tokens[4].c_str());
+		float cellHeight = (float)atof(tokens[5].c_str());
+		obj = new CInvisibleBlock(x, y, length, cellWidth, cellHeight);
 		break;
 	}
 	case OBJECT_TYPE_KOOPAS:

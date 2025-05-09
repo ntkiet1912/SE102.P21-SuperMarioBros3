@@ -159,6 +159,8 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Goomba.cpp" />
+    <ClCompile Include="InvisibleBlock.cpp" />
+    <ClCompile Include="InvisibleBlock.h" />
     <ClCompile Include="Koopas.cpp" />
     <ClCompile Include="LuckyBlock.cpp" />
     <ClCompile Include="main.cpp" />
