@@ -8,6 +8,7 @@
 #include "Game.h"
 #include "PlayScene.h"
 #include "LuckyBlock.h"
+#include "InvisibleBlock.h"
 #include "Block.h"
 
 
@@ -437,7 +438,7 @@ bool CKoopas::IsTherePlatformAhead(vector<LPGAMEOBJECT>* coObjects)
 	// scan all the objects to find koopa isOnplatform
 	for (LPGAMEOBJECT obj : *coObjects)
 	{
-		if (dynamic_cast<CBrick*>(obj) || dynamic_cast<CLuckyBlock*>(obj) || dynamic_cast<CBlock*>(obj) || dynamic_cast<CPlatform*>(obj))
+		if (dynamic_cast<CBrick*>(obj) || dynamic_cast<CLuckyBlock*>(obj) || dynamic_cast<CBlock*>(obj) || dynamic_cast<CPlatform*>(obj) || dynamic_cast<CInvisibleBlock*>(obj))
 		{
 			float l, t, r, b;
 			obj->GetBoundingBox(l, t, r, b);

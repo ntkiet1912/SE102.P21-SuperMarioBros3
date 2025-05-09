@@ -2,6 +2,10 @@
 #include "Animations.h"
 #include "Game.h"
 #include "Mario.h"
+#include <cstdlib>
+
+#define DEG2RAD(deg) ((deg) * 3.14159265f / 180.0f)
+
 
 CFireBullet::CFireBullet(float x, float y, float targetX, float targetY)
 {
@@ -12,10 +16,16 @@ CFireBullet::CFireBullet(float x, float y, float targetX, float targetY)
     float dy = targetY - y;
 
     float length = sqrtf(dx * dx + dy * dy);
-    if (length == 0) length = 1.0f; 
+    if (length == 0) length = 1.0f;
 
-    vx = (dx / length) * FIRE_BULLET_SPEED;
-    vy = (dy / length) * FIRE_BULLET_SPEED;
+    // Thêm độ lệch nhỏ vào hướng bắn (ví dụ: ±5 độ)
+    float angle = atan2f(dy, dx);
+    float spread = (rand() % 1001 / 1000.0f - 0.5f) * 2.0f * DEG2RAD(5.0f); // ±5 độ lệch
+
+    angle += spread;
+
+    vx = cosf(angle) * FIRE_BULLET_SPEED;
+    vy = sinf(angle) * FIRE_BULLET_SPEED;
 
     createTime = GetTickCount();
 }
