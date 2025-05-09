@@ -216,7 +216,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		int length = atoi(tokens[3].c_str());
 		float cellWidth = (float)atof(tokens[4].c_str());
 		float cellHeight = (float)atof(tokens[5].c_str());
-		obj = new CInvisibleBlock(x, y, length, cellWidth, cellHeight);
+		int isBlock = atoi(tokens[6].c_str());
+		obj = new CInvisibleBlock(x, y, length, cellWidth, cellHeight , isBlock) ;
 		break;
 	}
 	case OBJECT_TYPE_KOOPAS:

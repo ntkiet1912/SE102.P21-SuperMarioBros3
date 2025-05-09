@@ -72,8 +72,19 @@ void CFirePiranha::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	case PIRANHA_STATE_FIRE_DOWN_LEFT:
 	case PIRANHA_STATE_FIRE_DOWN_RIGHT:
 		if (!hasFired) {
-			Fire();
-			hasFired = true; 
+			float cam_x, cam_y;
+			CGame::GetInstance()->GetCamPos(cam_x, cam_y);
+
+			float screenWidth = CGame::GetInstance()->GetBackBufferWidth() + 20;
+			float screenHeight = CGame::GetInstance()->GetBackBufferHeight();
+
+			
+			if (x >= cam_x && x <= cam_x + screenWidth &&
+				y >= cam_y && y <= cam_y + screenHeight)
+			{
+				Fire();
+				hasFired = true;
+			}
 		}
 		if (GetTickCount64() - stateTimer >= PIRANHA_RISE_DELAY)
 		{

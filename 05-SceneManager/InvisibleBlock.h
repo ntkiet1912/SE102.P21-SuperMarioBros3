@@ -7,9 +7,12 @@ protected:
 	int length;
 	float cellWidth;
 	float cellHeight;
+	int isBlock ; // 0: not block, 1: block
+	
 public:
-	CInvisibleBlock(float x, float y, int length, float cellWidth, float cellHeight)
+	CInvisibleBlock(float x, float y, int length, float cellWidth, float cellHeight , int isBlock)
 		: CGameObject(x, y), length(length), cellWidth(cellWidth), cellHeight(cellHeight) {
+		this->isBlock = isBlock;
 	}
 	void Render();
 	void Update(DWORD dt) {}
