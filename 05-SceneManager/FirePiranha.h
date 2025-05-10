@@ -35,7 +35,8 @@ protected:
 	virtual void Render();
 
 	bool IsPlayerTooClose();
-
+	int IsBlocking() { return 0; }
+	int IsCollidable() { return 1; }
 public:
 	CFirePiranha(float x, float y);
 	virtual void SetState(int state);

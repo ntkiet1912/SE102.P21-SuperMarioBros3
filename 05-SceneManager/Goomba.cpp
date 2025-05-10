@@ -74,7 +74,7 @@ void CGoomba::Render()
 		aniId = ID_ANI_GOOMBA_DIE_BY_COLLISION;
 	}
 	CAnimations::GetInstance()->Get(aniId)->Render(x, y);
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void CGoomba::SetState(int state)
@@ -146,7 +146,7 @@ void CRedGoomba::Render()
 		aniId = ID_ANI_RED_GOOMBA_NOWING_WALKING;
 
 	CAnimations::GetInstance()->Get(aniId)->Render(x, y);
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 void CRedGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {

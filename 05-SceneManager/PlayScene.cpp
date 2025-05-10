@@ -343,15 +343,14 @@ void CPlayScene::Load()
 	DebugOut(L"[INFO] Done loading scene  %s\n", sceneFilePath);
 }
 
-bool isInCamera(float x, float y, float width = 80.0f, float height = 80.0f)
+bool isInCamera(float x, float y, float width = 100.0f, float height = 80.0f)
 {
 	float camX, camY;
 	CGame::GetInstance()->GetCamPos(camX, camY);
 	float screenW = CGame::GetInstance()->GetBackBufferWidth();
 	float screenH = CGame::GetInstance()->GetBackBufferHeight();
 
-	return (x > camX - width && x < camX + screenW && y < camY + screenH && y > camY - height);
-	//return !(x + width < camX || x > camX + screenW || y + height < camY || y > camY + screenH);
+	return (x > camX - width && x < camX + screenW + width && y < camY + screenH + height && y > camY - height);
 }
 void CPlayScene::Update(DWORD dt)
 {

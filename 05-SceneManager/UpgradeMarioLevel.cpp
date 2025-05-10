@@ -60,7 +60,7 @@ void CLeaf::Render()
 	if (nx >= 0) aniId = ID_ANI_LEAF_RIGHT;
 	else aniId= ID_ANI_LEAF_LEFT;
 	CAnimations::GetInstance()->Get(aniId)->Render(x, y);
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void CLeaf::OnNoCollision(DWORD dt)
@@ -131,12 +131,12 @@ void CMushroom1UP::Render()
 {
 	int aniId = ID_ANI_MUSHROOM1UP;
 	CAnimations::GetInstance()->Get(aniId)->Render(x, y);
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void CMushroomUpgradingMarioLevel::Render()
 {
 	int aniId = ID_ANI_MUSHROOM;
 	CAnimations::GetInstance()->Get(aniId)->Render(x, y);
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }

@@ -352,7 +352,7 @@ void CKoopas::Render()
 			aniId = ID_ANI_GREEN_KOOPAS_SHELL_REGEN;
 	}
 	CAnimations::GetInstance()->Get(aniId)->Render(x, y);
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void CKoopas::SetState(int state)

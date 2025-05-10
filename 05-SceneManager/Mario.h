@@ -15,7 +15,7 @@
 #define MARIO_JUMP_SPEED_Y		0.46f
 #define MARIO_JUMP_RUN_SPEED_Y	0.51f
 
-#define MARIO_GRAVITY			0.0014f
+#define MARIO_GRAVITY			0.0012f
 
 #define MARIO_JUMP_DEFLECT_SPEED  0.4f
 
@@ -204,7 +204,7 @@ public:
 		ax = 0.0f;
 		ay = MARIO_GRAVITY; 
 
-		level = MARIO_LEVEL_BIG;
+		level = MARIO_LEVEL_SMALL;
 		untouchable = 0;
 		untouchable_start = -1;
 		isOnPlatform = false;
@@ -247,4 +247,5 @@ public:
 	void PositionHeldKoopas(LPGAMEOBJECT);
 	void setCanSit(int cs) { this->canSit = cs; }
 	bool getCanSit() { return canSit; }
+	bool getIsUntouchable() { return untouchable; }
 };

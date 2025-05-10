@@ -38,10 +38,10 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (abs(vx) > abs(maxVx))
 	{
 		vx = maxVx;
-		if (vx > 0)
-			DebugOut(L" +reach max speed = %f\n", vx);
-		else
-			DebugOut(L" -reach max speed= %f\n", vx);
+		//if (vx > 0)
+		//	DebugOut(L" +reach max speed = %f\n", vx);
+		//else
+		//	DebugOut(L" -reach max speed= %f\n", vx);
 	}
 
 	// when releasing A key, and player is holding koopas, kick it 
@@ -121,15 +121,49 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 
 void CMario::OnCollisionWithFirePiranha(LPCOLLISIONEVENT e)
 {
-	SetState(MARIO_STATE_DIE);
+	if (untouchable == 0)
+	{
+		if (level == MARIO_LEVEL_WITH_TAIL)
+		{
+			level = MARIO_LEVEL_BIG;
+			StartUntouchable();
+		}
+		else if (level == MARIO_LEVEL_BIG)
+		{
+			level = MARIO_LEVEL_SMALL;
+			StartUntouchable();
+		}
+		else
+		{
+			DebugOut(L">>> Mario DIE >>> \n");
+			SetState(MARIO_STATE_DIE);
+		}
+	}
 }
 
 void CMario::OnCollisionWithFireBullet(LPCOLLISIONEVENT e)
 {
 	DebugOut(L"[INFO] Mario hit by bullet!\n");
-	SetState(MARIO_STATE_DIE);
-	e->obj->Delete();
+	if (untouchable == 0)
+	{
+		if (level == MARIO_LEVEL_WITH_TAIL)
+		{
+			level = MARIO_LEVEL_BIG;
+			StartUntouchable();
+		}
+		else if (level == MARIO_LEVEL_BIG)
+		{
+			level = MARIO_LEVEL_SMALL;
+			StartUntouchable();
+		}
+		else
+		{
+			DebugOut(L">>> Mario DIE >>> \n");
+			SetState(MARIO_STATE_DIE);
+		}
+	}
 
+	e->obj->Delete();
 }
 
 void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
