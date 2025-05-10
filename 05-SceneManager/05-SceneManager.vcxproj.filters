@@ -201,6 +201,9 @@
     <ClInclude Include="UpgradeMarioLevel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="UpgradeMarioLevel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="EnemyInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
