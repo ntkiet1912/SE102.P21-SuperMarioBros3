@@ -20,12 +20,15 @@ class CLuckyBlock :
 	public CGameObject
 {
 protected:
-	float initY, collisionY;
+	float initY, maxY;
 	float ay ;
 	int containItemIndex;
 	bool isEmpty;
-	ULONGLONG bouncingTime;
 	bool isHit;
+
+	bool isReturnToOriginalPos;
+	bool hasSpawned;
+	bool flagForMushroom;
 	void spawnItem();
 public:
 	CLuckyBlock(float x, float y, int containItemIndex) : CGameObject(x, y)
@@ -36,13 +39,16 @@ public:
 		else 
 			this->containItemIndex = 2;
 
-		isEmpty = false;
-		bouncingTime = -1;
 		initY = y;
-		collisionY = y - 16;
-		isHit = false;
-		state = LUCKYBLOCK_NORMAL;
+		maxY = y - 16;
+		//state = LUCKYBLOCK_NORMAL;
 		ay = 0;
+
+		isHit = false;
+		isEmpty = false;
+		isReturnToOriginalPos = false;
+		hasSpawned = false;
+		flagForMushroom = false;
 	}
 
 	bool getIsEmpty() { return isEmpty; }
@@ -52,7 +58,7 @@ public:
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	virtual void OnNoCollision(DWORD dt);
 	virtual void GetBoundingBox(float& l, float& t, float& r, float& b);
-	virtual void SetState(int state);
+	//virtual void SetState(int state);
 
 };
 

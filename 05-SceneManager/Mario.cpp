@@ -360,25 +360,23 @@ void CMario::OnCollisionWithLuckyBlock(LPCOLLISIONEVENT e)
 
 void CMario::OnCollisionWithUpgradingItem(LPCOLLISIONEVENT e)
 {
-	if (e->nx != 0 || e->ny != 0)
+
+	if (dynamic_cast<CMushroom1UP*>(e->obj))
 	{
-		if (dynamic_cast<CMushroom1UP*>(e->obj))
-		{
-			DebugOut(L"Life++\n");
-			e->obj->Delete();
-		}
-		else if (level == 1 && dynamic_cast<CMushroomUpgradingMarioLevel*>(e->obj))
-		{
-			SetLevel(2);
-			e->obj->Delete();
-		}
-		else if (level >= 2 && dynamic_cast<CLeaf*>(e->obj))
-		{
-			//if (level == 3) point += 1000;
-			//else SetLevel(3);
-			SetLevel(3);
-			e->obj->Delete();
-		}
+		DebugOut(L"Life++\n");
+		e->obj->Delete();
+	}
+	else if (level == 1 && dynamic_cast<CMushroomUpgradingMarioLevel*>(e->obj))
+	{
+		SetLevel(2);
+		e->obj->Delete();
+	}
+	else if (level >= 2 && dynamic_cast<CLeaf*>(e->obj))
+	{
+		//if (level == 3) point += 1000;
+		//else SetLevel(3);
+		SetLevel(3);
+		e->obj->Delete();
 	}
 }
 
