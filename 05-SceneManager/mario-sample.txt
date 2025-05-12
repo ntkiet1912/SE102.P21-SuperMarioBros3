@@ -23,3 +23,4 @@ height	240
 40	textures\Tiles.png
 50	textures\enemies_Koopa_Extension.png
 60	textures\misc2.png
+-10	textures\Goal_Roulette.png

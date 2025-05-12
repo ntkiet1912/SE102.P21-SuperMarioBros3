@@ -41,7 +41,6 @@ public:
 
 		initY = y;
 		maxY = y - 16;
-		//state = LUCKYBLOCK_NORMAL;
 		ay = 0;
 
 		isHit = false;
@@ -58,7 +57,6 @@ public:
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	virtual void OnNoCollision(DWORD dt);
 	virtual void GetBoundingBox(float& l, float& t, float& r, float& b);
-	//virtual void SetState(int state);
 
 };
 

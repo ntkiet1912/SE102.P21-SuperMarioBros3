@@ -1,5 +1,6 @@
 #include "UpgradeMarioLevel.h"
 #include "debug.h"
+#include "Mario.h"
 void CLeaf::GetBoundingBox(float& l, float& t, float& r, float& b)
 {
 	l = x - LEFT_BBOX_WIDTH / 2;
@@ -35,7 +36,7 @@ void CLeaf::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (x >= boundOfMovingMaxToTheRight)
 	{
 		ax = -LEAF_ACCELARATION;
-		ay = LEAF_GRAVITY;
+		//ay = LEAF_GRAVITY;
 
 		vx = -LEAF_MOVING_SPEED;
 		nx = -1;
@@ -46,7 +47,7 @@ void CLeaf::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	{
 		vx = LEAF_MOVING_SPEED;
 		vy = 0;
-		ay = LEAF_GRAVITY;
+		//ay = LEAF_GRAVITY;
 		nx = 1;
 		ax = LEAF_ACCELARATION;
 	}
@@ -60,7 +61,7 @@ void CLeaf::Render()
 	if (nx >= 0) aniId = ID_ANI_LEAF_RIGHT;
 	else aniId= ID_ANI_LEAF_LEFT;
 	CAnimations::GetInstance()->Get(aniId)->Render(x, y);
-	//RenderBoundingBox();
+	RenderBoundingBox();
 }
 
 void CLeaf::OnNoCollision(DWORD dt)
@@ -73,6 +74,12 @@ void CLeaf::OnCollisionWith(LPCOLLISIONEVENT e)
 {
 	if (e->obj->IsBlocking())
 		return;
+	else if (dynamic_cast<CMario*>(e->obj))
+	{
+		dynamic_cast<CMario*>(e->obj)->OnCollisionWithUpgradingItem(e);
+	}
+
+
 }
 
 void CMushroom::GetBoundingBox(float& l, float& t, float& r, float& b)

@@ -10,14 +10,14 @@
 #define MARIO_RUNNING_SPEED		0.16f
 
 #define MARIO_ACCEL_WALK_X	0.00025f
-#define MARIO_ACCEL_RUN_X	0.0006f
+#define MARIO_ACCEL_RUN_X	0.00026f
 
-#define MARIO_JUMP_SPEED_Y		0.46f
+#define MARIO_JUMP_SPEED_Y		0.44f
 #define MARIO_JUMP_RUN_SPEED_Y	0.51f
 
 #define MARIO_GRAVITY			0.0012f
 
-#define MARIO_JUMP_DEFLECT_SPEED  0.4f
+#define MARIO_JUMP_DEFLECT_SPEED  0.25f
 
 #define MARIO_STATE_DIE				-10
 #define MARIO_STATE_IDLE			0
@@ -182,6 +182,8 @@ class CMario : public CGameObject
 	CKoopas* heldKoopas;
 
 	bool canSit;
+
+	ULONGLONG jump_hold_start;
 	void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
 	void OnCollisionWithCoin(LPCOLLISIONEVENT e);
 	void OnCollisionWithPortal(LPCOLLISIONEVENT e);
@@ -191,7 +193,6 @@ class CMario : public CGameObject
 	void kickShell(CKoopas*& koopas);
 
 	void OnCollisionWithLuckyBlock(LPCOLLISIONEVENT e);
-	void OnCollisionWithUpgradingItem(LPCOLLISIONEVENT e);
 	int GetAniIdBig();
 	int GetAniIdSmall();
 	int GetAniIdWithTail();
@@ -204,7 +205,7 @@ public:
 		ax = 0.0f;
 		ay = MARIO_GRAVITY; 
 
-		level = MARIO_LEVEL_SMALL;
+		level = MARIO_LEVEL_BIG;
 		untouchable = 0;
 		untouchable_start = -1;
 		isOnPlatform = false;
@@ -237,6 +238,11 @@ public:
 
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 
+
+	void OnCollisionWithUpgradingItem(LPCOLLISIONEVENT e);
+	//void getDmg();
+	//void Skrink();
+
 	void setCanHold(bool canHold) { this->canHold = canHold; }
 	void setIsHolding(bool isHolding) { this->isHolding = isHolding; }
 	float getVx() { return vx; }
@@ -248,4 +254,5 @@ public:
 	void setCanSit(int cs) { this->canSit = cs; }
 	bool getCanSit() { return canSit; }
 	bool getIsUntouchable() { return untouchable; }
+	bool getIsSitting() { return isSitting; }
 };

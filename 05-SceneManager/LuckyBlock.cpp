@@ -26,21 +26,6 @@ void CLuckyBlock::GetBoundingBox(float& l, float& t, float& r, float& b)
 	r = l + LUCKYBLOCK_BBOX_WIDTH;
 	b = t + LUCKYBLOCK_BBOX_HEIGHT;
 }
-//void CLuckyBlock::SetState(int state)
-//{
-//	CGameObject::SetState(state);
-//	switch (state)
-//	{
-//	case LUCKYBLOCK_NORMAL:
-//		isEmpty = false;
-//		break;
-//	case LUCKYBLOCK_EMPTY:
-//		isEmpty = true;
-//		break;
-//	default:
-//		break;
-//	}
-//}
 void CLuckyBlock::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	vy += ay * dt;

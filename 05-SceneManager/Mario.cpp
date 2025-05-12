@@ -364,20 +364,19 @@ void CMario::OnCollisionWithUpgradingItem(LPCOLLISIONEVENT e)
 	if (dynamic_cast<CMushroom1UP*>(e->obj))
 	{
 		DebugOut(L"Life++\n");
-		e->obj->Delete();
 	}
 	else if (level == 1 && dynamic_cast<CMushroomUpgradingMarioLevel*>(e->obj))
 	{
 		SetLevel(2);
-		e->obj->Delete();
 	}
 	else if (level >= 2 && dynamic_cast<CLeaf*>(e->obj))
 	{
 		//if (level == 3) point += 1000;
 		//else SetLevel(3);
+		DebugOut(L"touch\n");
 		SetLevel(3);
-		e->obj->Delete();
 	}
+	e->obj->Delete();
 }
 
 //
@@ -719,7 +718,7 @@ void CMario::Render()
 		aniId = GetAniIdWithTail();
 	animations->Get(aniId)->Render(x, y);
 
-	//RenderBoundingBox();
+	RenderBoundingBox();
 
 	DebugOutTitle(L"Coins: %d", coin);
 }
@@ -736,30 +735,50 @@ void CMario::SetState(int state)
 		maxVx = MARIO_RUNNING_SPEED;
 		ax = MARIO_ACCEL_RUN_X;
 		nx = 1;
+		if (vx < 0) vx = -vx;
 		break;
 	case MARIO_STATE_RUNNING_LEFT:
 		if (isSitting) break;
 		maxVx = -MARIO_RUNNING_SPEED;
 		ax = -MARIO_ACCEL_RUN_X;
 		nx = -1;
+		if (vx > 0) vx = -vx;
 		break;
 	case MARIO_STATE_WALKING_RIGHT:
 		if (isSitting) break;
 		maxVx = MARIO_WALKING_SPEED;
 		ax = MARIO_ACCEL_WALK_X;
 		nx = 1;
+		if (vx < 0) vx = -vx;
 		break;
 	case MARIO_STATE_WALKING_LEFT:
 		if (isSitting) break;
 		maxVx = -MARIO_WALKING_SPEED;
 		ax = -MARIO_ACCEL_WALK_X;
 		nx = -1;
+		if (vx > 0) vx = -vx;
 		break;
+		//case MARIO_STATE_JUMP:
+		//	if (isSitting) break;
+		//	if (isOnPlatform)
+		//	{
+		//		if (abs(this->vx) == MARIO_RUNNING_SPEED)
+		//			vy = -MARIO_JUMP_RUN_SPEED_Y;
+		//		else
+		//			vy = -MARIO_JUMP_SPEED_Y;
+		//	}
+		//	break;
+
+		//case MARIO_STATE_RELEASE_JUMP:
+		//	if (vy < 0) vy += MARIO_JUMP_SPEED_Y / 16;
+		//	break;
+
 	case MARIO_STATE_JUMP:
 		if (isSitting) break;
 		if (isOnPlatform)
 		{
-			if (abs(this->vx) == MARIO_RUNNING_SPEED)
+			jump_hold_start = GetTickCount64();
+			if (abs(vx) == MARIO_RUNNING_SPEED)
 				vy = -MARIO_JUMP_RUN_SPEED_Y;
 			else
 				vy = -MARIO_JUMP_SPEED_Y;
@@ -767,9 +786,18 @@ void CMario::SetState(int state)
 		break;
 
 	case MARIO_STATE_RELEASE_JUMP:
-		if (vy < 0) vy += MARIO_JUMP_SPEED_Y / 2;
-		break;
+		if (vy < 0)
+		{
+			ULONGLONG now = GetTickCount64();
+			ULONGLONG hold_time = now - jump_hold_start;
 
+			float factor = (float)hold_time / 200.0f; // Giới hạn 200ms là nhảy tối đa
+			if (factor > 1.0f) factor = 1.0f;
+			else if (factor < 0.5f) factor = 0.5f;
+			// Làm Mario rơi sớm hơn nếu nhả phím sớm
+			vy += (1.0f - factor) * MARIO_JUMP_SPEED_Y;
+		}
+		break;
 	case MARIO_STATE_SIT:
 		if (isOnPlatform && level != MARIO_LEVEL_SMALL)
 		{
