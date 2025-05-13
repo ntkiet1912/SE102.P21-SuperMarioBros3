@@ -16,6 +16,7 @@
 #include "FirePiranha.h"
 #include "LuckyBlock.h"
 #include "InvisibleBlock.h"
+#include "PlayHUD.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -385,10 +386,9 @@ void CPlayScene::Update(DWORD dt)
 	CGame *game = CGame::GetInstance();
 	cx -= game->GetBackBufferWidth() / 2;
 	cy -= game->GetBackBufferHeight() / 2;
-
 	if (cx < 0) cx = 0;
-
-	CGame::GetInstance()->SetCamPos(cx, 0.0f /*cy*/);
+	if (cx > 2495) cx = 2495;
+	CGame::GetInstance()->SetCamPos(cx, 262.0f /*cy*/);
 
 	PurgeDeletedObjects();
 
@@ -398,6 +398,7 @@ void CPlayScene::Render()
 {
 	for (int i = 0; i < objects.size(); i++)
 		objects[i]->Render();
+	CPlayHUD::GetInstance()->Render();
 }
 
 /*

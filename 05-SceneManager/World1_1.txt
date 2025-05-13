@@ -19,6 +19,7 @@ Koopas.txt
 cloud_new.txt
 mario_with_tail.txt
 luckyblock.txt
+HUD.txt
 #
 [OBJECTS]
 # type	x	y	extra_settings per object type
@@ -181,7 +182,7 @@ luckyblock.txt
 3	620	120	1	0
 
 #Mario
-0	1400	10
+0	16	10
 
 
 #InvisibleBlock
