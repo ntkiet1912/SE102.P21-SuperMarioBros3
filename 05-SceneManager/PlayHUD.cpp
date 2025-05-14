@@ -5,18 +5,18 @@ CPlayHUD* CPlayHUD::__instance = nullptr;
 
 CPlayHUD::CPlayHUD()
 {
-	background = new CLoadHUD(CSprites::GetInstance()->Get(ID_SPRITE_HUD_BACKGROUND), 159, 16);
+	background = new CLoadHUD(CSprites::GetInstance()->Get(ID_SPRITE_HUD_BACKGROUND), 129, 8);
 	for (int i = 0; i < 7; i++)
 	{
-		score.push_back(new CLoadHUD(CSprites::GetInstance()->Get(ID_SPRITE_HUD_NUMBER_0), 97 + 8 * i, 11));
+		score.push_back(new CLoadHUD(CSprites::GetInstance()->Get(ID_SPRITE_HUD_NUMBER_0), 70 + 8 * i, 12));
 	}
 	for (int i = 0; i < 2; i++)
 	{
-		coin.push_back(new CLoadHUD(CSprites::GetInstance()->Get(ID_SPRITE_HUD_NUMBER_0), 177 + 8 * i, 19));
+		coin.push_back(new CLoadHUD(CSprites::GetInstance()->Get(ID_SPRITE_HUD_NUMBER_0), 149 + 8 * i, 20));
 	}
 	for (int i = 0; i < 3; i++)
 	{
-		time.push_back(new CLoadHUD(CSprites::GetInstance()->Get(ID_SPRITE_HUD_NUMBER_0), 169 + 8 * i, 11));
+		time.push_back(new CLoadHUD(CSprites::GetInstance()->Get(ID_SPRITE_HUD_NUMBER_0),  141 + 8 * i, 12));
 	}
 }
 
@@ -50,7 +50,7 @@ void CPlayHUD::SetCoin(int coinValue)
 {
 	string coinStr = to_string(coinValue);
 	while (coinStr.length() < 2)
-		coinStr = "0" + coinStr;
+		coinStr = coinStr;
 	if (coinStr.length() > 2)
 		coinStr = coinStr.substr(coinStr.length() - 2, 2);
 	for (int i = 0; i < 2; i++)

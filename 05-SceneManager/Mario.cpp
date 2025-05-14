@@ -3,6 +3,7 @@
 
 #include "Mario.h"
 #include "Game.h"
+#include "PlayHUD.h"
 
 #include "Goomba.h"
 #include "Coin.h"
@@ -341,6 +342,7 @@ void CMario::OnCollisionWithCoin(LPCOLLISIONEVENT e)
 {
 	e->obj->Delete();
 	coin++;
+	CPlayHUD::GetInstance()->SetCoin(coin);;
 }
 
 void CMario::OnCollisionWithPortal(LPCOLLISIONEVENT e)

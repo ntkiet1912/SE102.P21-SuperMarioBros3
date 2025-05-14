@@ -1,7 +1,7 @@
 [SETTINGS]
 start	6
-width	320
-height	240
+width	256
+height	226
 
 #id	type	file
 # type: 0: intro, 1: play scene 
@@ -24,4 +24,5 @@ height	240
 50	textures\enemies_Koopa_Extension.png
 60	textures\misc2.png
 70	textures\hud.png
+71	textures\hud2.png
  
