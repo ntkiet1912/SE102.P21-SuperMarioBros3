@@ -150,6 +150,7 @@
     <ClCompile Include="Animations.cpp" />
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="Brick.cpp" />
+    <ClCompile Include="DataManager.cpp" />
     <ClCompile Include="Decoration.cpp" />
     <ClCompile Include="Coin.cpp" />
     <ClCompile Include="Collision.cpp" />
@@ -163,12 +164,14 @@
     <ClCompile Include="InvisibleBlock.cpp" />
     <ClCompile Include="InvisibleBlock.h" />
     <ClCompile Include="Koopas.cpp" />
+    <ClCompile Include="LoadHUD.cpp" />
     <ClCompile Include="LuckyBlock.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mario.cpp" />
     <ClCompile Include="Pipe.cpp" />
     <ClCompile Include="Pipe.h" />
     <ClCompile Include="Platform.cpp" />
+    <ClCompile Include="PlayHUD.cpp" />
     <ClCompile Include="PlayScene.cpp" />
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="SampleKeyEventHandler.cpp" />
@@ -185,6 +188,7 @@
     <ClInclude Include="AssetIDs.h" />
     <ClInclude Include="Block.h" />
     <ClInclude Include="Brick.h" />
+    <ClInclude Include="DataManager.h" />
     <ClInclude Include="Decoration.h" />
     <ClInclude Include="Coin.h" />
     <ClInclude Include="Collision.h" />
@@ -197,9 +201,11 @@
     <ClInclude Include="Goomba.h" />
     <ClInclude Include="KeyEventHandler.h" />
     <ClInclude Include="Koopas.h" />
+    <ClInclude Include="LoadHUD.h" />
     <ClInclude Include="LuckyBlock.h" />
     <ClInclude Include="Mario.h" />
     <ClInclude Include="Platform.h" />
+    <ClInclude Include="PlayHUD.h" />
     <ClInclude Include="PlayScene.h" />
     <ClInclude Include="Portal.h" />
     <ClInclude Include="SampleKeyEventHandler.h" />

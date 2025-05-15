@@ -32,7 +32,7 @@ void CInvisibleBlock::GetBoundingBox(float& l, float& t, float& r, float& b)
 }
 void CInvisibleBlock::Render()
 {
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 int CInvisibleBlock::IsDirectionColliable(float nx, float ny)

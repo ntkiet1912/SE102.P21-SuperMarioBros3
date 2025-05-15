@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <fstream>
 #include "AssetIDs.h"
 
@@ -16,6 +16,8 @@
 #include "FirePiranha.h"
 #include "LuckyBlock.h"
 #include "InvisibleBlock.h"
+#include "PlayHUD.h"
+#include "DataManager.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -310,6 +312,9 @@ void CPlayScene::LoadAssets(LPCWSTR assetFile)
 
 void CPlayScene::Load()
 {
+	timeRemaining = 300;
+	timeAccmulator = 0.0f;
+
 	DebugOut(L"[INFO] Start loading scene from : %s \n", sceneFilePath);
 
 	ifstream f;
@@ -354,6 +359,9 @@ bool isInCamera(float x, float y, float width = 100.0f, float height = 80.0f)
 }
 void CPlayScene::Update(DWORD dt)
 {
+
+	// Cập nhật HUD
+	CPlayHUD::GetInstance()->SetTime(timeRemaining);
 	// We know that Mario is the first object in the list hence we won't add him into the colliable object list
 	// TO-DO: This is a "dirty" way, need a more organized way 
 	vector<LPGAMEOBJECT> coObjects;
@@ -385,12 +393,30 @@ void CPlayScene::Update(DWORD dt)
 	CGame *game = CGame::GetInstance();
 	cx -= game->GetBackBufferWidth() / 2;
 	cy -= game->GetBackBufferHeight() / 2;
-
 	if (cx < 0) cx = 0;
-
+	if (cx > 2495) cx = 2495;
 	CGame::GetInstance()->SetCamPos(cx, 0.0f /*cy*/);
 
 	PurgeDeletedObjects();
+
+	// Update time
+	timeAccmulator += dt / 1000.0f;
+	if (timeAccmulator >= timeDecrementInterval)
+	{
+		timeRemaining--;
+		timeAccmulator = 0.0f;
+
+		if (timeRemaining <= 0)
+		{
+
+			player->SetState(MARIO_STATE_DIE);
+			timeRemaining = 0;
+			return;
+		}
+	}
+
+	// Cập nhật HUD
+	CPlayHUD::GetInstance()->SetTime(timeRemaining);
 
 }
 
@@ -398,6 +424,7 @@ void CPlayScene::Render()
 {
 	for (int i = 0; i < objects.size(); i++)
 		objects[i]->Render();
+	CPlayHUD::GetInstance()->Render();
 }
 
 /*

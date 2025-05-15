@@ -15,7 +15,7 @@ CFirePiranha::CFirePiranha(float x, float y) : CGameObject(x, y)
 	direction = -1;
 	facingVertical = -1;
 	state = -1; 
-	hasFired = false; // Chưa bắn
+	hasFired = false; 
 	stateTimer = GetTickCount64();
 }
 
