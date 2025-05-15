@@ -36,6 +36,14 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 	vx += ax * dt;
 	vy += ay * dt;
+	if (state == MARIO_ENDING_SCENE)
+	{
+		if (isOnPlatform)
+			vx = MARIO_WALKING_SPEED;
+		else
+			vx = 0;
+	}
+
 	if (abs(vx) > abs(maxVx))
 	{
 		vx = maxVx;
@@ -389,6 +397,7 @@ void CMario::OnCollisionWithGoalRouletteIcon(LPCOLLISIONEVENT e)
 	DebugOut(L"set\n");
 	icon->setIsHitByMario(true);
 	// mario is uncontrolable during this time
+	SetState(MARIO_ENDING_SCENE);
 
 }
 #pragma endregion
@@ -400,7 +409,11 @@ int CMario::GetAniIdSmall()
 {
 	int aniId = -1;
 
-
+	if (state == MARIO_ENDING_SCENE)
+	{
+		aniId = ID_ANI_MARIO_SMALL_WALKING_RIGHT;
+		return aniId;
+	}
 	if (kick_flag)
 	{
 		// $$$$$ delay time for the kick animation 
@@ -493,6 +506,11 @@ int CMario::GetAniIdSmall()
 int CMario::GetAniIdBig()
 {
 	int aniId = -1;
+	if (state == MARIO_ENDING_SCENE)
+	{
+		aniId = ID_ANI_MARIO_WALKING_RIGHT;
+		return aniId;
+	}
 	if (kick_flag)
 	{
 		// $$$$$ delay time for the kick animation 
@@ -585,6 +603,11 @@ int CMario::GetAniIdBig()
 int CMario::GetAniIdWithTail()
 {
 	int aniId = -1;
+	if (state == MARIO_ENDING_SCENE)
+	{
+		aniId = ID_ANI_MARIO_WITH_TAIL_WALKING_RIGHT;
+		return aniId;
+	}
 	if (kick_flag)
 	{
 		// $$$$$ delay time for the kick animation 
@@ -843,6 +866,8 @@ void CMario::SetState(int state)
 		break;
 	case MARIO_STATE_KICK:
 		kick_start = GetTickCount64();
+		break;
+	case MARIO_ENDING_SCENE:
 		break;
 	}
 

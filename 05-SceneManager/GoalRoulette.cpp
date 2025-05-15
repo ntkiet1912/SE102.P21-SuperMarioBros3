@@ -47,11 +47,20 @@ void CGoalRouletteIcon::OnNoCollision(DWORD dt)
 	y += vy * dt;
 }
 
+void CGoalRouletteIcon::spawnGoalRouletteObjects()
+{
+	CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
+	vector<LPGAMEOBJECT>& objects = scene->GetObjects();
+
+	objects.push_back(new CGoalRoulette(100, 100, iconType));
+	objects.push_back(new CGoalRoulette(100, 30, COURSECLEAR_GOALROULETTE));
+	objects.push_back(new CGoalRoulette(100, 150, YOUGOTACARD_GOALROULETTE));
+}
+
 void CGoalRouletteIcon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	if (isHitByMario)
 	{
-		//DebugOut(L"set11\n");
 		vy = -0.08f;
 	}
 	else
@@ -67,14 +76,10 @@ void CGoalRouletteIcon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 
 	// when out of map, appearing 2 sentences and 1 card
-	if (y < -GR_ICON_HEIGHT_BBOX / 2)
+	if (y < static_cast<float>(-GR_ICON_HEIGHT_BBOX) / 2)
 	{
 		deleteTime = GetTickCount64();
-		CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
-		vector<LPGAMEOBJECT>& objects = scene->GetObjects();
-		objects.push_back(new CGoalRoulette(100, 100, iconType));
-		objects.push_back(new CGoalRoulette(100, 30, COURSECLEAR_GOALROULETTE));
-		objects.push_back(new CGoalRoulette(100, 150, YOUGOTACARD_GOALROULETTE));
+		spawnGoalRouletteObjects();
 	}
 	// need to seperate it into a small function because it causes this error below
 	// Exception thrown at 0x793B896F (d3dx9d_43.dll) in 05-SceneManager.exe:
