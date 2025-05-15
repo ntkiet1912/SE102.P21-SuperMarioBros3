@@ -1,6 +1,7 @@
-#include "PlayHUD.h"
+﻿#include "PlayHUD.h"
 #include <string>
 #include "AssetIDs.h"
+#include "DataManager.h"
 CPlayHUD* CPlayHUD::__instance = nullptr;
 
 CPlayHUD::CPlayHUD()
@@ -18,6 +19,9 @@ CPlayHUD::CPlayHUD()
 	{
 		time.push_back(new CLoadHUD(CSprites::GetInstance()->Get(ID_SPRITE_HUD_NUMBER_0),  141 + 8 * i, 12));
 	}
+	CDataManager::GetInstance()->LoadData();
+	SetCoin(CDataManager::GetInstance()->GetCoin());
+	SetScore(CDataManager::GetInstance()->GetScore());
 }
 
 CPlayHUD* CPlayHUD::GetInstance()
@@ -50,9 +54,11 @@ void CPlayHUD::SetCoin(int coinValue)
 {
 	string coinStr = to_string(coinValue);
 	while (coinStr.length() < 2)
-		coinStr = coinStr;
+		coinStr = "0" + coinStr; 
+
 	if (coinStr.length() > 2)
 		coinStr = coinStr.substr(coinStr.length() - 2, 2);
+
 	for (int i = 0; i < 2; i++)
 	{
 		int digit = coinStr[i] - '0';

@@ -17,6 +17,7 @@
 #include "LuckyBlock.h"
 #include "InvisibleBlock.h"
 #include "PlayHUD.h"
+#include "DataManager.h"
 
 #include "SampleKeyEventHandler.h"
 

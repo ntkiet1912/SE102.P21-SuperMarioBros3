@@ -4,6 +4,7 @@
 #include "Mario.h"
 #include "Game.h"
 #include "PlayHUD.h"
+#include "DataManager.h"
 
 #include "Goomba.h"
 #include "Coin.h"
@@ -169,6 +170,7 @@ void CMario::OnCollisionWithFireBullet(LPCOLLISIONEVENT e)
 
 void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 {
+	
 	CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
 
 	// jump on top >> kill Goomba and deflect a bit 
@@ -182,6 +184,8 @@ void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 		else
 		{
 			goomba->SetState(GOOMBA_STATE_DIE);
+			CDataManager::GetInstance()->AddScore(1000);
+			CPlayHUD::GetInstance()->SetScore(CDataManager::GetInstance()->GetScore());
 		}
 		vy = -MARIO_JUMP_DEFLECT_SPEED;
 	}
@@ -284,8 +288,12 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 			if (koopas->GetState() == KOOPAS_STATE_WING)
 				koopas->SetState(KOOPAS_STATE_WALKING_LEFT);
 			//from the walk one to the shell
-			else
+			else {
 				koopas->SetState(KOOPAS_STATE_SHELL);
+				CDataManager::GetInstance()->AddScore(1000);
+				
+			}
+				
 			//mario bounce back
 			vy = -MARIO_JUMP_DEFLECT_SPEED;
 		}
@@ -341,8 +349,8 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 void CMario::OnCollisionWithCoin(LPCOLLISIONEVENT e)
 {
 	e->obj->Delete();
-	coin++;
-	CPlayHUD::GetInstance()->SetCoin(coin);;
+	CDataManager::GetInstance()->AddCoin(1);
+	CDataManager::GetInstance()->AddScore(100);
 }
 
 void CMario::OnCollisionWithPortal(LPCOLLISIONEVENT e)
@@ -364,6 +372,7 @@ void CMario::OnCollisionWithUpgradingItem(LPCOLLISIONEVENT e)
 {
 	if (e->nx != 0 || e->ny != 0)
 	{
+		CDataManager::GetInstance()->AddScore(1000);
 		if (dynamic_cast<CMushroom1UP*>(e->obj))
 		{
 			DebugOut(L"Life++\n");

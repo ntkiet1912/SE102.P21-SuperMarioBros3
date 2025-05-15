@@ -10,7 +10,7 @@
 #include "LuckyBlock.h"
 #include "InvisibleBlock.h"
 #include "Block.h"
-
+#include "DataManager.h"
 
 
 CKoopas::CKoopas(float x, float y, int isRed, int yesWing) : CGameObject(x, y)
@@ -84,7 +84,8 @@ void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 			SetState(KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT);
 	}
 
-	if (dynamic_cast<CCoin*>(e->obj)) return;
+	if (dynamic_cast<CCoin*>(e->obj))
+		
 	if (dynamic_cast<CGoomba*>(e->obj))
 		OnCollisionWithGoomba(e);
 	//else if (dynamic_cast<CPlatform*>(e->obj))
@@ -95,6 +96,7 @@ void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithLuckyBlock(e);
 
 }
+
 //void CKoopas::OnCollisionWithPlatform(LPCOLLISIONEVENT e)
 //{
 //	CPlatform* platform = dynamic_cast<CPlatform*>(e->obj);
@@ -130,8 +132,11 @@ void CKoopas::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 	CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
 	if (state == KOOPAS_STATE_SHELLIDLE_MOVING_LEFT || state == KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT)
 	{
-		if (e->nx != 0)
+		if (e->nx != 0) {
 			goomba->SetState(GOOMBA_STATE_DIE_BY_COLLISION);
+			CDataManager::GetInstance()->AddScore(1000);
+		}
+			
 	}
 }
 void CKoopas::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
@@ -145,6 +150,7 @@ void CKoopas::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 			if (state == KOOPAS_STATE_SHELLIDLE_MOVING_LEFT || state == KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT)
 			{
 				koopas->SetState(KOOPAS_STATE_SHELL_DIE_BY_COLLISION_WITH_KOOPAS);
+				CDataManager::GetInstance()->AddScore(1000);
 				if (e->nx > 0)
 					koopas->vx = -KOOPAS_VX_DIE_SPEED;
 				else
@@ -164,6 +170,7 @@ void CKoopas::OnCollisionWithLuckyBlock(LPCOLLISIONEVENT e)
 		if (e->nx != 0)
 		{
 			lb->setIsHit(true);
+
 		}
 	}
 }
