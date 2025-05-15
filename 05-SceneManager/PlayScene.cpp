@@ -16,6 +16,7 @@
 #include "FirePiranha.h"
 #include "LuckyBlock.h"
 #include "InvisibleBlock.h"
+#include "GoalRoulette.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -258,8 +259,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		break;
 	}
 	case OBJECT_TYPE_RED_GOOMBA: obj = new CRedGoomba(x, y); break;
+	case OBJECT_TYPE_GOAL_ROULETTE_ICON: obj = new CGoalRouletteIcon(x, y); break;
 	break;
-
 
 	default:
 		DebugOut(L"[ERROR] Invalid object type: %d\n", object_type);

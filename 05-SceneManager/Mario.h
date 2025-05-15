@@ -193,6 +193,8 @@ class CMario : public CGameObject
 	void kickShell(CKoopas*& koopas);
 
 	void OnCollisionWithLuckyBlock(LPCOLLISIONEVENT e);
+	void OnCollisionWithGoalRouletteIcon(LPCOLLISIONEVENT e);
+
 	int GetAniIdBig();
 	int GetAniIdSmall();
 	int GetAniIdWithTail();
@@ -218,6 +220,7 @@ public:
 		isHolding = false;
 		heldKoopas = nullptr;
 		canSit = true;
+		jump_hold_start = -1;
 	}
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();

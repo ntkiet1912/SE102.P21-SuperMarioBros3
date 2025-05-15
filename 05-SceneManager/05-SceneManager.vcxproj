@@ -159,6 +159,7 @@
     <ClCompile Include="FirePiranha.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GoalRoulette.cpp" />
     <ClCompile Include="Goomba.cpp" />
     <ClCompile Include="InvisibleBlock.cpp" />
     <ClCompile Include="InvisibleBlock.h" />
@@ -194,6 +195,7 @@
     <ClInclude Include="FirePiranha.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GoalRoulette.h" />
     <ClInclude Include="Goomba.h" />
     <ClInclude Include="KeyEventHandler.h" />
     <ClInclude Include="Koopas.h" />

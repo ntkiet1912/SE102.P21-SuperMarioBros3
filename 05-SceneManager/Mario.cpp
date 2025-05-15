@@ -14,6 +14,7 @@
 #include "Collision.h"
 #include "LuckyBlock.h"
 #include "UpgradeMarioLevel.h"
+#include "GoalRoulette.h"
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
@@ -85,6 +86,7 @@ void CMario::OnNoCollision(DWORD dt)
 	y += vy * dt;
 	isOnPlatform = false;
 }
+#pragma region COLLISION
 
 void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 {
@@ -117,6 +119,8 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithLuckyBlock(e);
 	else if (dynamic_cast<CUpgradeLevel*>(e->obj))
 		OnCollisionWithUpgradingItem(e);
+	else if (dynamic_cast<CGoalRouletteIcon*>(e->obj))
+		OnCollisionWithGoalRouletteIcon(e);
 }
 
 void CMario::OnCollisionWithFirePiranha(LPCOLLISIONEVENT e)
@@ -378,6 +382,16 @@ void CMario::OnCollisionWithUpgradingItem(LPCOLLISIONEVENT e)
 	}
 	e->obj->Delete();
 }
+
+void CMario::OnCollisionWithGoalRouletteIcon(LPCOLLISIONEVENT e)
+{
+	CGoalRouletteIcon* icon = dynamic_cast<CGoalRouletteIcon*>(e->obj);
+	DebugOut(L"set\n");
+	icon->setIsHitByMario(true);
+	// mario is uncontrolable during this time
+
+}
+#pragma endregion
 
 //
 // Get animation ID for small Mario
@@ -718,7 +732,7 @@ void CMario::Render()
 		aniId = GetAniIdWithTail();
 	animations->Get(aniId)->Render(x, y);
 
-	RenderBoundingBox();
+	//RenderBoundingBox();
 
 	DebugOutTitle(L"Coins: %d", coin);
 }

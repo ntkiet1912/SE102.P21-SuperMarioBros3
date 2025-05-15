@@ -29,6 +29,7 @@
 
 #define OBJECT_TYPE_LUCKYBLOCK -1
 #define OBJECT_TYPE_RED_GOOMBA	-2
+#define OBJECT_TYPE_GOAL_ROULETTE_ICON	-3
 
 #pragma region MARIO 
 
