@@ -42,6 +42,7 @@ class CGoalRouletteIcon :
 protected:
 	bool isHitByMario;
 	int iconType;
+	bool isDeleted = false;
 	ULONGLONG timeToSwitching;
 	ULONGLONG deleteTime;
 
@@ -52,6 +53,7 @@ protected:
 	virtual int IsBlocking() { return 0; };
 	void OnNoCollision(DWORD dt);
 	void spawnGoalRouletteObjects();
+
 public:
 	CGoalRouletteIcon(float x, float y);
 	void setIsHitByMario(bool isHit) { isHitByMario = isHit; }

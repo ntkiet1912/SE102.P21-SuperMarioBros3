@@ -52,9 +52,9 @@ void CGoalRouletteIcon::spawnGoalRouletteObjects()
 	CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
 	vector<LPGAMEOBJECT>& objects = scene->GetObjects();
 
-	objects.push_back(new CGoalRoulette(100, 100, iconType));
-	objects.push_back(new CGoalRoulette(100, 30, COURSECLEAR_GOALROULETTE));
-	objects.push_back(new CGoalRoulette(100, 150, YOUGOTACARD_GOALROULETTE));
+	objects.push_back(new CGoalRoulette(2300, 100, iconType));
+	objects.push_back(new CGoalRoulette(2300, 30, COURSECLEAR_GOALROULETTE));
+	objects.push_back(new CGoalRoulette(2300, 150, YOUGOTACARD_GOALROULETTE));
 }
 
 void CGoalRouletteIcon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -86,9 +86,7 @@ void CGoalRouletteIcon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// 0xC0000005: Access violation reading location 0x00000080.
 	if(GetTickCount64() - deleteTime < 1000)
 	{
-		CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
-		vector<LPGAMEOBJECT>& objects = scene->GetObjects();
-		objects.erase(std::remove(objects.begin(), objects.end(), this), objects.end());
+		isDeleted = true;
 
 	}
 	CGameObject::Update(dt, coObjects);
@@ -119,5 +117,5 @@ void CGoalRouletteIcon::Render()
 			aniId = STAR_STATIC;
 	}
 	CAnimations::GetInstance()->Get(aniId)->Render(x, y);
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }

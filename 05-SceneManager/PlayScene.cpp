@@ -488,7 +488,19 @@ void CPlayScene::Update(DWORD dt)
 	CPlayHUD::GetInstance()->SetTime(timeRemaining);
 
 }
-
+void CPlayScene::CleanUpDeletedObjects()
+{
+	for (auto it = objects.begin(); it != objects.end(); )
+	{
+		if ((*it)->IsDeleted()) // hàm getter bạn cần cài thêm
+		{
+			delete* it;
+			it = objects.erase(it);
+		}
+		else
+			++it;
+	}
+}
 void CPlayScene::Render()
 {
 	for (int i = 0; i < objects.size(); i++)

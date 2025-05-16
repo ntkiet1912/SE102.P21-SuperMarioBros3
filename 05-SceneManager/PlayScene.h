@@ -46,6 +46,7 @@ public:
 	LPGAMEOBJECT GetPlayer() { return player; }
 
 	void Clear();
+	void CleanUpDeletedObjects();
 	void PurgeDeletedObjects();
 	void AddObject(LPGAMEOBJECT obj) { objects.push_back(obj); }
 	void InsertObject(LPGAMEOBJECT obj) { objects.insert(objects.begin() + 1, obj); }
