@@ -9,7 +9,6 @@ public:
     bool isRed;
     bool isSpawned;
     LPGAMEOBJECT instance;
-
     CEnemySpawnInfo(int type, float x, float y, bool isRed = false, bool yesWing = false)
     {
         this->type = type;
@@ -20,11 +19,5 @@ public:
         this->isSpawned = false;
         this->instance = nullptr;
     }
-
-    //bool isPlayerClose(float playerX, float playerY, float threshold = 100.0f)
-    //{
-    //    return ()
-
-    //}
 };
 

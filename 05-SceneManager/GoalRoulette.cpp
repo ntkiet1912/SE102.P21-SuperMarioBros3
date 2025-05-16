@@ -86,8 +86,10 @@ void CGoalRouletteIcon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// 0xC0000005: Access violation reading location 0x00000080.
 	if(GetTickCount64() - deleteTime < 1000)
 	{
-		DebugOut(L"delete\n");
-		this->Delete();
+		CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
+		vector<LPGAMEOBJECT>& objects = scene->GetObjects();
+		objects.erase(std::remove(objects.begin(), objects.end(), this), objects.end());
+
 	}
 	CGameObject::Update(dt, coObjects);
 	CCollision::GetInstance()->Process(this, dt, coObjects);
