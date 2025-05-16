@@ -78,8 +78,6 @@ void CLeaf::OnCollisionWith(LPCOLLISIONEVENT e)
 	{
 		dynamic_cast<CMario*>(e->obj)->OnCollisionWithUpgradingItem(e);
 	}
-
-
 }
 
 void CMushroom::GetBoundingBox(float& l, float& t, float& r, float& b)

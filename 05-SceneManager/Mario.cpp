@@ -40,10 +40,11 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	vy += ay * dt;
 	if (state == MARIO_ENDING_SCENE)
 	{
-		if (isOnPlatform)
-			vx = MARIO_WALKING_SPEED;
-		else
-			vx = 0;
+		//if (isOnPlatform)
+		//	vx = MARIO_WALKING_SPEED;
+		//else
+		//	vx = 0;
+
 	}
 
 	if (abs(vx) > abs(maxVx))
@@ -783,28 +784,24 @@ void CMario::SetState(int state)
 		maxVx = MARIO_RUNNING_SPEED;
 		ax = MARIO_ACCEL_RUN_X;
 		nx = 1;
-		if (vx < 0) vx = -vx;
 		break;
 	case MARIO_STATE_RUNNING_LEFT:
 		if (isSitting) break;
 		maxVx = -MARIO_RUNNING_SPEED;
 		ax = -MARIO_ACCEL_RUN_X;
 		nx = -1;
-		if (vx > 0) vx = -vx;
 		break;
 	case MARIO_STATE_WALKING_RIGHT:
 		if (isSitting) break;
 		maxVx = MARIO_WALKING_SPEED;
 		ax = MARIO_ACCEL_WALK_X;
 		nx = 1;
-		if (vx < 0) vx = -vx;
 		break;
 	case MARIO_STATE_WALKING_LEFT:
 		if (isSitting) break;
 		maxVx = -MARIO_WALKING_SPEED;
 		ax = -MARIO_ACCEL_WALK_X;
 		nx = -1;
-		if (vx > 0) vx = -vx;
 		break;
 		//case MARIO_STATE_JUMP:
 		//	if (isSitting) break;

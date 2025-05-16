@@ -20,7 +20,7 @@ CKoopas::CKoopas(float x, float y, int isRed, int yesWing) : CGameObject(x, y)
 	die_start = 0;
 	this->isRed = isRed;
 	this->yesWing = yesWing;
-	isFlyingUp = false;
+	//isFlyingUp = false;
 	isShellIdle = false;
 	isRegen = false;
 	if (yesWing)
@@ -66,11 +66,23 @@ void CKoopas::OnNoCollision(DWORD dt)
 
 void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 {
-	if (e->ny != 0 && e->obj->IsBlocking())
+	if (state == KOOPAS_STATE_WING)
+	{
+		
+		if (e->ny != 0 && e->obj->IsBlocking())
+		{
+			vy = -KOOPAS_FLYING_SPEED_VY;
+		}
+		else
+		{
+			vy = 0;
+		}
+			ay = KOOPAS_GRAVITY_FLYING;
+	}
+	else if(e->ny != 0 && e->obj->IsBlocking())
 	{
 		vy = 0;
 	}
-
 	// collide with block like brick or lucky box
 	if (e->nx != 0 && e->obj->IsBlocking())
 	{
@@ -84,7 +96,7 @@ void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 			SetState(KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT);
 	}
 
-	if (dynamic_cast<CCoin*>(e->obj))
+	if (dynamic_cast<CCoin*>(e->obj)) return;
 		
 	if (dynamic_cast<CGoomba*>(e->obj))
 		OnCollisionWithGoomba(e);
@@ -191,25 +203,6 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			else
 				SetState(KOOPAS_STATE_WALKING_LEFT);
 		}
-	}
-	if (state == KOOPAS_STATE_WING)
-	{
-		if (!isFlyingUp)
-		{
-			vy = -KOOPAS_FLYING_SPEED;
-			isFlyingUp = true;
-			flying_start = GetTickCount64();
-		}
-		else
-		{
-			// ready for next flying phase
-			if (GetTickCount64() - flying_start > 1000)
-			{
-				vy = 0;
-				isFlyingUp = false;
-			}
-		}
-		ay = KOOPAS_GRAVITY_FLYING;
 	}
 
 	// (*) when is held, set the ay = 0 to make sure that they are not dropping while holding
@@ -414,9 +407,7 @@ void CKoopas::SetState(int state)
 		break;
 
 	case KOOPAS_STATE_WING:
-
-		vx = -KOOPAS_WALKING_SPEED;
-		flying_start = GetTickCount64();
+		vx = -KOOPAS_FLYING_SPEED_VX;
 		isShellIdle = false;
 		break;
 

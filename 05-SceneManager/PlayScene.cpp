@@ -427,12 +427,12 @@ void CPlayScene::Update(DWORD dt)
 				enemySpawns[i]->isSpawned = true;
 				coObjects.push_back(enemy);
 				objects.push_back(enemy);
-			}
+			}	
 		}
 		// can't use else because x and y is original pos of enemy 
 		// when it reached bounds like cam + screenWidth + offset, and even in camera, 
 		// it still disappeared. 
-		else if(!isInCamera(x, y, 200.0f))
+		else if(!isInCamera(x, y, 250.0f))
 		{
 			enemySpawns[i]->isSpawned = false;
 

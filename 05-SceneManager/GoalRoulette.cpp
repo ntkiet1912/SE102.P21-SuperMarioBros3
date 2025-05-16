@@ -52,9 +52,9 @@ void CGoalRouletteIcon::spawnGoalRouletteObjects()
 	CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
 	vector<LPGAMEOBJECT>& objects = scene->GetObjects();
 
-	objects.push_back(new CGoalRoulette(2300, 100, iconType));
-	objects.push_back(new CGoalRoulette(2300, 30, COURSECLEAR_GOALROULETTE));
-	objects.push_back(new CGoalRoulette(2300, 150, YOUGOTACARD_GOALROULETTE));
+	objects.push_back(new CGoalRoulette(2510, 70, iconType));
+	objects.push_back(new CGoalRoulette(2438, 48, COURSECLEAR_GOALROULETTE));
+	objects.push_back(new CGoalRoulette(2428, 62, YOUGOTACARD_GOALROULETTE));
 }
 
 void CGoalRouletteIcon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)

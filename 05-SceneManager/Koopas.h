@@ -1,15 +1,16 @@
 #pragma once
 #include "GameObject.h"
-#define KOOPAS_GRAVITY 0.002f
+#define KOOPAS_GRAVITY 0.001f
 #define KOOPAS_WALKING_SPEED 0.05f
 #define KOOPAS_SHELL_SPEED 0.22f
 #define KOOPAS_VX_DIE_SPEED 0.1f
 #define KOOPAS_JUMP_DEFLECT_SPEED 0.4f
 #define KOOPAS_DYING_SPEED 0.2f
 #define KOOPAS_GRAVITY_DYING 0.0003f
-#define KOOPAS_FLYING_SPEED 0.4f
-#define KOOPAS_GRAVITY_FLYING 0.002f
 
+#define KOOPAS_FLYING_SPEED_VY 0.25f
+#define KOOPAS_GRAVITY_FLYING 0.0007f
+#define KOOPAS_FLYING_SPEED_VX 0.045f
 
 #define KOOPAS_BBOX_WIDTH 16	
 #define KOOPAS_BBOX_HEIGHT 26
@@ -56,7 +57,6 @@ protected:
 	bool isShellIdle;
 
 	ULONGLONG die_start;
-	ULONGLONG flying_start;
 	ULONGLONG regen_start;
 	ULONGLONG realRegen_start;
 
@@ -64,7 +64,6 @@ protected:
 	int yesWing;
 
 	bool isRegen;
-	bool isFlyingUp;
 	float ax;
 	float ay;
 

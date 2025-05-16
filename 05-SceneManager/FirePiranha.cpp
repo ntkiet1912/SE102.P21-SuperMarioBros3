@@ -44,7 +44,7 @@ void CFirePiranha::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt);
 
-	if (IsPlayerTooClose()) return;
+	//if (IsPlayerTooClose()) return;
 
 	switch (state)
 	{
