@@ -211,7 +211,6 @@ public:
 		untouchable = 0;
 		untouchable_start = -1;
 		isOnPlatform = false;
-		coin = 0;
 
 		kick_flag = false;
 		kick_start = -1;

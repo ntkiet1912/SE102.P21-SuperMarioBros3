@@ -1,4 +1,4 @@
-#include "InvisibleBlock.h"
+﻿#include "InvisibleBlock.h"
 #include "Textures.h"
 #include "Game.h"
 
@@ -32,14 +32,23 @@ void CInvisibleBlock::GetBoundingBox(float& l, float& t, float& r, float& b)
 }
 void CInvisibleBlock::Render()
 {
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 int CInvisibleBlock::IsDirectionColliable(float nx, float ny)
 {
-	if (nx == 0 && ny == -1 && isBlock == 0) return 1;
+	
+	if (nx == 0 && ny == -1 && isBlock == 0)
+		return 1;
 
 	
-	if ((nx == -1 || nx == 1) && ny == 0 && isBlock == 1) return 1;
+	if (
+		((nx == -1 && ny == 0) ||  
+			(nx == 1 && ny == 0) ||  
+			(nx == 0 && ny == -1) ||  
+			(nx == 0 && ny == 1))     
+		&& isBlock == 1)
+		return 1;
+
 	return 0;
 }

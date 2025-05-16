@@ -4,6 +4,7 @@
 #include "PlayScene.h"
 #include "UpgradeMarioLevel.h"
 #include "Coin.h"
+#include "DataManager.h"
 void CLuckyBlock::Render()
 {
 	int aniId;
@@ -104,7 +105,9 @@ void CLuckyBlock::spawnItem()
 		}
 		break;
 	case ITEM_COIN:
-		item = new CCoinFromLuckyBlock(x, y - 10);
+		item = new CCoinFromLuckyBlock(x, y - 8);
+		CDataManager::GetInstance()->AddCoin(1);
+		CDataManager::GetInstance()->AddScore(200);
 		break;
 	case ITEM_1UP:
 		if (mario->getX() > this->x)
