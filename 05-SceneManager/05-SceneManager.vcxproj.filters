@@ -123,6 +123,9 @@
     <ClCompile Include="GoalRoulette.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ScorePopup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
@@ -231,6 +234,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GoalRoulette.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ScorePopup.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

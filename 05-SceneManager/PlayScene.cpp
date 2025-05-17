@@ -19,6 +19,8 @@
 #include "PlayHUD.h"
 #include "DataManager.h"
 #include "GoalRoulette.h"
+#include "ScorePopup.h"	
+#include "Game.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -331,6 +333,7 @@ void CPlayScene::Load()
 {
 	timeRemaining = 300;
 	timeAccmulator = 0.0f;
+	InitFont();
 
 	DebugOut(L"[INFO] Start loading scene from : %s \n", sceneFilePath);
 
@@ -380,6 +383,7 @@ void CPlayScene::Update(DWORD dt)
 
 	// Cập nhật HUD
 	CPlayHUD::GetInstance()->SetTime(timeRemaining);
+	ScorePopupManager::GetInstance()->UpdateScorePopup(dt);
 	// We know that Mario is the first object in the list hence we won't add him into the colliable object list
 	// TO-DO: This is a "dirty" way, need a more organized way 
 	vector<LPGAMEOBJECT> coObjects;
@@ -510,6 +514,7 @@ void CPlayScene::Render()
 	}
 	player->Render();
 	CPlayHUD::GetInstance()->Render();
+	ScorePopupManager::GetInstance()->RenderScorePopup(font);
 }
 	
 	
@@ -541,6 +546,7 @@ void CPlayScene::Unload()
 		delete objects[i];
 
 	objects.clear();
+	ReleaseFont();
 	player = NULL;
 
 	DebugOut(L"[INFO] Scene %d unloaded! \n", id);
@@ -566,4 +572,27 @@ void CPlayScene::PurgeDeletedObjects()
 	objects.erase(
 		std::remove_if(objects.begin(), objects.end(), CPlayScene::IsGameObjectDeleted),
 		objects.end());
+}
+
+void CPlayScene::InitFont() {
+	ID3D10Device* device = CGame::GetInstance()->GetDirect3DDevice();
+	D3DX10CreateFont(
+		device,               // thiết bị Direct3D của bạn
+		20,                   // chiều cao font
+		0,                    // chiều rộng font (0 để auto)
+		FW_BOLD,              // độ đậm font
+		1,                    // số level mipmap
+		false,                // italic?
+		DEFAULT_CHARSET,      // charset
+		OUT_DEFAULT_PRECIS,
+		DEFAULT_QUALITY,
+		DEFAULT_PITCH | FF_DONTCARE,
+		L"Arial",             // tên font
+		&font);
+}
+void CPlayScene::ReleaseFont() {
+	if (font) {
+		font->Release();
+		font = nullptr;
+	}
 }

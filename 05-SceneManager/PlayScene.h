@@ -34,6 +34,7 @@ protected:
 	int timeRemaining = 300;
 	float timeAccmulator = 0.0f;
 	float timeDecrementInterval = 0.5f;
+	ID3DX10Font* font = nullptr;
 	
 public: 
 	CPlayScene(int id, LPCWSTR filePath);
@@ -50,6 +51,10 @@ public:
 	void PurgeDeletedObjects();
 	void AddObject(LPGAMEOBJECT obj) { objects.push_back(obj); }
 	void InsertObject(LPGAMEOBJECT obj) { objects.insert(objects.begin() + 1, obj); }
+
+	void InitFont();
+	void ReleaseFont();
+
 
 	static bool IsGameObjectDeleted(const LPGAMEOBJECT& o);
 	vector<LPGAMEOBJECT>& GetObjects() { return objects; }

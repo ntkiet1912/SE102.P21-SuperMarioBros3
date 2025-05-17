@@ -17,6 +17,7 @@
 #include "LuckyBlock.h"
 #include "UpgradeMarioLevel.h"
 #include "GoalRoulette.h"
+#include "ScorePopup.h"
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
@@ -384,6 +385,10 @@ void CMario::OnCollisionWithLuckyBlock(LPCOLLISIONEVENT e)
 void CMario::OnCollisionWithUpgradingItem(LPCOLLISIONEVENT e)
 {
 	CDataManager::GetInstance()->AddScore(1000);
+	Vector2 popupPos;
+	popupPos.x = e->obj->getX();
+	popupPos.y = e->obj->getY() - 16;
+	ScorePopupManager::GetInstance()->SpawnScorePopup(popupPos, "+1000");
 
 	if (dynamic_cast<CMushroom1UP*>(e->obj))
 	{
@@ -401,6 +406,8 @@ void CMario::OnCollisionWithUpgradingItem(LPCOLLISIONEVENT e)
 		SetLevel(3);
 	}
 	e->obj->Delete();
+	
+
 }
 
 void CMario::OnCollisionWithGoalRouletteIcon(LPCOLLISIONEVENT e)
