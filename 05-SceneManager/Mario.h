@@ -148,6 +148,7 @@
 // expand 
 #define ID_ANI_MARIO_EXPAND_LEFT 102
 #define ID_ANI_MARIO_EXPAND_RIGHT 103
+#define ID_ANI_MARIO_PUFF 104
 
 #pragma endregion
 
@@ -176,8 +177,10 @@
 #define MARIO_SMALL_BBOX_HEIGHT 12
 
 
-#define MARIO_UNTOUCHABLE_TIME 2500
-#define TRANSFORMATION_DURATION 1000
+#define MARIO_UNTOUCHABLE_TIME 1500
+#define TRANSFORMATION_DURATION 800
+#define TRANSFORMATION_RACOON_DURATION 450
+#define TAIL_TRANSFORMATION_DURATION 750
 
 class CMario : public CGameObject
 {
@@ -186,12 +189,12 @@ class CMario : public CGameObject
 	float ax;				// acceleration on x 
 	float ay;				// acceleration on y 
 
-	int level; 
-	int untouchable; 
+	int level;
+	int untouchable;
 	ULONGLONG untouchable_start;
 	BOOLEAN isOnPlatform;
-	int coin; 
-	
+	int coin;
+
 	ULONGLONG kick_start;
 	bool kick_flag;
 
@@ -200,8 +203,8 @@ class CMario : public CGameObject
 	CKoopas* heldKoopas;
 
 	bool canSit;
-	bool isShrinking;
-	bool isExpanding;
+	bool isLevelUp;
+	bool isLevelDown;
 	bool isActive;
 	ULONGLONG transformation_start;
 	ULONGLONG jump_hold_start;
@@ -220,30 +223,32 @@ class CMario : public CGameObject
 	int GetAniIdSmall();
 	int GetAniIdWithTail();
 
+	void levelUp();
+	void levelDown();
 public:
 	CMario(float x, float y) : CGameObject(x, y)
 	{
 		isSitting = false;
 		maxVx = 0.0f;
 		ax = 0.0f;
-		ay = MARIO_GRAVITY; 
+		ay = MARIO_GRAVITY;
 
-		level = MARIO_LEVEL_SMALL;
+		level = 2;
 		untouchable = 0;
 		untouchable_start = -1;
 		isOnPlatform = false;
 
 		kick_flag = false;
 		kick_start = -1;
-		
+
 		canHold = false;
 		isHolding = false;
 		heldKoopas = nullptr;
 		canSit = true;
 		jump_hold_start = -1;
 
-		isShrinking = false;
-		isExpanding = false;
+		isLevelUp = false;
+		isLevelDown = false;
 		transformation_start = -1;
 		isActive = true;
 	}
@@ -251,10 +256,7 @@ public:
 	void Render();
 	void SetState(int state);
 
-	int IsCollidable()
-	{ 
-		return (state != MARIO_STATE_DIE); 
-	}
+	int IsCollidable(){return (state != MARIO_STATE_DIE);}
 
 	int IsBlocking() { return 0; }
 
@@ -269,8 +271,7 @@ public:
 
 	void OnCollisionWithUpgradingItem(LPCOLLISIONEVENT e);
 	void getDmg();
-	void shrink();
-	void expand();
+
 	void setCanHold(bool canHold) { this->canHold = canHold; }
 	void setIsHolding(bool isHolding) { this->isHolding = isHolding; }
 	float getVx() { return vx; }

@@ -30,7 +30,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	else if (heldKoopas && !canHold && isHolding)
 	{
 		isHolding = false;
-		PositionHeldKoopas(heldKoopas);
+		//PositionHeldKoopas(heldKoopas);
 		heldKoopas->setIsHeld(false);
 		heldKoopas->setIsReleased(true);
 		kickShell(heldKoopas);
@@ -52,15 +52,18 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		vx = maxVx;
 	}
 
-	if (isExpanding && GetTickCount64() - transformation_start > TRANSFORMATION_DURATION) {
-		isExpanding = false;
+	if (isLevelUp && GetTickCount64() - transformation_start > TRANSFORMATION_DURATION) {
+		isLevelUp = false;
 		isActive = true;
 		transformation_start = -1;
 	}
 
-	if (isShrinking && GetTickCount64() - transformation_start > TRANSFORMATION_DURATION) {
-		isShrinking = false;
-		SetLevel(1);
+	if (isLevelDown && GetTickCount64() - transformation_start > TRANSFORMATION_DURATION) {
+		isLevelDown = false;
+		if (level == 3)
+			SetLevel(2);
+		else 
+			SetLevel(1);
 		isActive = true;
 		transformation_start = -1;
 		StartUntouchable();
@@ -307,15 +310,12 @@ void CMario::OnCollisionWithUpgradingItem(LPCOLLISIONEVENT e)
 	}
 	else if (level == 1 && dynamic_cast<CMushroomUpgradingMarioLevel*>(e->obj))
 	{
-		SetLevel(2);
-		expand();
+		levelUp();
 	}
 	else if (level >= 2 && dynamic_cast<CLeaf*>(e->obj))
 	{
-		//if (level == 3) point += 1000;
-		//else SetLevel(3);
-		DebugOut(L"touch\n");
-		SetLevel(3);
+		if (level == 3)	CDataManager::GetInstance()->AddScore(1000);
+		else levelUp();
 	}
 	e->obj->Delete();
 }
@@ -673,19 +673,40 @@ void CMario::Render()
 {
 	CAnimations* animations = CAnimations::GetInstance();
 	int aniId = -1;
-	if (isShrinking)
+	if (untouchable)
 	{
-		if (nx >= 0)
-			aniId = ID_ANI_MARIO_SHRINK_RIGHT;
-		else
-			aniId = ID_ANI_MARIO_SHRINK_LEFT;
+		// skip sprite 
+		if ((GetTickCount64() / 50) % 2 == 0)
+			return;
 	}
-	else if (isExpanding)
+
+	if (isLevelDown)
 	{
-		if (nx >= 0)
-			aniId = ID_ANI_MARIO_EXPAND_RIGHT;
+		if (level == 3)
+		{
+			aniId = ID_ANI_MARIO_PUFF;
+		}
 		else
-			aniId = ID_ANI_MARIO_EXPAND_LEFT;
+		{
+			if (nx >= 0)
+				aniId = ID_ANI_MARIO_SHRINK_RIGHT;
+			else
+				aniId = ID_ANI_MARIO_SHRINK_LEFT;
+		}
+	}
+	else if (isLevelUp)
+	{
+		if (level == 3)
+		{
+			aniId = ID_ANI_MARIO_PUFF;
+		}
+		else
+		{
+			if (nx >= 0)
+				aniId = ID_ANI_MARIO_EXPAND_RIGHT;
+			else
+				aniId = ID_ANI_MARIO_EXPAND_LEFT;
+		}
 	}
 	else if (state == MARIO_STATE_DIE)
 		aniId = ID_ANI_MARIO_DIE;
@@ -850,21 +871,25 @@ void CMario::SetLevel(int l)
 	level = l;
 }
 
-void CMario::shrink()
+void CMario::levelDown()
 {
-	isShrinking = true;
+	isLevelDown = true;
 	transformation_start = GetTickCount64();
 	isActive = false;
 	vx = 0;
 	ax = 0;
 }
-void CMario::expand()
+void CMario::levelUp()
 {
-	isExpanding = true;
+	isLevelUp = true;
 	transformation_start = GetTickCount64();
 	isActive = false;
 	vx = 0;
 	ax = 0;
+	if (level == 1)
+		SetLevel(2);
+	else if (level == 2)
+		SetLevel(3);
 }
 void CMario::getDmg()
 {
@@ -872,12 +897,11 @@ void CMario::getDmg()
 	{
 		if (level == (MARIO_LEVEL_WITH_TAIL))
 		{
-			SetLevel(2);
-			StartUntouchable();
+			levelDown();
 		}
 		else if (level == MARIO_LEVEL_BIG)
 		{
-			shrink();
+			levelDown();
 		}
 		else
 			SetState(MARIO_STATE_DIE);
