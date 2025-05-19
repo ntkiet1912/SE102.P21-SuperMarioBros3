@@ -6,6 +6,8 @@
 #include "Koopas.h"
 #include "debug.h"
 
+#pragma region Constaint
+
 #define MARIO_WALKING_SPEED		0.094f
 #define MARIO_RUNNING_SPEED		0.16f
 
@@ -18,6 +20,10 @@
 #define MARIO_GRAVITY			0.0012f
 
 #define MARIO_JUMP_DEFLECT_SPEED  0.25f
+
+#pragma endregion
+
+#pragma region State
 
 #define MARIO_STATE_DIE				-10
 #define MARIO_STATE_IDLE			0
@@ -35,6 +41,8 @@
 
 #define MARIO_STATE_KICK	701
 #define MARIO_ENDING_SCENE	999
+#pragma endregion
+
 #pragma region ANIMATION_ID
 
 #define ID_ANI_MARIO_IDLE_RIGHT 400
@@ -132,6 +140,15 @@
 #define ID_ANI_MARIO_WITH_TAIL_RUNNING_HOLDSHELL_RIGHT -1026
 #define ID_ANI_MARIO_WITH_TAIL_JUMP_HOLDSHELL_LEFT -1027
 #define ID_ANI_MARIO_WITH_TAIL_JUMP_HOLDSHELL_RIGHT -1028
+
+// shrink 
+#define ID_ANI_MARIO_SHRINK_LEFT	100
+#define ID_ANI_MARIO_SHRINK_RIGHT	101
+
+// expand 
+#define ID_ANI_MARIO_EXPAND_LEFT 102
+#define ID_ANI_MARIO_EXPAND_RIGHT 103
+
 #pragma endregion
 
 #define GROUND_Y 160.0f
@@ -160,6 +177,7 @@
 
 
 #define MARIO_UNTOUCHABLE_TIME 2500
+#define TRANSFORMATION_DURATION 1000
 
 class CMario : public CGameObject
 {
@@ -182,7 +200,10 @@ class CMario : public CGameObject
 	CKoopas* heldKoopas;
 
 	bool canSit;
-
+	bool isShrinking;
+	bool isExpanding;
+	bool isActive;
+	ULONGLONG transformation_start;
 	ULONGLONG jump_hold_start;
 	void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
 	void OnCollisionWithCoin(LPCOLLISIONEVENT e);
@@ -220,6 +241,11 @@ public:
 		heldKoopas = nullptr;
 		canSit = true;
 		jump_hold_start = -1;
+
+		isShrinking = false;
+		isExpanding = false;
+		transformation_start = -1;
+		isActive = true;
 	}
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();
@@ -242,9 +268,9 @@ public:
 
 
 	void OnCollisionWithUpgradingItem(LPCOLLISIONEVENT e);
-	//void getDmg();
-	//void Skrink();
-
+	void getDmg();
+	void shrink();
+	void expand();
 	void setCanHold(bool canHold) { this->canHold = canHold; }
 	void setIsHolding(bool isHolding) { this->isHolding = isHolding; }
 	float getVx() { return vx; }
@@ -257,4 +283,5 @@ public:
 	bool getCanSit() { return canSit; }
 	bool getIsUntouchable() { return untouchable; }
 	bool getIsSitting() { return isSitting; }
+	bool getIsActive() { return isActive; }
 };

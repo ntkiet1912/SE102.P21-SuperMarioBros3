@@ -52,26 +52,7 @@ void CFireBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
             if (CheckAABB(l1, t1, r1, b1, l2, t2, r2, b2)) {
                
                 CMario* mario = dynamic_cast<CMario*>(obj);
-
-                if (!mario->getIsUntouchable())
-                {
-                    if (mario->getLevel() == MARIO_LEVEL_WITH_TAIL)
-                    {
-                        mario->SetLevel(MARIO_LEVEL_BIG);
-                        mario->StartUntouchable();
-                    }
-                    else if (mario->getLevel() == MARIO_LEVEL_BIG)
-                    {
-                        mario->SetLevel(MARIO_LEVEL_SMALL);
-                        mario->StartUntouchable();
-
-                    }
-                    else
-                    {
-                        DebugOut(L">>> Mario DIE >>> \n");
-                        mario->SetState(MARIO_STATE_DIE);
-                    }
-                }
+                mario->getDmg();
                 this->Delete(); 
             }
         }

@@ -229,7 +229,7 @@ goalRoulette.txt
 3	1560	50	0	1
 3	1600	150	0	0
 #Mario
-0	2400	120
+0	200	120
 
 
 #InvisibleBlock
