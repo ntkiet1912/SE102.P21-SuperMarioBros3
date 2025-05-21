@@ -17,6 +17,7 @@
 #include "LuckyBlock.h"
 #include "UpgradeMarioLevel.h"
 #include "GoalRoulette.h"
+#include "PlayScene.h"
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
@@ -67,6 +68,16 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		isActive = true;
 		transformation_start = -1;
 		StartUntouchable();
+	}
+
+	if (GetTickCount64() - tailAttack_start > TAIL_ATTACK_DURATION)
+	{
+		isTailAttacking = false;
+		if (tail != nullptr)
+		{
+			tail->Delete();
+			tail = nullptr;
+		}
 	}
 	if (GetTickCount64() - untouchable_start > MARIO_UNTOUCHABLE_TIME)
 	{
@@ -193,79 +204,52 @@ void CMario::kickShell(CKoopas*& koopas)
 void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 {
 	CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
-	LPGAME game = CGame::GetInstance();
+	if (!koopas) return;
+
+	float koopasX, koopasY;
+	koopas->GetPosition(koopasX, koopasY);
+
 	if (e->ny > 0)
 	{
 		getDmg();
+		return;
 	}
-	else if (e->ny < 0)
+
+	if (e->ny < 0)
 	{
-		// if koopas is already in shell state, turn it be moving 
+		vy = -MARIO_JUMP_DEFLECT_SPEED;
+
 		if (koopas->GetState() == KOOPAS_STATE_SHELL || koopas->GetState() == KOOPAS_STATE_REGEN)
 		{
-
-			/*	ALERT !!!
-					we dont use e->nx < 0 || e->nx > 0 because
-					when we hit koopas with e->ny < 0 , most of the time,
-					the e->nx will be == 0
-
-				if (e->nx < 0)
-					koopas->SetState(KOOPAS_STATE_SHELLIDLE_MOVING_LEFT);
-				else if (e->nx > 0)
-					koopas->SetState(KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT);
-
-				==> useless
-			*/
-
-			// we use the direct position of both objects to compare and set state 
-			float x, y;
-			koopas->GetPosition(x, y);
-
-			//compare mario->x and koopas->x
-			if (this->x < x)
+			if (x < koopasX)
 				koopas->SetState(KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT);
-			else if (this->x >= x)
+			else
 				koopas->SetState(KOOPAS_STATE_SHELLIDLE_MOVING_LEFT);
-
-			vy = -MARIO_JUMP_DEFLECT_SPEED;
-
 		}
-		else if (koopas->GetState() != KOOPAS_STATE_SHELL)
+		else
 		{
-			// if koopas has wing, skrink the wing 
-			// turn to normal walking one
 			if (koopas->GetState() == KOOPAS_STATE_WING)
 				koopas->SetState(KOOPAS_STATE_WALKING_LEFT);
-			//from the walk one to the shell
-			else {
+			else
+			{
 				koopas->SetState(KOOPAS_STATE_SHELL);
 				CDataManager::GetInstance()->AddScore(1000);
-
 			}
-
-			//mario bounce back
-			vy = -MARIO_JUMP_DEFLECT_SPEED;
 		}
-
+		return;
 	}
-	else if (e->nx != 0)
+
+	if (e->nx != 0) // Va chạm bên hông Koopas
 	{
 		if (koopas->GetState() == KOOPAS_STATE_SHELL || koopas->GetState() == KOOPAS_STATE_REGEN)
 		{
-			// holding shell
-			if (canHold && !isHolding)
+			if (!isHolding)
 			{
 				isHolding = true;
 				heldKoopas = koopas;
-				heldKoopas->setIsHeld(true);
-				heldKoopas->setIsReleased(false);
+				koopas->SetState(KOOPAS_STATE_HELD); // ← nên có thêm state này cho rõ ràng
 			}
-			// let the hold and release A key in Update because when holding 
-			// two obj are not collide anymore, so put them in update is good
-
-
-			// kick it when not holding A key
-			else if (!canHold && !isHolding)
+			else if (!canHold)
 			{
 				kickShell(koopas);
 			}
@@ -274,7 +258,6 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 		{
 			getDmg();
 		}
-
 	}
 }
 
@@ -532,6 +515,17 @@ int CMario::GetAniIdBig()
 int CMario::GetAniIdWithTail()
 {
 	int aniId = -1;
+	if (isTailAttacking)
+	{
+		DebugOut(L"work\n");
+		if (nx > 0)
+		{
+			aniId = ID_ANI_MARIO_WITH_TAIL_ATTACK_LEFT;
+		}
+		else
+			aniId = ID_ANI_MARIO_WITH_TAIL_ATTACK_RIGHT;
+		return aniId;
+	}
 	if (state == MARIO_ENDING_SCENE)
 	{
 		aniId = ID_ANI_MARIO_WITH_TAIL_WALKING_RIGHT;
@@ -827,6 +821,20 @@ void CMario::SetState(int state)
 		kick_start = GetTickCount64();
 		break;
 	case MARIO_ENDING_SCENE:
+		break;
+	case MARIO_STATE_TAIL_ATTACK:
+		if (!isTailAttacking)
+		{
+			isTailAttacking = true;
+			tailAttack_start = GetTickCount64();
+
+			float tailX = nx > 0 ? this->x + 6 : this->x - 6;
+			tail = new CTail(tailX, y + 3);
+			tail->isActive = true;
+			CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
+			vector<LPGAMEOBJECT>& objects = scene->GetObjects();
+			objects.push_back(tail);
+		}
 		break;
 	}
 

@@ -5,6 +5,7 @@
 #include "Animations.h"
 #include "Koopas.h"
 #include "debug.h"
+#include "Tail.h"
 
 #pragma region Constaint
 
@@ -40,7 +41,9 @@
 #define MARIO_STATE_SIT_RELEASE		601
 
 #define MARIO_STATE_KICK	701
+#define MARIO_STATE_TAIL_ATTACK 711
 #define MARIO_ENDING_SCENE	999
+
 #pragma endregion
 
 #pragma region ANIMATION_ID
@@ -140,7 +143,9 @@
 #define ID_ANI_MARIO_WITH_TAIL_RUNNING_HOLDSHELL_RIGHT -1026
 #define ID_ANI_MARIO_WITH_TAIL_JUMP_HOLDSHELL_LEFT -1027
 #define ID_ANI_MARIO_WITH_TAIL_JUMP_HOLDSHELL_RIGHT -1028
-
+#define ID_ANI_MARIO_WITH_TAIL_ATTACK_LEFT -1029
+#define ID_ANI_MARIO_WITH_TAIL_ATTACK_RIGHT -1030
+#
 // shrink 
 #define ID_ANI_MARIO_SHRINK_LEFT	100
 #define ID_ANI_MARIO_SHRINK_RIGHT	101
@@ -182,6 +187,8 @@
 #define TRANSFORMATION_RACOON_DURATION 450
 #define TAIL_TRANSFORMATION_DURATION 750
 
+#define TAIL_ATTACK_DURATION 275
+
 class CMario : public CGameObject
 {
 	BOOLEAN isSitting;
@@ -208,6 +215,12 @@ class CMario : public CGameObject
 	bool isActive;
 	ULONGLONG transformation_start;
 	ULONGLONG jump_hold_start;
+
+	CTail* tail;
+	ULONGLONG tailAttack_start;
+	ULONGLONG tail_spawn_time;
+	bool isTailAttacking;
+
 	void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
 	void OnCollisionWithCoin(LPCOLLISIONEVENT e);
 	void OnCollisionWithPortal(LPCOLLISIONEVENT e);
@@ -233,7 +246,7 @@ public:
 		ax = 0.0f;
 		ay = MARIO_GRAVITY;
 
-		level = 2;
+		level = 3;
 		untouchable = 0;
 		untouchable_start = -1;
 		isOnPlatform = false;
@@ -251,6 +264,11 @@ public:
 		isLevelDown = false;
 		transformation_start = -1;
 		isActive = true;
+
+		tail = nullptr;
+		tailAttack_start = -1;
+		tail_spawn_time = -1;
+		isTailAttacking = false;
 	}
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();

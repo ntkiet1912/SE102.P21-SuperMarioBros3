@@ -276,7 +276,7 @@ void CKoopas::Render()
 {
 	int aniId = -1;
 	// shell state
-	if (state == KOOPAS_STATE_SHELL)
+	if (state == KOOPAS_STATE_SHELL || state == KOOPAS_STATE_HELD)
 	{
 
 		if (isRed)
@@ -417,7 +417,16 @@ void CKoopas::SetState(int state)
 		vy = -KOOPAS_DYING_SPEED;
 		ay = KOOPAS_GRAVITY_DYING;
 		break;
+
+	case KOOPAS_STATE_HELD:
+		ay = 0;
+		vy = 0;
+		ax = 0;
+		vx = 0;
+		regen_start = GetTickCount64();
+		break;
 	}
+
 }
 
 bool CKoopas::IsTherePlatformAhead(vector<LPGAMEOBJECT>* coObjects)

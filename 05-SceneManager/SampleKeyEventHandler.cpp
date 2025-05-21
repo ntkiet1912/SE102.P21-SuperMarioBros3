@@ -43,6 +43,10 @@ void CSampleKeyHandler::OnKeyDown(int KeyCode)
 		//Reload();
 		break;
 	case DIK_A:
+		if (mario->getLevel() == 3)
+		{
+			mario->SetState(MARIO_STATE_TAIL_ATTACK);
+		}
 		mario->setCanHold(true);
 		break;
 

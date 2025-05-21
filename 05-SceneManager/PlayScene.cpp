@@ -383,13 +383,11 @@ void CPlayScene::Update(DWORD dt)
 	// We know that Mario is the first object in the list hence we won't add him into the colliable object list
 	// TO-DO: This is a "dirty" way, need a more organized way 
 	vector<LPGAMEOBJECT> coObjects;
+
 	for (size_t i = 1; i < objects.size(); i++)
 	{
 		coObjects.push_back(objects[i]);
 	}
-
-	player->Update(dt, &coObjects);
-
 	/*
 		Spawning enemies has 2 scenerios : IN and OUT of player Camera
 			+ IN : if objects is spawned: keep updating 
@@ -448,7 +446,7 @@ void CPlayScene::Update(DWORD dt)
 	// when enemySpawns updated: this' time for objects 
 	for (size_t i = 0; i < objects.size(); i++)
 	{
-		if (dynamic_cast<CMario*>(objects[i])) continue;
+		//if (dynamic_cast<CMario*>(objects[i])) continue;
 		objects[i]->Update(dt, &coObjects);
 	}
 
