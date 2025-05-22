@@ -187,7 +187,7 @@
 #define TRANSFORMATION_RACOON_DURATION 450
 #define TAIL_TRANSFORMATION_DURATION 750
 
-#define TAIL_ATTACK_DURATION 275
+#define TAIL_ATTACK_DURATION 300
 
 class CMario : public CGameObject
 {
@@ -238,6 +238,7 @@ class CMario : public CGameObject
 
 	void levelUp();
 	void levelDown();
+	void tailUpdate(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 public:
 	CMario(float x, float y) : CGameObject(x, y)
 	{

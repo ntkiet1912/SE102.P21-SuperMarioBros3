@@ -63,7 +63,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		isLevelDown = false;
 		if (level == 3)
 			SetLevel(2);
-		else 
+		else
 			SetLevel(1);
 		isActive = true;
 		transformation_start = -1;
@@ -84,10 +84,22 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		untouchable_start = 0;
 		untouchable = 0;
 	}
+	tailUpdate(dt, coObjects);
 	CGameObject::Update(dt, coObjects);
 	CCollision::GetInstance()->Process(this, dt, coObjects);
 }
+void CMario::tailUpdate(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
+{
+	if (tail != nullptr)
+	{
+		if(nx > 0)
+			tail->SetPosition(x + 6, y + 3);
+		else
+			tail->SetPosition(x - 6 , y + 3);
 
+		tail->Update(dt, coObjects);
+	}
+}
 void CMario::PositionHeldKoopas(LPGAMEOBJECT koopas)
 {
 	// if mario state != small, then the offset is different a bit.
@@ -239,15 +251,16 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 		return;
 	}
 
-	if (e->nx != 0) // Va chạm bên hông Koopas
+	if (e->nx != 0)
 	{
 		if (koopas->GetState() == KOOPAS_STATE_SHELL || koopas->GetState() == KOOPAS_STATE_REGEN)
 		{
-			if (!isHolding)
+			if (!isHolding && canHold)
 			{
 				isHolding = true;
 				heldKoopas = koopas;
-				koopas->SetState(KOOPAS_STATE_HELD); // ← nên có thêm state này cho rõ ràng
+				koopas->setIsHeld(true);
+				koopas->setIsReleased(false);
 			}
 			else if (!canHold)
 			{
@@ -712,7 +725,7 @@ void CMario::Render()
 		aniId = GetAniIdWithTail();
 	animations->Get(aniId)->Render(x, y);
 
-	//RenderBoundingBox();
+	RenderBoundingBox();
 
 	DebugOutTitle(L"Coins: %d", coin);
 }
@@ -826,14 +839,15 @@ void CMario::SetState(int state)
 		if (!isTailAttacking)
 		{
 			isTailAttacking = true;
-			tailAttack_start = GetTickCount64();
 
-			float tailX = nx > 0 ? this->x + 6 : this->x - 6;
-			tail = new CTail(tailX, y + 3);
+			int tailNx = nx > 0 ? 1 : 0;
+			tail = new CTail(this->x, y + 3, tailNx);
 			tail->isActive = true;
 			CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
-			vector<LPGAMEOBJECT>& objects = scene->GetObjects();
-			objects.push_back(tail);
+			scene->AddObject(tail);
+			tailAttack_start = GetTickCount64();
+			//vector<LPGAMEOBJECT>& objects = scene->GetObjects();
+			//objects.push_back(tail);
 		}
 		break;
 	}

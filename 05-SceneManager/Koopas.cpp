@@ -23,6 +23,7 @@ CKoopas::CKoopas(float x, float y, int isRed, int yesWing) : CGameObject(x, y)
 	//isFlyingUp = false;
 	isShellIdle = false;
 	isRegen = false;
+	isUpsideDown = false;
 	if (yesWing)
 		SetState(KOOPAS_STATE_WING);
 	else
@@ -68,7 +69,7 @@ void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 {
 	if (state == KOOPAS_STATE_WING)
 	{
-		
+
 		if (e->ny != 0 && e->obj->IsBlocking())
 		{
 			vy = -KOOPAS_FLYING_SPEED_VY;
@@ -77,9 +78,9 @@ void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 		{
 			vy = 0;
 		}
-			ay = KOOPAS_GRAVITY_FLYING;
+		ay = KOOPAS_GRAVITY_FLYING;
 	}
-	else if(e->ny != 0 && e->obj->IsBlocking())
+	else if (e->ny != 0 && e->obj->IsBlocking())
 	{
 		vy = 0;
 	}
@@ -97,7 +98,7 @@ void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 	}
 
 	if (dynamic_cast<CCoin*>(e->obj)) return;
-		
+
 	if (dynamic_cast<CGoomba*>(e->obj))
 		OnCollisionWithGoomba(e);
 	//else if (dynamic_cast<CPlatform*>(e->obj))
@@ -148,7 +149,7 @@ void CKoopas::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 			goomba->SetState(GOOMBA_STATE_DIE_BY_COLLISION);
 			CDataManager::GetInstance()->AddScore(1000);
 		}
-			
+
 	}
 }
 void CKoopas::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
@@ -227,7 +228,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		return;
 	}
 	// first stage: from shell with no legs to shell with legs 
-	if (state == KOOPAS_STATE_SHELL && GetTickCount64() - regen_start > 5000)
+	if ((state == KOOPAS_STATE_SHELL) && GetTickCount64() - regen_start > 5000)
 	{
 		SetState(KOOPAS_STATE_REGEN);
 		ay = KOOPAS_GRAVITY;
@@ -251,20 +252,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		// when the koopas stay back to the walking state, player will get dmg
 		if (mario->getIsHolding())
 		{
-			if (mario->getLevel() == MARIO_LEVEL_WITH_TAIL)
-			{
-				mario->SetLevel(MARIO_LEVEL_BIG);
-				mario->StartUntouchable();
-			}
-			else if (mario->getLevel() == MARIO_LEVEL_BIG)
-			{
-				mario->SetLevel(MARIO_LEVEL_SMALL);
-				mario->StartUntouchable();
-			}
-			else
-			{
-				mario->SetState(MARIO_STATE_DIE);
-			}
+			mario->getDmg();
 		}
 		mario->setIsHolding(false);
 	}
@@ -278,29 +266,40 @@ void CKoopas::Render()
 	// shell state
 	if (state == KOOPAS_STATE_SHELL || state == KOOPAS_STATE_HELD)
 	{
-
-		if (isRed)
-			if (isRegen)
-
-				aniId = ID_ANI_RED_KOOPAS_SHELL_REGEN;
+		if (isUpsideDown)
+		{
+			if (isRed)
+				aniId = ID_ANI_RED_KOOPAS_SHELL_USD;
 			else
-				aniId = ID_ANI_RED_KOOPAS_SHELL;
+				aniId = ID_ANI_GREEN_KOOPAS_SHELL_USD;
+		}
 		else
-			if (isRegen)
-				aniId = ID_ANI_GREEN_KOOPAS_SHELL_REGEN;
+		{
+			if (isRed)
+				aniId = ID_ANI_RED_KOOPAS_SHELL;
 			else
 				aniId = ID_ANI_GREEN_KOOPAS_SHELL;
+		}
 	}
 
 	// shell moving state 
 	if (state == KOOPAS_STATE_SHELLIDLE_MOVING_LEFT || state == KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT)
 	{
-		if (isRed)
-			aniId = ID_ANI_RED_KOOPAS_SHELL_MOVING;
+		if (isUpsideDown)
+		{
+			if (isRed)
+				aniId = ID_ANI_RED_KOOPAS_SHELL_MOVING_USD;
+			else
+				aniId = ID_ANI_GREEN_KOOPAS_SHELL_MOVING_USD;
+		}
 		else
-			aniId = ID_ANI_GREEN_KOOPAS_SHELL_MOVING;
+		{
+			if (isRed)
+				aniId = ID_ANI_RED_KOOPAS_SHELL_MOVING;
+			else
+				aniId = ID_ANI_GREEN_KOOPAS_SHELL_MOVING;
+		}
 	}
-
 	// left 
 	if (state == KOOPAS_STATE_WALKING_LEFT)
 	{
@@ -346,10 +345,20 @@ void CKoopas::Render()
 	}
 	if (state == KOOPAS_STATE_REGEN)
 	{
-		if (isRed)
-			aniId = ID_ANI_RED_KOOPAS_SHELL_REGEN;
+		if (isUpsideDown)
+		{
+			if (isRed)
+				aniId = ID_ANI_RED_KOOPAS_SHELL_REGEN_USD;
+			else
+				aniId = ID_ANI_GREEN_KOOPAS_SHELL_REGEN_USD;
+		}
 		else
-			aniId = ID_ANI_GREEN_KOOPAS_SHELL_REGEN;
+		{
+			if (isRed)
+				aniId = ID_ANI_RED_KOOPAS_SHELL_REGEN;
+			else
+				aniId = ID_ANI_GREEN_KOOPAS_SHELL_REGEN;
+		}
 	}
 	CAnimations::GetInstance()->Get(aniId)->Render(x, y);
 	//RenderBoundingBox();
@@ -370,6 +379,7 @@ void CKoopas::SetState(int state)
 		ay = KOOPAS_GRAVITY;
 		//ay = 0;
 		break;
+ 
 	case KOOPAS_STATE_REGEN:
 		vx = 0;
 		vy = 0;
@@ -382,11 +392,15 @@ void CKoopas::SetState(int state)
 	case KOOPAS_STATE_WALKING_LEFT:
 		vx = -KOOPAS_WALKING_SPEED;
 		isShellIdle = false;
+		isUpsideDown = false;
+
 		ay = KOOPAS_GRAVITY;
 		break;
 
 	case KOOPAS_STATE_WALKING_RIGHT:
 		vx = KOOPAS_WALKING_SPEED;
+		isUpsideDown = false;
+
 		isShellIdle = false;
 		ay = KOOPAS_GRAVITY;
 
@@ -407,6 +421,8 @@ void CKoopas::SetState(int state)
 		break;
 
 	case KOOPAS_STATE_WING:
+		isUpsideDown = false;
+
 		vx = -KOOPAS_FLYING_SPEED_VX;
 		isShellIdle = false;
 		break;
@@ -418,13 +434,13 @@ void CKoopas::SetState(int state)
 		ay = KOOPAS_GRAVITY_DYING;
 		break;
 
-	case KOOPAS_STATE_HELD:
-		ay = 0;
-		vy = 0;
-		ax = 0;
-		vx = 0;
-		regen_start = GetTickCount64();
-		break;
+	//case KOOPAS_STATE_HELD:
+	//	ay = 0;
+	//	vy = 0;
+	//	ax = 0;
+	//	vx = 0;
+	//	regen_start = GetTickCount64();
+	//	break;
 	}
 
 }

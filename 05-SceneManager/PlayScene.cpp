@@ -387,6 +387,10 @@ void CPlayScene::Update(DWORD dt)
 	for (size_t i = 1; i < objects.size(); i++)
 	{
 		coObjects.push_back(objects[i]);
+		if (dynamic_cast<CTail*>(objects[i]))
+		{
+			DebugOut(L"true\n");
+		}
 	}
 	/*
 		Spawning enemies has 2 scenerios : IN and OUT of player Camera
@@ -448,6 +452,10 @@ void CPlayScene::Update(DWORD dt)
 	{
 		//if (dynamic_cast<CMario*>(objects[i])) continue;
 		objects[i]->Update(dt, &coObjects);
+		if (dynamic_cast<CTail*>(objects[i]))
+		{
+			DebugOut(L"true2\n");
+		}
 	}
 
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)

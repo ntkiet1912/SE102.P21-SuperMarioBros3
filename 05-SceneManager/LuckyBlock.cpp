@@ -13,7 +13,7 @@ void CLuckyBlock::Render()
 	else
 		aniId = ID_ANI_LUCKY_BLOCK_NORMAL;
 	CAnimations::GetInstance()->Get(aniId)->Render(x, y);
-	//RenderBoundingBox();
+	RenderBoundingBox();
 }
 void CLuckyBlock::OnNoCollision(DWORD dt)
 {
