@@ -21,12 +21,12 @@ public:
     {
         RenderBoundingBox();
     }
+    void effectSpawn(LPGAMEOBJECT e);
     virtual int IsCollidable() { return 1; };
     virtual int IsBlocking() { return 0; }
     void GetBoundingBox(float& l, float& t, float& r, float& b);
-    void OnNoCollision(DWORD dt);
-    void OnCollisionWith(LPCOLLISIONEVENT e);
     void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
     void OnCollisionWithLuckyBlock(LPCOLLISIONEVENT e);
     void OnCollisionWithKoopas(LPCOLLISIONEVENT e);
+    void OnCollisionWithFirePiranha(LPCOLLISIONEVENT e);
 };

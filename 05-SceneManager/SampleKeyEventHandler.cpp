@@ -44,7 +44,7 @@ void CSampleKeyHandler::OnKeyDown(int KeyCode)
 		break;
 	case DIK_A:
 		mario->setCanHold(true);
-		if (mario->getLevel() == 3)
+		if (mario->getLevel() == 3 && !mario->getIsSitting())
 		{
 			mario->SetState(MARIO_STATE_TAIL_ATTACK);
 		}

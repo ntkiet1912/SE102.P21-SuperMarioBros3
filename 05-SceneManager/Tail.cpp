@@ -3,6 +3,9 @@
 #include "Mario.h"
 #include "Game.h"
 #include "LuckyBlock.h"
+#include "CollisionEffect.h"
+#include "PlayScene.h"
+#include "FirePiranha.h"
 
 void CTail::GetBoundingBox(float& l, float& t, float& r, float& b)
 {
@@ -10,10 +13,6 @@ void CTail::GetBoundingBox(float& l, float& t, float& r, float& b)
 	t = y - TAIL_HEIGHT / 2;
 	r = l + TAIL_WIDTH;
 	b = t + TAIL_HEIGHT;
-}
-void CTail::OnNoCollision(DWORD dt)
-{
-	//x += vx * dt;	
 }
 
 bool isAABBOverlapping(CGameObject* a, CGameObject* b)
@@ -29,9 +28,6 @@ bool isAABBOverlapping(CGameObject* a, CGameObject* b)
 
 void CTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-	//x += vx * dt;
-	//y += vy * dt;
-
 	for (auto obj : *coObjects)
 	{
 		if (isAABBOverlapping(this, obj))
@@ -50,23 +46,19 @@ void CTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				OnCollisionWithKoopas(e);
 			else if (dynamic_cast<CLuckyBlock*>(obj))
 				OnCollisionWithLuckyBlock(e);
+			else if (dynamic_cast<CFirePiranha*>(e->obj))
+				OnCollisionWithFirePiranha(e);
 		}
 	}
 }
-//void CTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
-//{
-//
-//	vx += ax * dt;
-//	CCollision::GetInstance()->Process(this, dt, coObjects);
-//}
-void CTail::OnCollisionWith(LPCOLLISIONEVENT e)
+void CTail::effectSpawn(LPGAMEOBJECT e)
 {
-	if (dynamic_cast<CGoomba*>(e->obj))
-		OnCollisionWithGoomba(e);
-	else if (dynamic_cast<CLuckyBlock*>(e->obj))
-		OnCollisionWithLuckyBlock(e);
-	else if (dynamic_cast<CKoopas*>(e->obj))
-		OnCollisionWithKoopas(e);
+	// spawn a flash effect 
+	float ex, ey;
+	e->GetPosition(ex, ey);
+	CCollisionEffect* effect = new CCollisionEffect(ex, ey);
+	CPlayScene* currentScene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
+	currentScene->AddObject(effect);
 }
 void CTail::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 {
@@ -75,6 +67,7 @@ void CTail::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 	{
 		goomba->SetState(GOOMBA_STATE_DIE_BY_COLLISION);
 	}
+	effectSpawn(goomba);
 }
 void CTail::OnCollisionWithLuckyBlock(LPCOLLISIONEVENT e)
 {
@@ -87,5 +80,14 @@ void CTail::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 	CKoopas* koopa = dynamic_cast<CKoopas*>(e->obj);
 	koopa->SetState(KOOPAS_STATE_SHELL);
 	koopa->isUpsideDown = true;
+	effectSpawn(koopa);
 }
+
+void CTail::OnCollisionWithFirePiranha(LPCOLLISIONEVENT e)
+{
+	CFirePiranha* fp = dynamic_cast<CFirePiranha*>(e->obj);
+	fp->Delete();
+	effectSpawn(fp);
+}
+
 
