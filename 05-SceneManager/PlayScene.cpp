@@ -394,13 +394,13 @@ void CPlayScene::Update(DWORD dt)
 	}
 	/*
 		Spawning enemies has 2 scenerios : IN and OUT of player Camera
-			+ IN : if objects is spawned: keep updating 
-				 : if not spawn yet, give it a chance to appear 
-			+ OUT: keep the original info, except the instance 
+			+ IN : if objects is spawned: keep updating
+				 : if not spawn yet, give it a chance to appear
+			+ OUT: keep the original info, except the instance
 		-> delete the "outcamera" object, set its instance to nullptr
 
-		
-		we can't update or render enemySpawns because main idea is based on vector objects 
+
+		we can't update or render enemySpawns because main idea is based on vector objects
 		-> so when an object in enemySpawns activated, it needs to be added to objects
 	*/
 	for (size_t i = 0; i < enemySpawns.size(); i++)
@@ -429,20 +429,20 @@ void CPlayScene::Update(DWORD dt)
 				enemySpawns[i]->isSpawned = true;
 				coObjects.push_back(enemy);
 				objects.push_back(enemy);
-			}	
+			}
 		}
 		// can't use else because x and y is original pos of enemy 
 		// when it reached bounds like cam + screenWidth + offset, and even in camera, 
 		// it still disappeared. 
-		else if(!isInCamera(x, y, 250.0f))
+		else if (!isInCamera(x, y, 250.0f))
 		{
 			enemySpawns[i]->isSpawned = false;
 
 			/*
 				i dont use enemySpawns[i]->instance->Delete()
-				because it causes Exception error ... bla bla 
+				because it causes Exception error ... bla bla
 					-> so delete by using std::remove is a better solution
-			*/ 
+			*/
 			objects.erase(std::remove(objects.begin(), objects.end(), enemySpawns[i]->instance), objects.end());
 			coObjects.erase(std::remove(coObjects.begin(), coObjects.end(), enemySpawns[i]->instance), coObjects.end());
 		}
@@ -463,14 +463,56 @@ void CPlayScene::Update(DWORD dt)
 
 	// Update camera to follow mario
 	float cx, cy;
+	CGame* game = CGame::GetInstance();
 	player->GetPosition(cx, cy);
 
-	CGame* game = CGame::GetInstance();
-	cx -= game->GetBackBufferWidth() / 2;
-	cy -= game->GetBackBufferHeight() / 2;
-	if (cx < 0) cx = 0;
-	if (cx > 2495) cx = 2495;
-	CGame::GetInstance()->SetCamPos(cx, 0.0f /*cy*/);
+	if (id == 1)
+	{
+		static bool isLoadWall = false;
+		static float autoCamX = 0.0f;
+		autoCamX += 0.01f * dt;
+		float minCamX = 0;
+		float maxCamX = cx + game->GetBackBufferWidth() - 40;
+		if (!isLoadWall)
+		{
+			for (size_t i = 0; i < 20; i++)
+			{
+				CBrick* brick = new CBrick(minCamX, 17 * i);
+				AddObject(brick);
+				blockingWall.push_back(brick);
+
+				brick = new CBrick(maxCamX, 17 * i);
+				AddObject(brick);
+				blockingWall.push_back(brick);
+			}
+			isLoadWall = true;
+		}
+		for (size_t i = 0; i < blockingWall.size(); i++)
+		{
+			float x, y;
+			blockingWall[i]->GetPosition(x, y);
+
+			if (!i%2)
+				blockingWall[i]->SetPosition(autoCamX, y); // Gắn theo cam
+			else
+				blockingWall[i]->SetPosition(x + (0.01f * dt), y); // Gắn tường phải
+		}
+		if (autoCamX > 2495) autoCamX = 2495;
+
+		CGame::GetInstance()->SetCamPos(autoCamX, 0.0f);
+		;
+	}
+	else
+	{
+		player->GetPosition(cx, cy);
+		cx -= game->GetBackBufferWidth() / 2;
+		cy -= game->GetBackBufferHeight() / 2;
+		if (cx < 0) cx = 0;
+		if (cx > 2495) cx = 2495;
+		CGame::GetInstance()->SetCamPos(cx, 0.0f /*cy*/);
+	}
+
+
 
 	PurgeDeletedObjects();
 
@@ -512,13 +554,13 @@ void CPlayScene::Render()
 	for (int i = 0; i < objects.size(); i++)
 	{
 		if (dynamic_cast<CMario*>(objects[i])) continue;
-		objects[i]->Render();	
+		objects[i]->Render();
 	}
 	player->Render();
 	CPlayHUD::GetInstance()->Render();
 }
-	
-	
+
+
 
 
 /*
