@@ -19,6 +19,7 @@
 #include "PlayHUD.h"
 #include "DataManager.h"
 #include "GoalRoulette.h"
+#include "FLyingGround.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -279,7 +280,24 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	}
 	case OBJECT_TYPE_GOAL_ROULETTE_ICON: obj = new CGoalRouletteIcon(x, y); break;
 		break;
+	case OBJECT_TYPE_FLYINGGROUND:
+	{
+		float cell_width = (float)atof(tokens[3].c_str());
+		float cell_height = (float)atof(tokens[4].c_str());
+		int length = atoi(tokens[5].c_str());
+		int sprite_begin = atoi(tokens[6].c_str());
+		int sprite_middle = atoi(tokens[7].c_str());
+		int sprite_end = atoi(tokens[8].c_str());
 
+		obj = new CFlyingGround(
+			x, y,
+			cell_width, cell_height, length,
+			sprite_begin, sprite_middle, sprite_end
+		);
+		DebugOut(L"[DONE]\n");
+
+		break;
+	}
 	default:
 		DebugOut(L"[ERROR] Invalid object type: %d\n", object_type);
 		return;
@@ -387,10 +405,6 @@ void CPlayScene::Update(DWORD dt)
 	for (size_t i = 1; i < objects.size(); i++)
 	{
 		coObjects.push_back(objects[i]);
-		if (dynamic_cast<CTail*>(objects[i]))
-		{
-			DebugOut(L"true\n");
-		}
 	}
 	/*
 		Spawning enemies has 2 scenerios : IN and OUT of player Camera
@@ -452,10 +466,6 @@ void CPlayScene::Update(DWORD dt)
 	{
 		//if (dynamic_cast<CMario*>(objects[i])) continue;
 		objects[i]->Update(dt, &coObjects);
-		if (dynamic_cast<CTail*>(objects[i]))
-		{
-			DebugOut(L"true2\n");
-		}
 	}
 
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
@@ -466,43 +476,47 @@ void CPlayScene::Update(DWORD dt)
 	CGame* game = CGame::GetInstance();
 	player->GetPosition(cx, cy);
 
-	if (id == 1)
-	{
-		static bool isLoadWall = false;
-		static float autoCamX = 0.0f;
-		autoCamX += 0.01f * dt;
-		float minCamX = 0;
-		float maxCamX = cx + game->GetBackBufferWidth() - 40;
-		if (!isLoadWall)
-		{
-			for (size_t i = 0; i < 20; i++)
-			{
-				CBrick* brick = new CBrick(minCamX, 17 * i);
-				AddObject(brick);
-				blockingWall.push_back(brick);
+	//if (id == 1)
+	//{
+	//	static bool isLoadWall = false;
+	//	static float autoCamX = 0.0f;
+	//	autoCamX += 0.01f * dt;
+	//	float minCamX = 20;
+	//	float maxCamX = cx + game->GetBackBufferWidth() - 40;
+	//	if (!isLoadWall)
+	//	{
+	//		for (size_t i = 0; i < 20; i++)
+	//		{
+	//			CBrick* brick = new CBrick(minCamX, 17 * i, -0.001f);
+	//			AddObject(brick);
+	//			blockingWall.push_back(brick);
 
-				brick = new CBrick(maxCamX, 17 * i);
-				AddObject(brick);
-				blockingWall.push_back(brick);
-			}
-			isLoadWall = true;
-		}
-		for (size_t i = 0; i < blockingWall.size(); i++)
-		{
-			float x, y;
-			blockingWall[i]->GetPosition(x, y);
+	//			//brick = new CBrick(minCamX , 17 * i);
+	//			//AddObject(brick);
+	//			//blockingWall.push_back(brick);
 
-			if (!i%2)
-				blockingWall[i]->SetPosition(autoCamX, y); // Gắn theo cam
-			else
-				blockingWall[i]->SetPosition(x + (0.01f * dt), y); // Gắn tường phải
-		}
-		if (autoCamX > 2495) autoCamX = 2495;
+	//			brick = new CBrick(maxCamX, 20 * i, 0.01f);
+	//			AddObject(brick);
+	//			blockingWall.push_back(brick);
+	//		}
+	//		isLoadWall = true;
+	//	}
+	//	for (size_t i = 0; i < blockingWall.size(); i++)
+	//	{
+	//		float x, y;
+	//		blockingWall[i]->GetPosition(x, y);
+	//		if (i % 2 == 0)
+	//			blockingWall[i]->SetPosition(x + (0.01f * dt), y);
+	//		else
+	//		{
+	//			blockingWall[i]->SetPosition(x , y);
+	//		}
+	//	}
+	//	if (autoCamX > 2495) autoCamX = 2495;
 
-		CGame::GetInstance()->SetCamPos(autoCamX, 0.0f);
-		;
-	}
-	else
+	//	CGame::GetInstance()->SetCamPos(autoCamX, 0.0f);
+	//}
+	//else
 	{
 		player->GetPosition(cx, cy);
 		cx -= game->GetBackBufferWidth() / 2;

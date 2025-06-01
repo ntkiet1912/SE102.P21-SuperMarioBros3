@@ -76,4 +76,6 @@ public:
 	float getY() { return y; }
 	void setX(float x) { this->x = x; }
 	void setY(float y) { this->y = y; }
+	float getVx() { return vx; }
+	float getVy() { return vy; }
 };

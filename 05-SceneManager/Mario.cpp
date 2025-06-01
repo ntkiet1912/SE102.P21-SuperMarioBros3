@@ -18,9 +18,43 @@
 #include "UpgradeMarioLevel.h"
 #include "GoalRoulette.h"
 #include "PlayScene.h"
+#include "FlyingGround.h"
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
+	if (isOnFlyingGround && currentFlyingGround != nullptr)
+	{
+		// Get the flying ground's current vertical velocity
+		float platformVy = currentFlyingGround->getVy();
+		float platformY = currentFlyingGround->getY();
+
+		// Set Mario's vertical velocity to match the platform's
+		vy = platformVy;
+
+		// Update Mario's y position to stay on top of the platform
+		y = platformY - getHeight() +3; // Adjust -7 based on Mario's sprite height or collision box
+
+		//isOnPlatform = true;
+		SetState(MARIO_STATE_IDLE);
+		// Optional: Check if Mario is still on the platform
+		// If Mario jumps or moves off, reset the flags
+		// 
+
+	}
+	else
+	{
+		// Apply normal gravity when not on the flying ground
+		vy += MARIO_GRAVITY * dt; // Assuming MARIO_GRAVITY is defined
+	}
+	if (!isOnPlatform)
+{
+	isOnFlyingGround = false;
+	currentFlyingGround = nullptr;
+}
+	//// reset trạng thái mỗi frame
+	//isOnFlyingGround = false;
+	//currentFlyingGround = nullptr;
+	camSpeed = 0.01f * dt;
 	// Update heldKoopas' position
 	// move to here to optimize koopas' shell movement more smooth 
 	// but can't be like real game 100%
@@ -38,7 +72,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		heldKoopas = nullptr;
 	}
 	vx += ax * dt;
-	vy += ay * dt;
+	//vy += ay * dt;
 	if (state == MARIO_ENDING_SCENE)
 	{
 		//if (isOnPlatform)
@@ -133,6 +167,7 @@ void CMario::OnNoCollision(DWORD dt)
 
 void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 {
+
 	if (e->ny != 0 && e->obj->IsBlocking())
 	{
 		vy = 0;
@@ -143,7 +178,7 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		{
 			vx = 0;
 		}
-
+	//DebugOut(L"vx = %f\n", vx);
 	if (dynamic_cast<CGoomba*>(e->obj))
 		OnCollisionWithGoomba(e);
 	else if (dynamic_cast<CCoin*>(e->obj))
@@ -164,8 +199,45 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithUpgradingItem(e);
 	else if (dynamic_cast<CGoalRouletteIcon*>(e->obj))
 		OnCollisionWithGoalRouletteIcon(e);
+	else if (dynamic_cast<CBrick*>(e->obj))
+		OnCollisionWithBrickWall(e);
+	else if (dynamic_cast<CFlyingGround*>(e->obj))
+		OnCollisionWithFlyingGround(e);
 }
+void CMario::OnCollisionWithFlyingGround(LPCOLLISIONEVENT e)
+{
+	CFlyingGround* flyingGround = dynamic_cast<CFlyingGround*>(e->obj);
+	if (e->ny < 0)
+	{
+        isOnPlatform = true;
+        isOnFlyingGround = true;
+        currentFlyingGround = flyingGround;
 
+		// Align Mario's y position with the platform
+		y = flyingGround->getY() - getHeight() + 3; // Adjust -7 based on Mario's sprite height or collision box
+
+		// Set Mario's vertical velocity to match the platform's
+		vy = flyingGround->getVy();
+
+		// Notify the platform that it has been stepped on
+		flyingGround->setIsStepped(true);
+	}
+}
+void CMario::OnCollisionWithBrickWall(LPCOLLISIONEVENT e)
+{
+	if (e->nx > 0)
+	{
+		float x, y;
+		GetPosition(x, y);
+
+		// Đẩy Mario ra khỏi tường một chút
+		x += e->nx * (abs(e->dx) + 0.4f); // hoặc BLOCK_PUSH_FACTOR
+
+		SetPosition(x, y);
+		ax = 0;
+		vx = -camSpeed; // Mario đi cùng tốc độ camera, hoặc để 0
+	}
+}
 void CMario::OnCollisionWithFirePiranha(LPCOLLISIONEVENT e)
 {
 	getDmg();
@@ -784,7 +856,7 @@ void CMario::SetState(int state)
 			if (abs(vx) == MARIO_RUNNING_SPEED)
 				vy = -MARIO_JUMP_RUN_SPEED_Y;
 			else
-				vy = -MARIO_JUMP_SPEED_Y;
+				vy = -MARIO_JUMP_SPEED_Y; 
 		}
 		break;
 
@@ -928,4 +1000,13 @@ void CMario::getDmg()
 		else
 			SetState(MARIO_STATE_DIE);
 	}
+}
+
+int CMario::getHeight()
+{
+	if (level == 1)
+	{
+		return MARIO_SMALL_BBOX_HEIGHT;
+	}
+	return MARIO_BIG_BBOX_HEIGHT;
 }

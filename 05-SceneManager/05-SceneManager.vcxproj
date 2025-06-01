@@ -159,6 +159,7 @@
     <ClCompile Include="EnemyInfo.cpp" />
     <ClCompile Include="FireBullet.cpp" />
     <ClCompile Include="FirePiranha.cpp" />
+    <ClCompile Include="FlyingGround.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GoalRoulette.cpp" />
@@ -200,6 +201,7 @@
     <ClInclude Include="EnemyInfo.h" />
     <ClInclude Include="FireBullet.h" />
     <ClInclude Include="FirePiranha.h" />
+    <ClInclude Include="FlyingGround.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GoalRoulette.h" />

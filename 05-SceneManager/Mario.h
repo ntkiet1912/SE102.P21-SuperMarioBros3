@@ -6,6 +6,7 @@
 #include "Koopas.h"
 #include "debug.h"
 #include "Tail.h"
+#include "FlyingGround.h"
 
 #pragma region Constaint
 
@@ -181,6 +182,8 @@
 #define MARIO_SMALL_BBOX_WIDTH  13
 #define MARIO_SMALL_BBOX_HEIGHT 12
 
+#define MARIO_RACOON_BBOX_WIDTH  21
+#define MARIO_RACOON_BBOX_HEIGHT 26
 
 #define MARIO_UNTOUCHABLE_TIME 1500
 #define TRANSFORMATION_DURATION 800
@@ -221,6 +224,8 @@ class CMario : public CGameObject
 	ULONGLONG tail_spawn_time;
 	bool isTailAttacking;
 
+	CFlyingGround* currentFlyingGround;
+	bool isOnFlyingGround;
 	void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
 	void OnCollisionWithCoin(LPCOLLISIONEVENT e);
 	void OnCollisionWithPortal(LPCOLLISIONEVENT e);
@@ -240,6 +245,7 @@ class CMario : public CGameObject
 	void levelDown();
 	void tailUpdate(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 public:
+	float camSpeed;
 	CMario(float x, float y) : CGameObject(x, y)
 	{
 		isSitting = false;
@@ -270,6 +276,9 @@ public:
 		tailAttack_start = -1;
 		tail_spawn_time = -1;
 		isTailAttacking = false;
+
+		currentFlyingGround = nullptr;
+		isOnFlyingGround = false;
 	}
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();
@@ -289,6 +298,8 @@ public:
 
 
 	void OnCollisionWithUpgradingItem(LPCOLLISIONEVENT e);
+	void OnCollisionWithBrickWall(LPCOLLISIONEVENT e);
+	void OnCollisionWithFlyingGround(LPCOLLISIONEVENT e);
 	void getDmg();
 
 	void setCanHold(bool canHold) { this->canHold = canHold; }
@@ -304,4 +315,7 @@ public:
 	bool getIsUntouchable() { return untouchable; }
 	bool getIsSitting() { return isSitting; }
 	bool getIsActive() { return isActive; }
+	void setVx(float vx) { this->vx = vx; }
+	void setVy(float vy) { this->vy = vy; }
+	int getHeight();
 };
