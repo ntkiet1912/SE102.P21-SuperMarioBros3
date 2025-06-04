@@ -448,7 +448,7 @@ void CPlayScene::Update(DWORD dt)
 		// can't use else because x and y is original pos of enemy 
 		// when it reached bounds like cam + screenWidth + offset, and even in camera, 
 		// it still disappeared. 
-		else if (!isInCamera(x, y, 250.0f))
+		else if (!isInCamera(x, y, 500))
 		{
 			enemySpawns[i]->isSpawned = false;
 

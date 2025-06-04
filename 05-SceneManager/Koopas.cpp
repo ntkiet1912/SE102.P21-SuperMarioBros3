@@ -22,6 +22,7 @@ CKoopas::CKoopas(float x, float y, int isRed, int yesWing) : CGameObject(x, y)
 	this->yesWing = yesWing;
 	isRegen = false;
 	isUpsideDown = false;
+	isOnGround = false;
 	if (yesWing)
 		SetState(KOOPAS_STATE_WING);
 	else
@@ -53,17 +54,6 @@ void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& botto
 
 void CKoopas::OnNoCollision(DWORD dt)
 {
-	if (isRed && yesWing)
-	{
-		if (y < 30)
-		{
-			vy = -RED_KOOPAS_FLYING_SPEED_VY;
-		}
-		else if (y > CGame::GetInstance()->GetBackBufferHeight() - 30)
-		{
-			vy = RED_KOOPAS_FLYING_SPEED_VY;
-		}
-	}
 	x += vx * dt;
 	y += vy * dt;
 
@@ -153,11 +143,22 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	vy += ay * dt;
 	// red Koopas is more intelligent than the green one and only move on blocks
 	// when outta block, he will "turn back"
-	if (isRed && (state == KOOPAS_STATE_WALKING))
+	if (isRed && (state == KOOPAS_STATE_WALKING) && isOnGround)
 	{
 		if (!IsTherePlatformAhead(coObjects))
 		{
 			vx = -vx;
+		}
+	}
+	if (isRed && yesWing && state == KOOPAS_STATE_WING)
+	{
+		if (y < 16)
+		{
+			vy = RED_KOOPAS_FLYING_SPEED_VY;
+		}
+		else if (y > CGame::GetInstance()->GetBackBufferHeight() - 50)
+		{
+			vy = -RED_KOOPAS_FLYING_SPEED_VY;
 		}
 	}
 	if (state == KOOPAS_STATE_SHELL_UPSIDE_DOWN && isOnGround)
@@ -360,11 +361,13 @@ void CKoopas::SetState(int state)
 	case KOOPAS_STATE_WING:
 		if (!isRed)
 		{
-			ay = KOOPAS_GRAVITY_FLYING;
 			vx = -KOOPAS_FLYING_SPEED_VX;
 		}
 		else
+		{
 			vy = RED_KOOPAS_FLYING_SPEED_VY;
+			ay = 0;
+		}
 		break;
 
 	case KOOPAS_STATE_DIE:

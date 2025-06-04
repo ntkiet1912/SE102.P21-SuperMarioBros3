@@ -63,6 +63,10 @@ void CTail::effectSpawn(LPGAMEOBJECT e)
 void CTail::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 {
 	CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
+	if (this->x > goomba->getX())
+		goomba->setNx(-1);
+	else
+		goomba->setNx(1);
 	if (goomba->GetState() != GOOMBA_STATE_DIE || goomba->GetState() != GOOMBA_STATE_DIE_BY_COLLISION)
 	{
 		goomba->SetState(GOOMBA_STATE_DIE_BY_COLLISION);
