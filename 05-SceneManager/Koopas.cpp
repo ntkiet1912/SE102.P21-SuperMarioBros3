@@ -30,12 +30,16 @@ CKoopas::CKoopas(float x, float y, int isRed, int yesWing) : CGameObject(x, y)
 
 void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
-	if (state == KOOPAS_STATE_WALKING)
+	if (state == KOOPAS_STATE_WALKING || state == KOOPAS_STATE_WING)
 	{
 		left = x - KOOPAS_BBOX_WIDTH / 2;
 		top = y - KOOPAS_BBOX_HEIGHT / 2;
 		right = left + KOOPAS_BBOX_WIDTH;
 		bottom = top + KOOPAS_BBOX_HEIGHT;
+	}
+	else if (die_start > 0)
+	{
+		left = right = top = bottom = 0; // no bounding box when die
 	}
 	else
 	{
@@ -49,27 +53,44 @@ void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& botto
 
 void CKoopas::OnNoCollision(DWORD dt)
 {
+	if (isRed && yesWing)
+	{
+		if (y < 30)
+		{
+			vy = -RED_KOOPAS_FLYING_SPEED_VY;
+		}
+		else if (y > CGame::GetInstance()->GetBackBufferHeight() - 30)
+		{
+			vy = RED_KOOPAS_FLYING_SPEED_VY;
+		}
+	}
 	x += vx * dt;
 	y += vy * dt;
+
 };
 
 void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 {
 	if (state == KOOPAS_STATE_WING)
 	{
-		if (e->ny != 0 && e->obj->IsBlocking())
+		// only green one bounces - red one just flies up and down
+		if(!isRed)
 		{
-			vy = -KOOPAS_FLYING_SPEED_VY;
+			if (e->ny != 0 && e->obj->IsBlocking())
+			{
+				vy = -KOOPAS_FLYING_SPEED_VY;
+			}
+			else
+			{
+				vy = 0;
+			}
+			ay = KOOPAS_GRAVITY_FLYING;
 		}
-		else
-		{
-			vy = 0;
-		}
-		ay = KOOPAS_GRAVITY_FLYING;
 	}
 	else if (e->ny != 0 && e->obj->IsBlocking())
 	{
 		vy = 0;
+		isOnGround = true;
 	}
 	// collide with block like brick or lucky box
 	if (e->nx != 0 && e->obj->IsBlocking())
@@ -77,15 +98,18 @@ void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 		vx = -vx;
 	}
 
+
 	if (dynamic_cast<CCoin*>(e->obj)) return;
 
-	if (dynamic_cast<CGoomba*>(e->obj))
-		OnCollisionWithGoomba(e);
-	else if ((dynamic_cast<CKoopas*>(e->obj)))
-		OnCollisionWithKoopas(e);
-	else if (dynamic_cast<CLuckyBlock*>(e->obj))
-		OnCollisionWithLuckyBlock(e);
-
+	if (state == KOOPAS_STATE_HELD || state == KOOPAS_STATE_SHELL_MOVING)
+	{
+		if (dynamic_cast<CGoomba*>(e->obj))
+			OnCollisionWithGoomba(e);
+		else if ((dynamic_cast<CKoopas*>(e->obj)))
+			OnCollisionWithKoopas(e);
+		else if (dynamic_cast<CLuckyBlock*>(e->obj))
+			OnCollisionWithLuckyBlock(e);
+	}
 }
 
 void CKoopas::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
@@ -99,7 +123,6 @@ void CKoopas::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 
 void CKoopas::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 {
-
 	CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
 	if (e->nx != 0 || e->ny != 0)
 	{
@@ -136,6 +159,10 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		{
 			vx = -vx;
 		}
+	}
+	if (state == KOOPAS_STATE_SHELL_UPSIDE_DOWN && isOnGround)
+	{
+		SetState(KOOPAS_STATE_SHELL);
 	}
 	// die by collide with koopas shell moving
 	if ((state == KOOPAS_STATE_DIE) &&
@@ -177,6 +204,13 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 void CKoopas::Render()
 {
 	int aniId = -1;
+	if (state == KOOPAS_STATE_SHELL_UPSIDE_DOWN)
+	{
+		if (isRed)
+			aniId = ID_ANI_RED_KOOPAS_SHELL_USD;
+		else
+			aniId = ID_ANI_GREEN_KOOPAS_SHELL_USD;
+	}
 	// shell state
 	if (state == KOOPAS_STATE_SHELL || state == KOOPAS_STATE_HELD)
 	{
@@ -295,16 +329,19 @@ void CKoopas::SetState(int state)
 		//ay = 0;
 		break;
 
+		// being attacked by tail : move a bit and then upside down
 	case KOOPAS_STATE_SHELL_UPSIDE_DOWN:
-		vx = KOOPAS_TAIL_WHOOP_SPEED_X * -nx;
+		vx = KOOPAS_TAIL_WHOOP_SPEED_X * nx;
 		vy = -KOOPAS_TAIL_WHOOP_SPEED_Y;
 		isUpsideDown = true;
+		isOnGround = false;
 		break;
 
 	case KOOPAS_STATE_REGEN:
-		//vx = 0;
-		//vy = 0;
+		vx = 0;
+		vy = 0;
 		//ay = KOOPAS_GRAVITY;
+
 		realRegen_start = GetTickCount64(); // time to go to phase 3: Koopas reborn
 		break;
 
@@ -314,20 +351,26 @@ void CKoopas::SetState(int state)
 
 		ay = KOOPAS_GRAVITY;
 		break;
-
+	
 	case KOOPAS_STATE_SHELL_MOVING:
 		vx = KOOPAS_SHELL_SPEED * nx;
 		ay = KOOPAS_GRAVITY;
 		break;
 
 	case KOOPAS_STATE_WING:
-		vx = -KOOPAS_FLYING_SPEED_VX;
+		if (!isRed)
+		{
+			ay = KOOPAS_GRAVITY_FLYING;
+			vx = -KOOPAS_FLYING_SPEED_VX;
+		}
+		else
+			vy = RED_KOOPAS_FLYING_SPEED_VY;
 		break;
 
 	case KOOPAS_STATE_DIE:
 		die_start = GetTickCount64();
 		vy = -KOOPAS_DYING_SPEED;
-		ay = KOOPAS_GRAVITY_DYING;
+		//ay = KOOPAS_GRAVITY_DYING;
 		break;
 
 	case KOOPAS_STATE_HELD:

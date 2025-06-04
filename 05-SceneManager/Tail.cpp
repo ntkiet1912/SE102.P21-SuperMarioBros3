@@ -78,8 +78,12 @@ void CTail::OnCollisionWithLuckyBlock(LPCOLLISIONEVENT e)
 void CTail::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 {
 	CKoopas* koopa = dynamic_cast<CKoopas*>(e->obj);
+	if (this->x > koopa->getX())
+		koopa->setNx(-1);
+	else
+		koopa->setNx(1);
 	koopa->SetState(KOOPAS_STATE_SHELL_UPSIDE_DOWN);
-	koopa->SetState(KOOPAS_STATE_SHELL);
+	//koopa->SetState(KOOPAS_STATE_SHELL);
 	effectSpawn(koopa);
 }
 

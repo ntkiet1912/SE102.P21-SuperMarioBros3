@@ -305,8 +305,12 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 	float koopasX, koopasY;
 	koopas->GetPosition(koopasX, koopasY);
 
-	if (e->ny > 0)
+	int stateKoopas = koopas->GetState();
+	if (e->ny > 0 )
 	{
+		if (stateKoopas == KOOPAS_STATE_SHELL || stateKoopas == KOOPAS_STATE_SHELL_UPSIDE_DOWN) return;
+		DebugOut(L"Getdmg from ny\n");
+
 		getDmg();
 		return;
 	}
@@ -341,8 +345,6 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 	// Side collision
 	if (e->nx != 0)
 	{
-		int stateKoopas = koopas->GetState();
-
 		if (stateKoopas == KOOPAS_STATE_SHELL || stateKoopas == KOOPAS_STATE_HELD || stateKoopas == KOOPAS_STATE_REGEN)
 		{
 			if (!isHolding && canHold)
@@ -351,9 +353,15 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 				heldKoopas = koopas;
 				koopas->SetState(KOOPAS_STATE_HELD);
 			}
+			else if (!canHold)
+			{
+				kickShell(koopas);
+			}
 		}
 		else
 		{
+			if(stateKoopas == KOOPAS_STATE_SHELL_UPSIDE_DOWN) return;
+			DebugOut(L"Getdmg from nx\n");
 			getDmg();
 		}
 	}

@@ -254,7 +254,7 @@ public:
 		ax = 0.0f;
 		ay = MARIO_GRAVITY;
 
-		level = 2;
+		level = 3;
 		untouchable = 0;
 		untouchable_start = -1;
 		isOnPlatform = false;

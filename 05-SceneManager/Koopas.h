@@ -3,10 +3,12 @@
 #define KOOPAS_GRAVITY 0.001f
 #define KOOPAS_WALKING_SPEED 0.05f
 #define KOOPAS_SHELL_SPEED 0.22f
-#define KOOPAS_VX_DIE_SPEED 0.1f
 #define KOOPAS_JUMP_DEFLECT_SPEED 0.4f
-#define KOOPAS_DYING_SPEED 0.2f
-#define KOOPAS_GRAVITY_DYING 0.0003f
+
+#define KOOPAS_VX_DIE_SPEED 0.15f
+#define KOOPAS_DYING_SPEED 0.29f
+
+#define RED_KOOPAS_FLYING_SPEED_VY 0.2f 
 
 #define KOOPAS_TAIL_WHOOP_SPEED_X 0.1f
 #define KOOPAS_TAIL_WHOOP_SPEED_Y 0.25f
@@ -75,6 +77,8 @@ protected:
 	bool isRegen;
 	float ax;
 	float ay;
+
+	bool isOnGround;
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 	virtual void Render();
 
