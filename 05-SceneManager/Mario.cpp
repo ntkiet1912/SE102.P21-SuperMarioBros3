@@ -29,13 +29,13 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		float platformY = currentFlyingGround->getY();
 
 		// Set Mario's vertical velocity to match the platform's
-		vy = platformVy;
+		//vy = platformVy;
 
 		// Update Mario's y position to stay on top of the platform
-		y = platformY - getHeight() +3; // Adjust -7 based on Mario's sprite height or collision box
+		y = platformY - getHeight() + 3; // Adjust -7 based on Mario's sprite height or collision box
 
 		//isOnPlatform = true;
-		SetState(MARIO_STATE_IDLE);
+		//SetState(MARIO_STATE_IDLE);
 		// Optional: Check if Mario is still on the platform
 		// If Mario jumps or moves off, reset the flags
 		// 
@@ -47,30 +47,16 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		vy += MARIO_GRAVITY * dt; // Assuming MARIO_GRAVITY is defined
 	}
 	if (!isOnPlatform)
-{
-	isOnFlyingGround = false;
-	currentFlyingGround = nullptr;
-}
+	{
+		isOnFlyingGround = false;
+		currentFlyingGround = nullptr;
+	}
 	//// reset trạng thái mỗi frame
 	//isOnFlyingGround = false;
 	//currentFlyingGround = nullptr;
 	camSpeed = 0.01f * dt;
-	// Update heldKoopas' position
-	// move to here to optimize koopas' shell movement more smooth 
-	// but can't be like real game 100%
-	if (heldKoopas && canHold && isHolding)
-	{
-		PositionHeldKoopas(heldKoopas);
-	}
-	else if (heldKoopas && !canHold && isHolding)
-	{
-		isHolding = false;
-		//PositionHeldKoopas(heldKoopas);
-		heldKoopas->setIsHeld(false);
-		heldKoopas->setIsReleased(true);
-		kickShell(heldKoopas);
-		heldKoopas = nullptr;
-	}
+
+
 	vx += ax * dt;
 	//vy += ay * dt;
 	if (state == MARIO_ENDING_SCENE)
@@ -118,18 +104,36 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		untouchable_start = 0;
 		untouchable = 0;
 	}
-	tailUpdate(dt, coObjects);
+
 	CGameObject::Update(dt, coObjects);
 	CCollision::GetInstance()->Process(this, dt, coObjects);
+	tailUpdate(dt, coObjects);
+	holdingKoopas();
+}
+void CMario::holdingKoopas()
+{
+	if (isHolding)
+	{
+		if (canHold)
+			PositionHeldKoopas(heldKoopas);
+		else
+		{
+			isHolding = false;
+			kickShell(heldKoopas);
+			heldKoopas->SetState(KOOPAS_STATE_SHELL_MOVING);
+			heldKoopas = nullptr;
+		}
+	}
+
 }
 void CMario::tailUpdate(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	if (tail != nullptr)
 	{
-		if(nx > 0)
+		if (nx > 0)
 			tail->SetPosition(x + 6, y + 3);
 		else
-			tail->SetPosition(x - 6 , y + 3);
+			tail->SetPosition(x - 6, y + 3);
 
 		tail->Update(dt, coObjects);
 	}
@@ -140,8 +144,8 @@ void CMario::PositionHeldKoopas(LPGAMEOBJECT koopas)
 	float offsetX, offsetY;
 	if (level == MARIO_LEVEL_BIG)
 	{
-		offsetX = 11.0f;
-		offsetY = -2.0f;
+		offsetX = 12.0f;
+		offsetY = -4.0f;
 	}
 	else if (level == MARIO_LEVEL_WITH_TAIL)
 	{
@@ -209,15 +213,15 @@ void CMario::OnCollisionWithFlyingGround(LPCOLLISIONEVENT e)
 	CFlyingGround* flyingGround = dynamic_cast<CFlyingGround*>(e->obj);
 	if (e->ny < 0)
 	{
-        isOnPlatform = true;
-        isOnFlyingGround = true;
-        currentFlyingGround = flyingGround;
+		isOnPlatform = true;
+		isOnFlyingGround = true;
+		currentFlyingGround = flyingGround;
 
 		// Align Mario's y position with the platform
 		y = flyingGround->getY() - getHeight() + 3; // Adjust -7 based on Mario's sprite height or collision box
 
 		// Set Mario's vertical velocity to match the platform's
-		vy = flyingGround->getVy();
+		//vy = flyingGround->getVy();
 
 		// Notify the platform that it has been stepped on
 		flyingGround->setIsStepped(true);
@@ -276,12 +280,20 @@ void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 	}
 }
 
+void checkNx(LPGAMEOBJECT x1, LPGAMEOBJECT x2)
+{
+	if (x1->getX() < x2->getX())
+		x2->setNx(1);
+	else
+		x2->setNx(-1);
+}
 void CMario::kickShell(CKoopas*& koopas)
 {
-	if (nx < 0)
-		koopas->SetState(KOOPAS_STATE_SHELLIDLE_MOVING_LEFT);
-	else
-		koopas->SetState(KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT);
+	if (this->nx > 0)
+		koopas->setNx(1);
+	else if (this->nx < 0)
+		koopas->setNx(-1);
+	koopas->SetState(KOOPAS_STATE_SHELL_MOVING);
 	kick_flag = true;
 	SetState(MARIO_STATE_KICK);
 }
@@ -299,44 +311,45 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 		return;
 	}
 
+	// Jump on head
 	if (e->ny < 0)
 	{
 		vy = -MARIO_JUMP_DEFLECT_SPEED;
 
 		if (koopas->GetState() == KOOPAS_STATE_SHELL || koopas->GetState() == KOOPAS_STATE_REGEN)
 		{
-			if (x < koopasX)
-				koopas->SetState(KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT);
-			else
-				koopas->SetState(KOOPAS_STATE_SHELLIDLE_MOVING_LEFT);
+			checkNx(this, koopas);
+			koopas->SetState(KOOPAS_STATE_SHELL_MOVING);
+			CDataManager::GetInstance()->AddScore(1000);
+
+		}
+		else if (koopas->GetState() == KOOPAS_STATE_WING)
+		{
+			checkNx(this, koopas);
+			koopas->SetState(KOOPAS_STATE_WALKING);
+			CDataManager::GetInstance()->AddScore(1000);
+
 		}
 		else
 		{
-			if (koopas->GetState() == KOOPAS_STATE_WING)
-				koopas->SetState(KOOPAS_STATE_WALKING_LEFT);
-			else
-			{
-				koopas->SetState(KOOPAS_STATE_SHELL);
-				CDataManager::GetInstance()->AddScore(1000);
-			}
+			koopas->SetState(KOOPAS_STATE_SHELL);
+			CDataManager::GetInstance()->AddScore(1000);
 		}
 		return;
 	}
 
+	// Side collision
 	if (e->nx != 0)
 	{
-		if (koopas->GetState() == KOOPAS_STATE_SHELL || koopas->GetState() == KOOPAS_STATE_REGEN)
+		int stateKoopas = koopas->GetState();
+
+		if (stateKoopas == KOOPAS_STATE_SHELL || stateKoopas == KOOPAS_STATE_HELD || stateKoopas == KOOPAS_STATE_REGEN)
 		{
 			if (!isHolding && canHold)
 			{
 				isHolding = true;
 				heldKoopas = koopas;
-				koopas->setIsHeld(true);
-				koopas->setIsReleased(false);
-			}
-			else if (!canHold)
-			{
-				kickShell(koopas);
+				koopas->SetState(KOOPAS_STATE_HELD);
 			}
 		}
 		else
@@ -345,6 +358,7 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 		}
 	}
 }
+
 
 void CMario::OnCollisionWithCoin(LPCOLLISIONEVENT e)
 {
@@ -424,7 +438,7 @@ int CMario::GetAniIdSmall()
 		else
 			kick_flag = false;
 	}
-	else if (isHolding && canHold)
+	else if (isHolding)
 	{
 		if (vx == 0)
 		{
@@ -521,7 +535,7 @@ int CMario::GetAniIdBig()
 		else
 			kick_flag = false;
 	}
-	else if (isHolding && canHold)
+	else if (isHolding)
 	{
 		if (vx == 0)
 		{
@@ -629,7 +643,7 @@ int CMario::GetAniIdWithTail()
 		else
 			kick_flag = false;
 	}
-	else if (isHolding && canHold)
+	else if (isHolding)
 	{
 		if (vy != 0)
 		{
@@ -856,7 +870,7 @@ void CMario::SetState(int state)
 			if (abs(vx) == MARIO_RUNNING_SPEED)
 				vy = -MARIO_JUMP_RUN_SPEED_Y;
 			else
-				vy = -MARIO_JUMP_SPEED_Y; 
+				vy = -MARIO_JUMP_SPEED_Y;
 		}
 		break;
 

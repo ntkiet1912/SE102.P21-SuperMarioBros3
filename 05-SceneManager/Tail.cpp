@@ -78,8 +78,8 @@ void CTail::OnCollisionWithLuckyBlock(LPCOLLISIONEVENT e)
 void CTail::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 {
 	CKoopas* koopa = dynamic_cast<CKoopas*>(e->obj);
+	koopa->SetState(KOOPAS_STATE_SHELL_UPSIDE_DOWN);
 	koopa->SetState(KOOPAS_STATE_SHELL);
-	koopa->isUpsideDown = true;
 	effectSpawn(koopa);
 }
 

@@ -8,6 +8,9 @@
 #define KOOPAS_DYING_SPEED 0.2f
 #define KOOPAS_GRAVITY_DYING 0.0003f
 
+#define KOOPAS_TAIL_WHOOP_SPEED_X 0.1f
+#define KOOPAS_TAIL_WHOOP_SPEED_Y 0.25f
+
 #define KOOPAS_FLYING_SPEED_VY 0.25f
 #define KOOPAS_GRAVITY_FLYING 0.0007f
 #define KOOPAS_FLYING_SPEED_VX 0.045f
@@ -19,17 +22,20 @@
 
 #define KOOPAS_SHELL_TIMEOUT 1000 
 
-#define KOOPAS_STATE_WALKING_LEFT 1000
-#define KOOPAS_STATE_WALKING_RIGHT 1001
-#define KOOPAS_STATE_SHELL 1002
-#define KOOPAS_STATE_SHELLIDLE_MOVING_LEFT 1003
-#define KOOPAS_STATE_SHELLIDLE_MOVING_RIGHT 1004
-#define KOOPAS_STATE_WING 1005
-#define KOOPAS_STATE_WALK_DIE_BY_COLLISION_WITH_KOOPAS 1006
-#define KOOPAS_STATE_SHELL_DIE_BY_COLLISION_WITH_KOOPAS 1007
-#define KOOPAS_STATE_REGEN 1008
-#define KOOPAS_STATE_HELD 1009
-#define KOOPAS_STATE_SHELL_UPSIDE_DOWN 1010
+#pragma region state
+
+#define KOOPAS_STATE_WALKING 1000
+#define KOOPAS_STATE_SHELL 1001
+#define KOOPAS_STATE_SHELL_UPSIDE_DOWN 1002
+#define KOOPAS_STATE_SHELL_MOVING 1003
+#define KOOPAS_STATE_HELD 1004
+
+#define KOOPAS_STATE_REGEN 1005
+#define KOOPAS_STATE_DIE 1006
+
+#define KOOPAS_STATE_WING 1007
+#pragma endregion
+
 
 
 #define ID_ANI_RED_KOOPAS_WALKING_LEFT 20001
@@ -59,8 +65,6 @@
 class CKoopas : public CGameObject
 {
 protected:
-	bool isShellIdle;
-
 	ULONGLONG die_start;
 	ULONGLONG regen_start;
 	ULONGLONG realRegen_start;
@@ -71,10 +75,6 @@ protected:
 	bool isRegen;
 	float ax;
 	float ay;
-
-	bool isHeld = false;
-	bool isReleased = false;
-
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 	virtual void Render();
 
@@ -95,6 +95,5 @@ public:
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	CKoopas(float x, float y, int isRed, int yesWing);
 	virtual void SetState(int state);
-	void setIsHeld(bool isHeld) { this->isHeld = isHeld; }
-	void setIsReleased(bool isHeld) { this->isReleased = isReleased; }
+
 };

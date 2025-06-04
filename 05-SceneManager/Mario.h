@@ -244,6 +244,7 @@ class CMario : public CGameObject
 	void levelUp();
 	void levelDown();
 	void tailUpdate(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
+	void holdingKoopas();
 public:
 	float camSpeed;
 	CMario(float x, float y) : CGameObject(x, y)
@@ -253,7 +254,7 @@ public:
 		ax = 0.0f;
 		ay = MARIO_GRAVITY;
 
-		level = 3;
+		level = 2;
 		untouchable = 0;
 		untouchable_start = -1;
 		isOnPlatform = false;
