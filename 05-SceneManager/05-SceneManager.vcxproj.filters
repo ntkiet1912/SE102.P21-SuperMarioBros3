@@ -123,6 +123,12 @@
     <ClCompile Include="GoalRoulette.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BoomerangBro.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Boomerang.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
@@ -231,6 +237,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GoalRoulette.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BoomerangBro.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Boomerang.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

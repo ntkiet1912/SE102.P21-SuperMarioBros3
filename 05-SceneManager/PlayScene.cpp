@@ -19,6 +19,7 @@
 #include "PlayHUD.h"
 #include "DataManager.h"
 #include "GoalRoulette.h"
+#include "BoomerangBro.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -126,6 +127,12 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 		DebugOut(L"[INFO] Player object has been created!\n");
 		break;
+	case OBJECT_TYPE_BOOMERANG_BRO:
+	{
+		obj = new CBoomerangBro(x, y);
+		//objects.push_back(obj);
+		break;
+	}
 	case OBJECT_TYPE_GOOMBA:
 	{
 		obj = new CGoomba(x, y);
