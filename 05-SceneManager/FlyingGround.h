@@ -1,7 +1,7 @@
 #pragma once
 #include "Platform.h"
 #define FLYINGGROUND_SPEED_VY 0.035f
-#define FLYINGGROUND_SPEED_VX 0.02f
+#define FLYINGGROUND_SPEED_VX -0.025f
 class CFlyingGround :
 	public CPlatform
 {

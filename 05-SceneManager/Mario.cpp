@@ -20,6 +20,10 @@
 #include "PlayScene.h"
 #include "FlyingGround.h"
 
+float speedMeter = 0.0f;
+const float SPEED_METER_MAX = 1.0f; 
+const float SPEED_METER_FILL_RATE = 0.001f;
+const float SPEED_METER_DECAY_RATE = 0.002f;
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 
@@ -39,6 +43,43 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		vx = maxVx;
 	}
 
+	// when mario reach max walking speed: gradually run
+	if (isOnPlatform)
+	{
+		if (abs(vx) > MARIO_WALKING_SPEED)
+		{
+			speedMeter += SPEED_METER_FILL_RATE * dt;
+			if (speedMeter > SPEED_METER_MAX) speedMeter = SPEED_METER_MAX;
+		}
+		else
+		{
+			speedMeter -= SPEED_METER_DECAY_RATE * dt;
+			if (speedMeter < 0) speedMeter = 0;
+		}
+		isRunning = (speedMeter >= SPEED_METER_MAX);
+	}
+
+	// when reach max speed_meter: mario is running
+
+	if (level == 3 && !isOnPlatform && canFly)
+	{
+		bool isJumpKeyDown = CGame::GetInstance()->IsKeyDown(DIK_S);
+		bool isJumpKeyPressed = CGame::GetInstance()->IsKeyPress(DIK_S);
+
+		if (isRunning && isJumpKeyPressed)
+		{
+			vy = -MARIO_FLY_UP_SPEED;
+		}
+		else if (!isRunning && isJumpKeyPressed)
+		{
+			// Apply reduced gravity for tail flap descent
+			vy += MARIO_TAIL_FLAP_GRAVITY_REDUCE * dt;
+			if (vy > MARIO_MIN_FALL_SPEED)
+				vy = MARIO_MIN_FALL_SPEED;
+			isFlying = true;
+			// StartTailFlap();
+		}
+	}
 	if (isLevelUp && GetTickCount64() - transformation_start > TRANSFORMATION_DURATION) {
 		isLevelUp = false;
 		isActive = true;
@@ -585,18 +626,18 @@ int CMario::GetAniIdBig()
 			{
 				if (ax < 0)
 					aniId = ID_ANI_MARIO_BRACE_RIGHT;
-				else if (ax == MARIO_ACCEL_RUN_X)
+				else if (isRunning)
 					aniId = ID_ANI_MARIO_RUNNING_RIGHT;
-				else if (ax == MARIO_ACCEL_WALK_X)
+				else 
 					aniId = ID_ANI_MARIO_WALKING_RIGHT;
 			}
 			else // vx < 0
 			{
 				if (ax > 0)
 					aniId = ID_ANI_MARIO_BRACE_LEFT;
-				else if (ax == -MARIO_ACCEL_RUN_X)
+				else if (isRunning)
 					aniId = ID_ANI_MARIO_RUNNING_LEFT;
-				else if (ax == -MARIO_ACCEL_WALK_X)
+				else 
 					aniId = ID_ANI_MARIO_WALKING_LEFT;
 			}
 	if (aniId == -1)
@@ -810,7 +851,7 @@ void CMario::Render()
 
 	RenderBoundingBox();
 
-	DebugOutTitle(L"Coins: %d", coin);
+	//DebugOutTitle(L"Coins: %d", coin);
 }
 
 void CMario::SetState(int state)

@@ -14,7 +14,7 @@
 #define MARIO_RUNNING_SPEED		0.16f
 
 #define MARIO_ACCEL_WALK_X	0.00025f
-#define MARIO_ACCEL_RUN_X	0.00026f
+#define MARIO_ACCEL_RUN_X	0.00027f
 
 #define MARIO_JUMP_SPEED_Y		0.44f
 #define MARIO_JUMP_RUN_SPEED_Y	0.51f
@@ -23,6 +23,9 @@
 
 #define MARIO_JUMP_DEFLECT_SPEED  0.25f
 
+#define MARIO_FLY_UP_SPEED 0.25f
+#define MARIO_TAIL_FLAP_GRAVITY_REDUCE 0.001f
+#define MARIO_MIN_FALL_SPEED 0.01f
 #pragma endregion
 
 #pragma region State
@@ -225,7 +228,9 @@ class CMario : public CGameObject
 	bool isTailAttacking;
 
 	CFlyingGround* currentFlyingGround;
-	//bool isOnFlyingGround;
+	
+	bool isFlying;
+	bool isRunning;
 	void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
 	void OnCollisionWithCoin(LPCOLLISIONEVENT e);
 	void OnCollisionWithPortal(LPCOLLISIONEVENT e);
@@ -247,6 +252,7 @@ class CMario : public CGameObject
 	void holdingKoopas();
 	void liftUpdate(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 public:
+	bool canFly;
 	float camSpeed;
 	CMario(float x, float y) : CGameObject(x, y)
 	{
@@ -255,7 +261,7 @@ public:
 		ax = 0.0f;
 		ay = MARIO_GRAVITY;
 
-		level = 2;
+		level = 3;
 		untouchable = 0;
 		untouchable_start = -1;
 		isOnPlatform = false;
@@ -280,7 +286,8 @@ public:
 		isTailAttacking = false;
 
 		currentFlyingGround = nullptr;
-		//isOnFlyingGround = false;
+		isFlying = false;
+		isRunning = false;
 	}
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();
@@ -320,8 +327,7 @@ public:
 	void setVx(float vx) { this->vx = vx; }
 	void setVy(float vy) { this->vy = vy; }
 	int getHeight();
-	//void setIsOnFlyingGround(bool value) { isOnFlyingGround = value; }
-	//bool getIsOnFlyingGround() { return isOnFlyingGround; }
+
 	void SetCurrentFlyingGround(CFlyingGround* fg) { currentFlyingGround = fg; }
 	CFlyingGround* GetCurrentFlyingGround() { return currentFlyingGround; }
 

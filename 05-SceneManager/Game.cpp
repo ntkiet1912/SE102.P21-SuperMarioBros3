@@ -1,4 +1,4 @@
-#include <fstream>
+ï»¿#include <fstream>
 
 #include "Game.h"
 #include "debug.h"
@@ -176,7 +176,7 @@ void CGame::Draw(float x, float y, LPTEXTURE tex, RECT* rect, float alpha, int s
 
 	D3DX10_SPRITE sprite;
 
-	// Set the sprite’s shader resource view
+	// Set the spriteâ€™s shader resource view
 	sprite.pTexture = tex->getShaderResourceView();
 
 	if (rect == NULL)
@@ -226,7 +226,7 @@ void CGame::Draw(float x, float y, LPTEXTURE tex, RECT* rect, float alpha, int s
 	D3DXMATRIX matScaling;
 	D3DXMatrixScaling(&matScaling, (FLOAT)spriteWidth, (FLOAT)spriteHeight, 1.0f);
 
-	// Setting the sprite’s position and size
+	// Setting the spriteâ€™s position and size
 	sprite.matWorld = (matScaling * matTranslation);
 
 	spriteObject->DrawSpritesImmediate(&sprite, 1, 0, 0);
@@ -322,7 +322,12 @@ int CGame::IsKeyDown(int KeyCode)
 {
 	return (keyStates[KeyCode] & 0x80) > 0;
 }
-
+int CGame::IsKeyPress(int keyCode)
+{
+	return
+		(keyStates[keyCode] & 0x80)
+		&& !(prevKeyStates[keyCode] & 0x80);
+}
 void CGame::InitKeyboard()
 {
 	HRESULT hr = DirectInput8Create(this->hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (VOID**)&di, NULL);
@@ -385,11 +390,11 @@ void CGame::ProcessKeyboard()
 {
 	HRESULT hr;
 
-	// Collect all key states first
+	memcpy(prevKeyStates, keyStates, sizeof(keyStates));
+
 	hr = didv->GetDeviceState(sizeof(keyStates), keyStates);
 	if (FAILED(hr))
 	{
-		// If the keyboard lost focus or was not acquired then try to get control back.
 		if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
 		{
 			HRESULT h = didv->Acquire();
@@ -401,14 +406,11 @@ void CGame::ProcessKeyboard()
 		}
 		else
 		{
-			//DebugOut(L"[ERROR] DINPUT::GetDeviceState failed. Error: %d\n", hr);
 			return;
 		}
 	}
 
 	keyHandler->KeyState((BYTE*)&keyStates);
-
-	// Collect all buffered events
 	DWORD dwElements = KEYBOARD_BUFFER_SIZE;
 	hr = didv->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), keyEvents, &dwElements, 0);
 	if (FAILED(hr))
@@ -416,18 +418,18 @@ void CGame::ProcessKeyboard()
 		DebugOut(L"[ERROR] DINPUT::GetDeviceData failed. Error: %d\n", hr);
 		return;
 	}
-
-	// Scan through all buffered events, check if the key is pressed or released
 	for (DWORD i = 0; i < dwElements; i++)
 	{
 		int KeyCode = keyEvents[i].dwOfs;
 		int KeyState = keyEvents[i].dwData;
+
 		if ((KeyState & 0x80) > 0)
 			keyHandler->OnKeyDown(KeyCode);
 		else
 			keyHandler->OnKeyUp(KeyCode);
 	}
 }
+
 
 #define MAX_GAME_LINE 1024
 
