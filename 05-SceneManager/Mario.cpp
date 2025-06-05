@@ -69,6 +69,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		if (isRunning && isJumpKeyPressed)
 		{
 			vy = -MARIO_FLY_UP_SPEED;
+			isWagFlyingUp = true;
+			isFlying = true;
+			flying_start = GetTickCount64();
 		}
 		else if (!isRunning && isJumpKeyPressed)
 		{
@@ -76,9 +79,16 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			vy += MARIO_TAIL_FLAP_GRAVITY_REDUCE * dt;
 			if (vy > MARIO_MIN_FALL_SPEED)
 				vy = MARIO_MIN_FALL_SPEED;
+			isWagDown = true;
 			isFlying = true;
-			// StartTailFlap();
+			flying_start = GetTickCount64();
 		}
+	}
+	if (isFlying && GetTickCount64() - flying_start > 300)
+	{
+		isFlying = false;
+		isWagFlyingUp = false;
+		isWagDown = false;
 	}
 	if (isLevelUp && GetTickCount64() - transformation_start > TRANSFORMATION_DURATION) {
 		isLevelUp = false;
@@ -211,7 +221,13 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 	if (e->ny != 0 && e->obj->IsBlocking())
 	{
 		vy = 0;
-		if (e->ny < 0) isOnPlatform = true;
+		if (e->ny < 0)
+		{
+			isOnPlatform = true;
+			isWagDown = false;
+			isWagFlyingUp = false;
+		}
+
 	}
 	else
 		if (e->nx != 0 && e->obj->IsBlocking())
@@ -652,9 +668,24 @@ int CMario::GetAniIdBig()
 int CMario::GetAniIdWithTail()
 {
 	int aniId = -1;
+	if (isWagDown)
+	{
+		if (nx > 0)
+			aniId = ID_ANI_MARIO_WITH_TAIL_WAG_DOWN_RIGHT;
+		else
+			aniId = ID_ANI_MARIO_WITH_TAIL_WAG_DOWN_LEFT;
+		return aniId;
+	}
+	if (isWagFlyingUp)
+	{
+		if (nx > 0)
+			aniId = ID_ANI_MARIO_WITH_TAIL_WAG_UP_RIGHT;
+		else
+			aniId = ID_ANI_MARIO_WITH_TAIL_WAG_UP_LEFT;
+		return aniId;
+	}
 	if (isTailAttacking)
 	{
-		DebugOut(L"work\n");
 		if (nx > 0)
 		{
 			aniId = ID_ANI_MARIO_WITH_TAIL_ATTACK_LEFT;

@@ -149,6 +149,10 @@
 #define ID_ANI_MARIO_WITH_TAIL_JUMP_HOLDSHELL_RIGHT -1028
 #define ID_ANI_MARIO_WITH_TAIL_ATTACK_LEFT -1029
 #define ID_ANI_MARIO_WITH_TAIL_ATTACK_RIGHT -1030
+#define ID_ANI_MARIO_WITH_TAIL_WAG_UP_LEFT -1031
+#define ID_ANI_MARIO_WITH_TAIL_WAG_UP_RIGHT -1032
+#define ID_ANI_MARIO_WITH_TAIL_WAG_DOWN_LEFT -1033
+#define ID_ANI_MARIO_WITH_TAIL_WAG_DOWN_RIGHT -1034
 #
 // shrink 
 #define ID_ANI_MARIO_SHRINK_LEFT	100
@@ -230,7 +234,10 @@ class CMario : public CGameObject
 	CFlyingGround* currentFlyingGround;
 	
 	bool isFlying;
+	ULONGLONG flying_start;
 	bool isRunning;
+	bool isWagFlyingUp;
+	bool isWagDown;
 	void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
 	void OnCollisionWithCoin(LPCOLLISIONEVENT e);
 	void OnCollisionWithPortal(LPCOLLISIONEVENT e);
