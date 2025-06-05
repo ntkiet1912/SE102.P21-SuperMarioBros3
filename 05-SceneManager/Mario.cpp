@@ -12,11 +12,12 @@
 #include "FirePiranha.h"
 #include "FireBullet.h"
 #include "Koopas.h"
-
+#include "GoldenBrick.h"
 #include "Collision.h"
 #include "LuckyBlock.h"
 #include "UpgradeMarioLevel.h"
 #include "GoalRoulette.h"
+#include "ButtonBrick.h"	
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
@@ -132,6 +133,33 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithUpgradingItem(e);
 	else if (dynamic_cast<CGoalRouletteIcon*>(e->obj))
 		OnCollisionWithGoalRouletteIcon(e);
+	else if (dynamic_cast<CGoldenBrick*>(e->obj)) {
+			if (e->ny > 0) {
+				CGoldenBrick* goldenBrick = dynamic_cast<CGoldenBrick*>(e->obj);
+				if (goldenBrick->GetState() == GOLDEN_BRICK_STATE_NORMAL) {
+					if (level == MARIO_LEVEL_SMALL) goldenBrick->HitByMario();
+					else goldenBrick->Break();
+				}
+			}
+
+		if (e->obj->GetState() == GOLDEN_BRICK_STATE_GOLD) {
+			e->obj->Delete();
+			CDataManager::GetInstance()->AddCoin(1);
+			CDataManager::GetInstance()->AddCoin(100);
+			CPlayHUD::GetInstance()->SetCoin(CDataManager::GetInstance()->GetCoin());
+			CPlayHUD::GetInstance()->SetScore(CDataManager::GetInstance()->GetScore());
+		}
+	}
+	else if (dynamic_cast<CButtonBrick*>(e->obj)) {
+			CButtonBrick* buttonBrick = dynamic_cast<CButtonBrick*>(e->obj);
+		if (e->ny > 0) {
+			buttonBrick->SetState(BUTTON_BRICK_STATE_MOVE_UP);
+		}
+	}
+	else if (dynamic_cast<CButton*>(e->obj)) {
+			if (e->ny < 0 && e->obj->GetState() == BUTTON_STATE_NORMAL)
+				e->obj->SetState(BUTTON_STATE_PRESSED);
+	}
 }
 
 void CMario::OnCollisionWithFirePiranha(LPCOLLISIONEVENT e)

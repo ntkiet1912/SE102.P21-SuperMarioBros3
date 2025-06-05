@@ -25,5 +25,5 @@ height	226
 60	textures\misc2.png
 70	textures\hud.png
 71	textures\hud2.png
- 
+80	textures\objects.png
 -10	textures\Goal_Roulette.png

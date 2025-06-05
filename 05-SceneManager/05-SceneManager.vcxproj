@@ -150,6 +150,10 @@
     <ClCompile Include="Animations.cpp" />
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="Brick.cpp" />
+    <ClCompile Include="BrokenBrickEffect.cpp" />
+    <ClCompile Include="Button.cpp" />
+    <ClCompile Include="ButtonBrick.cpp" />
+    <ClCompile Include="DamageEffect.cpp" />
     <ClCompile Include="DataManager.cpp" />
     <ClCompile Include="Decoration.cpp" />
     <ClCompile Include="Coin.cpp" />
@@ -159,8 +163,10 @@
     <ClCompile Include="FireBullet.cpp" />
     <ClCompile Include="FirePiranha.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GoalRoulette.cpp" />
+    <ClCompile Include="GoldenBrick.cpp" />
     <ClCompile Include="Goomba.cpp" />
     <ClCompile Include="InvisibleBlock.cpp" />
     <ClCompile Include="InvisibleBlock.h" />
@@ -176,6 +182,7 @@
     <ClCompile Include="PlayScene.cpp" />
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="SampleKeyEventHandler.cpp" />
+    <ClCompile Include="ScoreEffect.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Sprites.cpp" />
     <ClCompile Include="Textures.cpp" />
@@ -189,6 +196,10 @@
     <ClInclude Include="AssetIDs.h" />
     <ClInclude Include="Block.h" />
     <ClInclude Include="Brick.h" />
+    <ClInclude Include="BrokenBrickEffect.h" />
+    <ClInclude Include="Button.h" />
+    <ClInclude Include="ButtonBrick.h" />
+    <ClInclude Include="DamageEffect.h" />
     <ClInclude Include="DataManager.h" />
     <ClInclude Include="Decoration.h" />
     <ClInclude Include="Coin.h" />
@@ -198,8 +209,10 @@
     <ClInclude Include="FireBullet.h" />
     <ClInclude Include="FirePiranha.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameManager.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GoalRoulette.h" />
+    <ClInclude Include="GoldenBrick.h" />
     <ClInclude Include="Goomba.h" />
     <ClInclude Include="KeyEventHandler.h" />
     <ClInclude Include="Koopas.h" />
@@ -212,6 +225,7 @@
     <ClInclude Include="Portal.h" />
     <ClInclude Include="SampleKeyEventHandler.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="ScoreEffect.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Sprites.h" />
     <ClInclude Include="Texture.h" />

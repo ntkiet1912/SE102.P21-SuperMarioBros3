@@ -19,6 +19,8 @@
 #include "PlayHUD.h"
 #include "DataManager.h"
 #include "GoalRoulette.h"
+#include "GoldenBrick.h"
+#include "ButtonBrick.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -126,6 +128,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 		DebugOut(L"[INFO] Player object has been created!\n");
 		break;
+	case OBJECT_TYPE_BUTTON_BRICK: obj = new CButtonBrick(x, y); break;
+	case OBJECT_TYPE_GOLDEN_BRICK: obj = new CGoldenBrick(x, y); break;
 	case OBJECT_TYPE_GOOMBA:
 	{
 		obj = new CGoomba(x, y);
@@ -291,6 +295,42 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 	objects.push_back(obj);
 }
+
+void CPlayScene::MarioPause(float time)
+{
+	marioPause_start = GetTickCount64();
+	marioPause_time = time;
+	isMarioPaused = true;
+}
+
+void CPlayScene::GamePause()
+{
+	gamePause_time = GetTickCount64();
+	isGamePaused = true;
+
+}
+
+void CPlayScene::GameResume()
+{
+	gameResume_time = GetTickCount64();
+	isGamePaused = false;
+}
+void CPlayScene::GameOver()
+{
+	isGameOver = true;
+}
+
+ULONGLONG CPlayScene::GetDeltaTime(ULONGLONG start)
+{
+	ULONGLONG result = GetTickCount64() - start;
+	if (start < marioPause_start) result -= marioPause_time;
+	if (start < gameResume_time) {
+		if (start > gamePause_time) result -= (gameResume_time - start);
+		else result -= (gameResume_time - gamePause_time);;
+	}
+	return result;
+}
+
 
 void CPlayScene::LoadAssets(LPCWSTR assetFile)
 {
@@ -483,6 +523,7 @@ void CPlayScene::Update(DWORD dt)
 			return;
 		}
 	}
+
 
 	// Cập nhật HUD
 	CPlayHUD::GetInstance()->SetTime(timeRemaining);

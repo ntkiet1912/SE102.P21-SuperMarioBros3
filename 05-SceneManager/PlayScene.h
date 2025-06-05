@@ -16,7 +16,16 @@ class CPlayScene: public CScene
 protected: 
 	// A play scene has to have player, right? 
 	LPGAMEOBJECT player;					
-
+	ULONGLONG marioPause_start;
+	float marioPause_time;
+	float preY;
+	float gamePause_time;
+	float gameResume_time;
+	float cmaxX, cminX, cmaxY, cminY;
+	bool isMarioPaused = false;
+	bool isGamePaused = false;
+	bool isGameOver = false;
+	bool isFollowing = false;
 	vector<LPGAMEOBJECT> objects;
 
 	void _ParseSection_SPRITES(string line);
@@ -42,7 +51,11 @@ public:
 	virtual void Update(DWORD dt);
 	virtual void Render();
 	virtual void Unload();
-
+	virtual void MarioPause(float time);
+	virtual void GamePause();
+	virtual void GameResume();
+	virtual void GameOver();
+	virtual ULONGLONG GetDeltaTime(ULONGLONG start);
 	LPGAMEOBJECT GetPlayer() { return player; }
 
 	void Clear();
