@@ -18,6 +18,7 @@
 #include "UpgradeMarioLevel.h"
 #include "GoalRoulette.h"
 #include "ButtonBrick.h"	
+#include "DeadZone.h"
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
@@ -159,6 +160,9 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 	else if (dynamic_cast<CButton*>(e->obj)) {
 			if (e->ny < 0 && e->obj->GetState() == BUTTON_STATE_NORMAL)
 				e->obj->SetState(BUTTON_STATE_PRESSED);
+	}
+	else if (dynamic_cast<CDeadZone*>(e->obj)) {
+			SetState(MARIO_STATE_DIE);
 	}
 }
 

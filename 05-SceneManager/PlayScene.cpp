@@ -23,6 +23,7 @@
 #include "BigPipe.h"
 #include "ButtonBrick.h"
 #include "BackgroundTile.h"
+#include "DeadZone.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -447,6 +448,7 @@ void CPlayScene::Load()
 	f.close();
 
 	DebugOut(L"[INFO] Done loading scene  %s\n", sceneFilePath);
+	objects.push_back(new CDeadZone());
 }
 
 // considered is one object inside the camera ? 
