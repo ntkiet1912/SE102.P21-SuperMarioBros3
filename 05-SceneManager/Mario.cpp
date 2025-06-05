@@ -22,50 +22,16 @@
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-	if (isOnFlyingGround && currentFlyingGround != nullptr)
-	{
-		// Get the flying ground's current vertical velocity
-		float platformVy = currentFlyingGround->getVy();
-		float platformY = currentFlyingGround->getY();
 
-		// Set Mario's vertical velocity to match the platform's
-		//vy = platformVy;
-
-		// Update Mario's y position to stay on top of the platform
-		y = platformY - getHeight() + 3; // Adjust -7 based on Mario's sprite height or collision box
-
-		//isOnPlatform = true;
-		//SetState(MARIO_STATE_IDLE);
-		// Optional: Check if Mario is still on the platform
-		// If Mario jumps or moves off, reset the flags
-		// 
-
-	}
-	else
-	{
-		// Apply normal gravity when not on the flying ground
-		vy += MARIO_GRAVITY * dt; // Assuming MARIO_GRAVITY is defined
-	}
-	if (!isOnPlatform)
-	{
-		isOnFlyingGround = false;
-		currentFlyingGround = nullptr;
-	}
-	//// reset trạng thái mỗi frame
-	//isOnFlyingGround = false;
-	//currentFlyingGround = nullptr;
 	camSpeed = 0.01f * dt;
-
-
 	vx += ax * dt;
-	//vy += ay * dt;
+	vy += ay * dt;
 	if (state == MARIO_ENDING_SCENE)
 	{
 		//if (isOnPlatform)
 		//	vx = MARIO_WALKING_SPEED;
 		//else
 		//	vx = 0;
-
 	}
 
 	if (abs(vx) > abs(maxVx))
@@ -109,7 +75,11 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	CCollision::GetInstance()->Process(this, dt, coObjects);
 	tailUpdate(dt, coObjects);
 	holdingKoopas();
-}
+	liftUpdate(dt, coObjects);
+	//DebugOut(L"[CMario] isOnPlatform: %d\n", isOnPlatform);
+	//DebugOut(L"[CMario] state: %d\n", state);
+
+} 
 void CMario::holdingKoopas()
 {
 	if (isHolding)
@@ -160,7 +130,32 @@ void CMario::PositionHeldKoopas(LPGAMEOBJECT koopas)
 	offsetX = (nx > 0 ? offsetX : -offsetX);
 	koopas->SetPosition(x + offsetX, y - offsetY);
 }
+void CMario::liftUpdate(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
+{
+	if (currentFlyingGround != nullptr)
+	{
+		// to check that mario is on the flying ground
+		// use Raycasting to check (epsilon = 1.0f) like the gap between mario and the platform
+		float mLeft, mTop, mRight, mBottom;
+		float pLeft, pTop, pRight, pBottom;
+		GetBoundingBox(mLeft, mTop, mRight, mBottom);
+		currentFlyingGround->GetBoundingBox(pLeft, pTop, pRight, pBottom);
 
+		const float epsilon = 1.0f;
+		if (abs(mBottom - pTop) <= epsilon && mRight > pLeft && mLeft < pRight)
+		{
+			// sync mario's position & vy with the fg
+			// to make it move smoothly
+			y = currentFlyingGround->getY() - 8 - getHeight() / 2;
+			vy = currentFlyingGround->getVy();
+			isOnPlatform = true;
+		}
+		else // when mario jump out or move out of the fg
+		{
+			currentFlyingGround = nullptr;
+		}
+	}
+}
 void CMario::OnNoCollision(DWORD dt)
 {
 	x += vx * dt;
@@ -211,19 +206,13 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 void CMario::OnCollisionWithFlyingGround(LPCOLLISIONEVENT e)
 {
 	CFlyingGround* flyingGround = dynamic_cast<CFlyingGround*>(e->obj);
-	if (e->ny < 0)
+	if (e->ny < 0) // Mario lands on top of the platform
 	{
 		isOnPlatform = true;
-		isOnFlyingGround = true;
 		currentFlyingGround = flyingGround;
 
-		// Align Mario's y position with the platform
-		y = flyingGround->getY() - getHeight() + 3; // Adjust -7 based on Mario's sprite height or collision box
-
-		// Set Mario's vertical velocity to match the platform's
-		//vy = flyingGround->getVy();
-
 		// Notify the platform that it has been stepped on
+		// start descending
 		flyingGround->setIsStepped(true);
 	}
 }

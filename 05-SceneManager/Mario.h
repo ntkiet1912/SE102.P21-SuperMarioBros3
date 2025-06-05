@@ -225,7 +225,7 @@ class CMario : public CGameObject
 	bool isTailAttacking;
 
 	CFlyingGround* currentFlyingGround;
-	bool isOnFlyingGround;
+	//bool isOnFlyingGround;
 	void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
 	void OnCollisionWithCoin(LPCOLLISIONEVENT e);
 	void OnCollisionWithPortal(LPCOLLISIONEVENT e);
@@ -245,6 +245,7 @@ class CMario : public CGameObject
 	void levelDown();
 	void tailUpdate(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void holdingKoopas();
+	void liftUpdate(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 public:
 	float camSpeed;
 	CMario(float x, float y) : CGameObject(x, y)
@@ -254,7 +255,7 @@ public:
 		ax = 0.0f;
 		ay = MARIO_GRAVITY;
 
-		level = 3;
+		level = 2;
 		untouchable = 0;
 		untouchable_start = -1;
 		isOnPlatform = false;
@@ -279,7 +280,7 @@ public:
 		isTailAttacking = false;
 
 		currentFlyingGround = nullptr;
-		isOnFlyingGround = false;
+		//isOnFlyingGround = false;
 	}
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();
@@ -319,4 +320,9 @@ public:
 	void setVx(float vx) { this->vx = vx; }
 	void setVy(float vy) { this->vy = vy; }
 	int getHeight();
+	//void setIsOnFlyingGround(bool value) { isOnFlyingGround = value; }
+	//bool getIsOnFlyingGround() { return isOnFlyingGround; }
+	void SetCurrentFlyingGround(CFlyingGround* fg) { currentFlyingGround = fg; }
+	CFlyingGround* GetCurrentFlyingGround() { return currentFlyingGround; }
+
 };
