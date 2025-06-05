@@ -20,7 +20,9 @@
 #include "DataManager.h"
 #include "GoalRoulette.h"
 #include "GoldenBrick.h"
+#include "BigPipe.h"
 #include "ButtonBrick.h"
+#include "BackgroundTile.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -38,9 +40,11 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 #define SCENE_SECTION_ASSETS	1
 #define SCENE_SECTION_OBJECTS	2
 
+#define SCENE_SECTION_SETTING 3
 #define ASSETS_SECTION_UNKNOWN -1
 #define ASSETS_SECTION_SPRITES 1
 #define ASSETS_SECTION_ANIMATIONS 2
+#define ASSETS_SECTION_TILES 3
 
 #define MAX_SCENE_LINE 1024
 
@@ -99,6 +103,18 @@ void CPlayScene::_ParseSection_ANIMATIONS(string line)
 	CAnimations::GetInstance()->Add(ani_id, ani);
 }
 
+
+void CPlayScene::_ParseSection_TILES(string line)
+{
+	vector<string> tokens = split(line);
+	if (tokens.size() < 3) return; // skip invalid lines
+	int ID = atoi(tokens[0].c_str());
+	int x = atoi(tokens[1].c_str());
+	int y = atoi(tokens[2].c_str());
+	CBackgroundTile* tile = new CBackgroundTile(CSprites::GetInstance()->Get(ID), x, y);
+	tiles.push_back(tile);
+}
+
 /*
 	Parse a line in section [OBJECTS]
 */
@@ -128,6 +144,21 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 		DebugOut(L"[INFO] Player object has been created!\n");
 		break;
+	case OBJECT_TYPE_BIG_PIPE:
+	{
+
+		if (tokens.size() < 4) return;
+		int height = atoi(tokens[3].c_str());
+		if (tokens.size() < 6) {
+				obj = new CBigPipe(x, y, height);
+		}
+		else {
+			int headId = atoi(tokens[4].c_str());
+			int bodyId = atoi(tokens[5].c_str());
+			obj = new CBigPipe(x, y, height, headId, bodyId);
+		}
+		break;
+	}
 	case OBJECT_TYPE_BUTTON_BRICK: obj = new CButtonBrick(x, y); break;
 	case OBJECT_TYPE_GOLDEN_BRICK: obj = new CGoldenBrick(x, y); break;
 	case OBJECT_TYPE_GOOMBA:
@@ -295,7 +326,15 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 	objects.push_back(obj);
 }
-
+void CPlayScene::_ParseSection_SETTING(string line)
+{
+	vector<string> tokens = split(line);
+	if (tokens.size() < 4) return;
+	cminX = atoi(tokens[0].c_str());
+	cmaxX = atoi(tokens[1].c_str());
+	cmaxY = atoi(tokens[2].c_str());
+	cminY = atoi(tokens[3].c_str());
+}
 void CPlayScene::MarioPause(float time)
 {
 	marioPause_start = GetTickCount64();
@@ -350,6 +389,7 @@ void CPlayScene::LoadAssets(LPCWSTR assetFile)
 
 		if (line == "[SPRITES]") { section = ASSETS_SECTION_SPRITES; continue; };
 		if (line == "[ANIMATIONS]") { section = ASSETS_SECTION_ANIMATIONS; continue; };
+		if (line == "[TILES]") { section = ASSETS_SECTION_TILES; continue; };
 		if (line[0] == '[') { section = SCENE_SECTION_UNKNOWN; continue; }
 
 		//
@@ -359,6 +399,7 @@ void CPlayScene::LoadAssets(LPCWSTR assetFile)
 		{
 		case ASSETS_SECTION_SPRITES: _ParseSection_SPRITES(line); break;
 		case ASSETS_SECTION_ANIMATIONS: _ParseSection_ANIMATIONS(line); break;
+		case ASSETS_SECTION_TILES: _ParseSection_TILES(line); break;
 		}
 	}
 
@@ -388,6 +429,8 @@ void CPlayScene::Load()
 		if (line[0] == '#') continue;	// skip comment lines	
 		if (line == "[ASSETS]") { section = SCENE_SECTION_ASSETS; continue; };
 		if (line == "[OBJECTS]") { section = SCENE_SECTION_OBJECTS; continue; };
+		if (line == "[SETTING]") { section = SCENE_SECTION_SETTING; continue; };
+		
 		if (line[0] == '[') { section = SCENE_SECTION_UNKNOWN; continue; }
 
 		//
@@ -397,6 +440,7 @@ void CPlayScene::Load()
 		{
 		case SCENE_SECTION_ASSETS: _ParseSection_ASSETS(line); break;
 		case SCENE_SECTION_OBJECTS: _ParseSection_OBJECTS(line); break;
+		case SCENE_SECTION_SETTING: _ParseSection_SETTING(line); break;
 		}
 	}
 
@@ -496,15 +540,31 @@ void CPlayScene::Update(DWORD dt)
 	if (player == NULL) return;
 
 	// Update camera to follow mario
-	float cx, cy;
-	player->GetPosition(cx, cy);
-
+	float my, cx, sx, sy;
+	player->GetPosition(cx, my);
+	player->GetSpeed(sx, sy);
 	CGame* game = CGame::GetInstance();
 	cx -= game->GetBackBufferWidth() / 2;
-	cy -= game->GetBackBufferHeight() / 2;
-	if (cx < 0) cx = 0;
-	if (cx > 2495) cx = 2495;
-	CGame::GetInstance()->SetCamPos(cx, 0.0f /*cy*/);
+
+
+
+	if (preY > 0) {
+		if (my - preY < 20) isFollowing = true;
+		if (isFollowing) {
+			if (my - preY < 80) preY -= 0.2f * dt;
+			else isFollowing = false;
+		}
+		else if (my - preY > 100) preY += 0.2f * dt;
+	}
+	else {
+		preY = my - game->GetBackBufferHeight() / 2;
+	}
+	//MarioFly setting here
+	if (cx < cminX) cx = cminX;
+	if (cx > cmaxX) cx = cmaxX;
+	if (preY < cminY) preY = cminY;
+	if (preY > cmaxY) preY = cmaxY;
+	CGame::GetInstance()->SetCamPos(cx, preY);
 
 	PurgeDeletedObjects();
 
@@ -544,6 +604,8 @@ void CPlayScene::CleanUpDeletedObjects()
 }
 void CPlayScene::Render()
 {
+	for (int i = 0; i < tiles.size(); i++)
+		tiles[i]->Draw();
 	for (int i = 0; i < objects.size(); i++)
 	{
 		if (dynamic_cast<CMario*>(objects[i])) continue;

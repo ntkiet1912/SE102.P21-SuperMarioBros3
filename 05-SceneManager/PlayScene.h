@@ -7,6 +7,8 @@
 #include "Mario.h"
 #include "Goomba.h"
 #include "EnemyInfo.h"
+#include "BackgroundTile.h"
+
 //#include "Koopas.h"
 
 
@@ -27,10 +29,12 @@ protected:
 	bool isGameOver = false;
 	bool isFollowing = false;
 	vector<LPGAMEOBJECT> objects;
-
+	vector<LPGAMEOBJECT> pipes;
+	vector<CBackgroundTile*> tiles;
 	void _ParseSection_SPRITES(string line);
 	void _ParseSection_ANIMATIONS(string line);
-
+	void _ParseSection_TILES(string line);
+	void _ParseSection_SETTING(string line);
 	void _ParseSection_ASSETS(string line);
 	void _ParseSection_OBJECTS(string line);
 

@@ -75,6 +75,7 @@ void CSampleKeyHandler::OnKeyUp(int KeyCode)
 
 void CSampleKeyHandler::KeyState(BYTE* states)
 {
+	if (((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer() == NULL) return;
 	LPGAME game = CGame::GetInstance();
 	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
 	if (mario->GetState() == MARIO_ENDING_SCENE) return;

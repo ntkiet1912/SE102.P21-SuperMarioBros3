@@ -1,0 +1,98 @@
+# list of object assets to load in this scene
+[ASSETS]
+mario.txt
+brick.txt
+pipe.txt
+background.txt
+HUD.txt
+coin.txt
+#
+[SETTING]
+0	2564	0	0
+[OBJECTS]
+# type	x	y	extra_settings per object type
+# type:
+# 0 = Mario 
+# 1 = Brick
+# 2 = Goomba
+# 3 = Koopas
+# 4 = Coin
+# 5 = Cloud
+# 6 = Platform:	cell_width	cell_height	length	thick	spritesID (6)
+# 7 = Block:	cell_width	cell_height	width	height	9 cellIDs	4 shadowCellIds
+# 8 = Pipe
+# 9 = Red Venus Fire Trap
+# 10 = Green Venus Fire Trap
+# 11 = Fire Bullet
+# 12 = Piranha Plant
+# 13 = Question Brick
+# 50 = Portal: r	b	sceneID
+# See OBJECT_TYPE constants in AssetIDs.h
+0	150	20
+1	119	7
+1	119	23
+1	119	39
+1	119	55
+1	119	71
+1	119	87
+1	119	103
+1	119	119
+1	119	135
+1	119	151
+1	119	166
+1	119	182
+1	135	167
+1	151	167
+1	166	167
+1	182	167
+1	198	167
+1	214	167
+1	230	167
+1	246	167
+1	262	167
+1	263	151
+1	279	151
+1	279	135
+1	295	135
+1	295	119
+1	311	119
+1	311	103
+1	327	103
+1	327	87
+1	343	87
+1	343	71
+1	359	71
+1	375	71
+1	391	71
+1	391	55
+1	391	39
+1	391	23
+1	391	7
+1	167	7
+1	183	7
+1	199	7
+1	215	7
+1	231	7
+1	247	7
+1	263	7
+1	279	7
+1	295	7
+1	311	7
+1	327	7
+1	343	7
+
+40	143	7	2	110103	110104
+40	367	7	2	110103	110104
+
+4	215	47
+4	231	31
+4	247	31
+4	263	47
+4	263	63
+4	231	79
+4	247	79
+4	263	95
+4	263	111
+4	215	111
+4	231	127
+4	247	127
