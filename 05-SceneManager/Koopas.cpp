@@ -13,6 +13,8 @@
 #include "DataManager.h"
 #include "DeadZone.h"
 #include "GameManager.h"
+#include "GoldenBrick.h"
+#include "ButtonBrick.h"
 
 CKoopas::CKoopas(float x, float y, int isRed, int yesWing) : CGameObject(x, y)
 {
@@ -105,6 +107,29 @@ void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 			OnCollisionWithKoopas(e);
 		else if (dynamic_cast<CLuckyBlock*>(e->obj))
 			OnCollisionWithLuckyBlock(e);
+		else if (dynamic_cast<CGoldenBrick*>(e->obj))
+			OnCollisionWithGoldenBrick(e);
+		else if (dynamic_cast<CButtonBrick*>(e->obj))
+			OnCollisionWithButtonBrick(e);
+		
+	}
+}
+
+void CKoopas::OnCollisionWithButtonBrick(LPCOLLISIONEVENT e)
+{
+	if (e->nx != 0)
+	{
+		CButtonBrick* buttonBrick = dynamic_cast<CButtonBrick*>(e->obj);
+		if (buttonBrick->GetState() == BUTTON_BRICK_STATE_NORMAL)
+			buttonBrick->SetState(BUTTON_BRICK_STATE_MOVE_UP);
+	}
+}
+void CKoopas::OnCollisionWithGoldenBrick(LPCOLLISIONEVENT e)
+{
+	CGoldenBrick* gb = dynamic_cast<CGoldenBrick*>(e->obj);
+	if (e->nx != 0)
+	{
+		gb->Break();
 	}
 }
 

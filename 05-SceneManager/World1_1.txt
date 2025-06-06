@@ -33,7 +33,7 @@ buttonBrick.txt
 
 
 #Mario
-0	100	50
+0	2100	50
 
 #Decoration	
 
@@ -250,6 +250,8 @@ buttonBrick.txt
 3	1520	50	0	1
 3	1560	50	0	1
 3	1600	150	0	0
+
+3	2240	130	1	0
 #BUTTON_BRICK
 31	2178	146
 #GOLDEN_BRICK
@@ -271,6 +273,7 @@ buttonBrick.txt
 30	2242	178
 30	2242	162
 30	2258	178
+
 
 
 

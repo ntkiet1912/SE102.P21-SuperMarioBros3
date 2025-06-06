@@ -274,12 +274,10 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithUpgradingItem(e);
 	else if (dynamic_cast<CGoalRouletteIcon*>(e->obj))
 		OnCollisionWithGoalRouletteIcon(e);
-	else if (dynamic_cast<CBrick*>(e->obj))
-		OnCollisionWithBrickWall(e);
 	else if (dynamic_cast<CFlyingGround*>(e->obj))
 		OnCollisionWithFlyingGround(e);
 	else if (dynamic_cast<CGoldenBrick*>(e->obj)) {
-			if (e->ny > 0) {
+			if (e->ny > 0 ) {
 				CGoldenBrick* goldenBrick = dynamic_cast<CGoldenBrick*>(e->obj);
 				if (goldenBrick->GetState() == GOLDEN_BRICK_STATE_NORMAL) {
 					if (level == MARIO_LEVEL_SMALL) goldenBrick->HitByMario();
@@ -308,6 +306,8 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 	else if (dynamic_cast<CDeadZone*>(e->obj)) {
 			SetState(MARIO_STATE_DIE);
 	}
+	else if (dynamic_cast<CBrick*>(e->obj))
+		OnCollisionWithBrickWall(e);
 };
 
 void CMario::OnCollisionWithFirePiranha(LPCOLLISIONEVENT e) {

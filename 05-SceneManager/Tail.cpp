@@ -7,6 +7,8 @@
 #include "PlayScene.h"
 #include "FirePiranha.h"
 #include "GameManager.h"
+#include "GoldenBrick.h"
+#include "ButtonBrick.h"
 
 void CTail::GetBoundingBox(float& l, float& t, float& r, float& b)
 {
@@ -49,6 +51,10 @@ void CTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				OnCollisionWithLuckyBlock(e);
 			else if (dynamic_cast<CFirePiranha*>(e->obj))
 				OnCollisionWithFirePiranha(e);
+			else if (dynamic_cast<CGoldenBrick*>(e->obj))
+				OnCollisionWithGoldenBrick(e);
+			else if (dynamic_cast<CButtonBrick*>(e->obj))
+				OnCollisionWithButtonBrick(e);
 		}
 	}
 }
@@ -60,6 +66,25 @@ void CTail::effectSpawn(LPGAMEOBJECT e)
 	CCollisionEffect* effect = new CCollisionEffect(ex, ey);
 	CPlayScene* currentScene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
 	currentScene->AddObject(effect);
+}
+void CTail::OnCollisionWithGoldenBrick(LPCOLLISIONEVENT e)
+{
+	if (e->nx != 0)
+	{
+		CGoldenBrick* goldenBrick = dynamic_cast<CGoldenBrick*>(e->obj);
+		if (goldenBrick->GetState() == GOLDEN_BRICK_STATE_NORMAL) {
+			goldenBrick->Break();
+		}
+	}
+}
+void CTail::OnCollisionWithButtonBrick(LPCOLLISIONEVENT e)
+{
+	if (e->nx != 0)
+	{
+		CButtonBrick* buttonBrick = dynamic_cast<CButtonBrick*>(e->obj);
+		if (buttonBrick->GetState() == BUTTON_BRICK_STATE_NORMAL)
+			buttonBrick->SetState(BUTTON_BRICK_STATE_MOVE_UP);
+	}
 }
 void CTail::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 {
