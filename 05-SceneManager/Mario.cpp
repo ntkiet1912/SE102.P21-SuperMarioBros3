@@ -19,12 +19,19 @@
 #include "GoalRoulette.h"
 #include "ButtonBrick.h"	
 #include "DeadZone.h"
+#include "WarpPipe.h"
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	// Update heldKoopas' position
 	// move to here to optimize koopas' shell movement more smooth 
 	// but can't be like real game 100%
+	if (warpTime > 0) {
+			y += vwarp * dt;
+		warpTime -= dt;
+		return;
+	}
+
 	if (heldKoopas && canHold && isHolding)
 	{
 		PositionHeldKoopas(heldKoopas);
@@ -107,6 +114,10 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 	{
 		vy = 0;
 		if (e->ny < 0) isOnPlatform = true;
+		if (dynamic_cast<CWarpPipe*>(e->obj)) {
+			((CWarpPipe*)e->obj)->HandleWithMario(e, this);
+			return;
+		}
 	}
 	else
 		if (e->nx != 0 && e->obj->IsBlocking())
@@ -452,7 +463,7 @@ void CMario::OnCollisionWithGoalRouletteIcon(LPCOLLISIONEVENT e)
 int CMario::GetAniIdSmall()
 {
 	int aniId = -1;
-
+	if (warpTime > 0) return ID_ANI_MARIO_SMALL_WARPING;
 	if (state == MARIO_ENDING_SCENE)
 	{
 		aniId = ID_ANI_MARIO_SMALL_WALKING_RIGHT;
@@ -550,6 +561,7 @@ int CMario::GetAniIdSmall()
 int CMario::GetAniIdBig()
 {
 	int aniId = -1;
+	if (warpTime > 0) return ID_ANI_MARIO_WARPING;
 	if (state == MARIO_ENDING_SCENE)
 	{
 		aniId = ID_ANI_MARIO_WALKING_RIGHT;
@@ -647,6 +659,7 @@ int CMario::GetAniIdBig()
 int CMario::GetAniIdWithTail()
 {
 	int aniId = -1;
+	if (warpTime > 0) return ID_ANI_MARIO_WITH_TAIL_WARPING;
 	if (state == MARIO_ENDING_SCENE)
 	{
 		aniId = ID_ANI_MARIO_WITH_TAIL_WALKING_RIGHT;

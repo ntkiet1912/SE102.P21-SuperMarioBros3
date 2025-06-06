@@ -6,8 +6,8 @@
 #define PIPE_BORDER 2
 #define PIPE_CELL_WIDTH 32
 #define PIPE_CELL_HEIGHT 16
-#define PIPE_HEAD_ID 800000
-#define PIPE_BODY_ID 800001
+#define PIPE_HEAD_ID 110101
+#define PIPE_BODY_ID 110102
 class CBigPipe : public CGameObject
 {
 private:

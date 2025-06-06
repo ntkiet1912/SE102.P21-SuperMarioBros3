@@ -22,6 +22,7 @@
 #include "GoldenBrick.h"
 #include "BigPipe.h"
 #include "ButtonBrick.h"
+#include "WarpPipe.h"
 #include "BackgroundTile.h"
 #include "DeadZone.h"
 
@@ -138,6 +139,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		if (player != NULL)
 		{
 			DebugOut(L"[ERROR] MARIO object was created before!\n");
+			objects.push_back(player);
 			return;
 		}
 		obj = new CMario(x, y);
@@ -145,19 +147,31 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 		DebugOut(L"[INFO] Player object has been created!\n");
 		break;
+	case OBJECT_TYPE_DEAD_ZONE:
+		obj = new CDeadZone();
+		break;
 	case OBJECT_TYPE_BIG_PIPE:
 	{
 
 		if (tokens.size() < 4) return;
 		int height = atoi(tokens[3].c_str());
-		if (tokens.size() < 6) {
-				obj = new CBigPipe(x, y, height);
+		if (tokens.size() == 5) {
+				obj = new CWarpPipe(x, y, height, atoi(tokens[4].c_str()));
+		}
+		else if (tokens.size() == 4) {
+			obj = new CBigPipe(x, y, height);
+		}
+		else if (tokens.size() == 7) {
+			int headId = atoi(tokens[4].c_str());
+			int bodyId = atoi(tokens[5].c_str());
+			obj = new CWarpPipe(x, y, height, headId, bodyId, atoi(tokens[6].c_str()));
 		}
 		else {
 			int headId = atoi(tokens[4].c_str());
 			int bodyId = atoi(tokens[5].c_str());
 			obj = new CBigPipe(x, y, height, headId, bodyId);
 		}
+		pipes.push_back(obj);
 		break;
 	}
 	case OBJECT_TYPE_BUTTON_BRICK: obj = new CButtonBrick(x, y); break;
@@ -333,8 +347,8 @@ void CPlayScene::_ParseSection_SETTING(string line)
 	if (tokens.size() < 4) return;
 	cminX = atoi(tokens[0].c_str());
 	cmaxX = atoi(tokens[1].c_str());
-	cmaxY = atoi(tokens[2].c_str());
-	cminY = atoi(tokens[3].c_str());
+	cminY = atoi(tokens[2].c_str());
+	cmaxY = atoi(tokens[3].c_str());
 }
 void CPlayScene::MarioPause(float time)
 {
@@ -415,7 +429,7 @@ void CPlayScene::Load()
 	timeAccmulator = 0.0f;
 
 	DebugOut(L"[INFO] Start loading scene from : %s \n", sceneFilePath);
-
+	player = CGame::GetInstance()->GetPlayer();
 	ifstream f;
 	f.open(sceneFilePath);
 
@@ -448,7 +462,7 @@ void CPlayScene::Load()
 	f.close();
 
 	DebugOut(L"[INFO] Done loading scene  %s\n", sceneFilePath);
-	objects.push_back(new CDeadZone());
+	time = CGame::GetInstance()->GetGameTime();
 }
 
 // considered is one object inside the camera ? 
@@ -541,32 +555,17 @@ void CPlayScene::Update(DWORD dt)
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
 	if (player == NULL) return;
 
-	// Update camera to follow mario
-	float my, cx, sx, sy;
-	player->GetPosition(cx, my);
-	player->GetSpeed(sx, sy);
+	// Update camera to follow marioAdd commentMore actions
+	float cx, cy;
+	player->GetPosition(cx, cy);
+
 	CGame* game = CGame::GetInstance();
-	cx -= game->GetBackBufferWidth() / 2;
+		cx -= game->GetBackBufferWidth() / 2;
+	cy -= game->GetBackBufferHeight() / 2;
+	if (cx < 0) cx = 0;
+	if (cx > 2495) cx = 2495;
+	CGame::GetInstance()->SetCamPos(cx, 0.0f /*cy*/);
 
-
-
-	if (preY > 0) {
-		if (my - preY < 20) isFollowing = true;
-		if (isFollowing) {
-			if (my - preY < 80) preY -= 0.2f * dt;
-			else isFollowing = false;
-		}
-		else if (my - preY > 100) preY += 0.2f * dt;
-	}
-	else {
-		preY = my - game->GetBackBufferHeight() / 2;
-	}
-	//MarioFly setting here
-	if (cx < cminX) cx = cminX;
-	if (cx > cmaxX) cx = cmaxX;
-	if (preY < cminY) preY = cminY;
-	if (preY > cmaxY) preY = cmaxY;
-	CGame::GetInstance()->SetCamPos(cx, preY);
 
 	PurgeDeletedObjects();
 
@@ -613,6 +612,9 @@ void CPlayScene::Render()
 		if (dynamic_cast<CMario*>(objects[i])) continue;
 		objects[i]->Render();	
 	}
+	for (int i = 0; i < pipes.size(); i++) {
+			pipes[i]->Render();
+	}
 	player->Render();
 	CPlayHUD::GetInstance()->Render();
 }
@@ -642,11 +644,20 @@ void CPlayScene::Clear()
 */
 void CPlayScene::Unload()
 {
-	for (int i = 0; i < objects.size(); i++)
+	for (int i = 1; i < objects.size(); i++)
 		delete objects[i];
 
+	for (int i = 0; i < tiles.size(); i++) 
+		delete tiles[i];
+		tiles.clear();
+
+	pipes.clear();
 	objects.clear();
+	CGame::GetInstance()->SetPlayer(player);
 	player = NULL;
+
+	CPlayHUD::GetInstance()->Clear();
+	 CGame::GetInstance()->SetGameTime(time);
 
 	DebugOut(L"[INFO] Scene %d unloaded! \n", id);
 }

@@ -28,6 +28,7 @@ protected:
 	bool isGamePaused = false;
 	bool isGameOver = false;
 	bool isFollowing = false;
+	float time = 0;
 	vector<LPGAMEOBJECT> objects;
 	vector<LPGAMEOBJECT> pipes;
 	vector<CBackgroundTile*> tiles;
