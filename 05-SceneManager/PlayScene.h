@@ -8,7 +8,7 @@
 #include "Goomba.h"
 #include "EnemyInfo.h"
 #include "BackgroundTile.h"
-
+#include "BlockingWall.h"
 //#include "Koopas.h"
 
 
@@ -44,7 +44,7 @@ protected:
 	// use for spawning enemy when mario's cam is near 
 	// or delete enemy when cam is far enough
 	vector<CEnemySpawnInfo*> enemySpawns;
-	vector<CBrick*> blockingWall;
+	vector<CBlockingWall*> blockingWall;
 	//for time countdown
 	int timeRemaining = 300;
 	float timeAccmulator = 0.0f;

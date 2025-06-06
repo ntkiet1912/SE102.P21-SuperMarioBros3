@@ -142,6 +142,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	liftUpdate(dt, coObjects);
 	//DebugOut(L"[CMario] isOnPlatform: %d\n", isOnPlatform);
 	//DebugOut(L"[CMario] state: %d\n", state);
+	//DebugOutTitle(L"y = %f"y);
 
 } 
 void CMario::holdingKoopas()
@@ -262,9 +263,7 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 	else if (dynamic_cast<CFirePiranha*>(e->obj))
 		OnCollisionWithFirePiranha(e);
 	else if (dynamic_cast<CFireBullet*>(e->obj))
-	{
 		OnCollisionWithFireBullet(e);
-	}
 	else if (dynamic_cast<CKoopas*>(e->obj))
 		OnCollisionWithKoopas(e);
 	else if (dynamic_cast<CLuckyBlock*>(e->obj))
@@ -273,11 +272,12 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithUpgradingItem(e);
 	else if (dynamic_cast<CGoalRouletteIcon*>(e->obj))
 		OnCollisionWithGoalRouletteIcon(e);
-	else if (dynamic_cast<CBrick*>(e->obj))
+	else if (dynamic_cast<CBlockingWall*>(e->obj))
 		OnCollisionWithBrickWall(e);
 	else if (dynamic_cast<CFlyingGround*>(e->obj))
 		OnCollisionWithFlyingGround(e);
-	else if (dynamic_cast<CGoldenBrick*>(e->obj)) {
+	else if (dynamic_cast<CGoldenBrick*>(e->obj)) 
+	{
 			if (e->ny > 0) {
 				CGoldenBrick* goldenBrick = dynamic_cast<CGoldenBrick*>(e->obj);
 				if (goldenBrick->GetState() == GOLDEN_BRICK_STATE_NORMAL) {
