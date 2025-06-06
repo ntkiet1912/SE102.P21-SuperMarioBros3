@@ -32,10 +32,11 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	vy += ay * dt;
 	if (state == MARIO_ENDING_SCENE)
 	{
-		//if (isOnPlatform)
-		//	vx = MARIO_WALKING_SPEED;
-		//else
-		//	vx = 0;
+		//vy = 0;
+		if (isOnPlatform)
+			vx = MARIO_WALKING_SPEED;
+		else
+			vx = 0;
 	}
 
 	if (abs(vx) > abs(maxVx))
@@ -84,7 +85,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			flying_start = GetTickCount64();
 		}
 	}
-	if (isFlying && GetTickCount64() - flying_start > 300)
+	if (isFlying && GetTickCount64() - flying_start > 250)
 	{
 		isFlying = false;
 		isWagFlyingUp = false;

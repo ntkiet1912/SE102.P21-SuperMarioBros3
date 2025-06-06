@@ -35,7 +35,7 @@ protected:
 	int timeRemaining = 300;
 	float timeAccmulator = 0.0f;
 	float timeDecrementInterval = 0.5f;
-	
+	float maxCx = 0;
 public: 
 	CPlayScene(int id, LPCWSTR filePath);
 
@@ -54,7 +54,8 @@ public:
 
 	static bool IsGameObjectDeleted(const LPGAMEOBJECT& o);
 	vector<LPGAMEOBJECT>& GetObjects() { return objects; }
-
+	void setMaxCx(float x) { maxCx= x; }
+	float getMaxCx() { return maxCx; }
 };
 
 typedef CPlayScene* LPPLAYSCENE;

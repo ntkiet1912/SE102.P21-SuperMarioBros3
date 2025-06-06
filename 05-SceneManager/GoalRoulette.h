@@ -42,7 +42,7 @@ class CGoalRouletteIcon :
 protected:
 	bool isHitByMario;
 	int iconType;
-	bool isDeleted = false;
+	//bool isDeleted = false;
 	ULONGLONG timeToSwitching;
 	ULONGLONG deleteTime;
 

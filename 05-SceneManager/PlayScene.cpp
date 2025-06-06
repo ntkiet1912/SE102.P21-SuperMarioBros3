@@ -354,7 +354,10 @@ void CPlayScene::Load()
 
 	ifstream f;
 	f.open(sceneFilePath);
-
+	if (id == 6)
+		maxCx= 2480;
+	else if (id == 2)
+		maxCx = 1800;
 	// current resource section flag
 	int section = SCENE_SECTION_UNKNOWN;
 
@@ -522,8 +525,8 @@ void CPlayScene::Update(DWORD dt)
 		cx -= game->GetBackBufferWidth() / 2;
 		cy -= game->GetBackBufferHeight() / 2;
 		if (cx < 0) cx = 0;
-		if (cx > 2495) cx = 2495;
-		CGame::GetInstance()->SetCamPos(cx, 0.0f /*cy*/);
+		if (cx + game->GetBackBufferWidth()/1.5 > maxCx)    cx = maxCx - game->GetBackBufferWidth() / 1.5;
+		CGame::GetInstance()->SetCamPos(cx, 0.0f);
 	}
 
 
