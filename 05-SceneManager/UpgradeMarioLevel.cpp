@@ -35,12 +35,12 @@ void CLeaf::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// bound right -> make it go back to the left 
 	if (x >= boundOfMovingMaxToTheRight)
 	{
-		ax = -LEAF_ACCELARATION;
+		vx = -LEAF_MOVING_SPEED;
 		//ay = LEAF_GRAVITY;
 
-		vx = -LEAF_MOVING_SPEED;
 		nx = -1;
 		vy = 0;
+		ax = -LEAF_ACCELARATION;
 	}
 	// bound left -> make it go back to the right
 	else if (x <= boundOfMovingMaxToTheLeft)

@@ -45,7 +45,7 @@ class CGame
 
 	BYTE  keyStates[KEYBOARD_STATE_SIZE];			// DirectInput keyboard state buffer 
 	DIDEVICEOBJECTDATA keyEvents[KEYBOARD_BUFFER_SIZE];		// Buffered keyboard data
-
+	BYTE prevKeyStates[256];   
 	LPKEYEVENTHANDLER keyHandler;
 
 	float cam_x = 0.0f;
@@ -90,6 +90,7 @@ public:
 	// Keyboard related functions 
 	void InitKeyboard();
 	int IsKeyDown(int KeyCode);
+	int IsKeyPress(int KeyCode);
 	void ProcessKeyboard();
 	void SetKeyHandler(LPKEYEVENTHANDLER handler) { keyHandler = handler; }
 

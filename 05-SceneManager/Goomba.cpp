@@ -55,7 +55,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	vy += ay * dt;
 	vx += ax * dt;
 
-	if ((state == GOOMBA_STATE_DIE) && (GetTickCount64() - die_start > GOOMBA_DIE_TIMEOUT))
+	if ((state == GOOMBA_STATE_DIE || state == GOOMBA_STATE_DIE_BY_COLLISION) && (GetTickCount64() - die_start > 3000))
 	{
 		isDeleted = true;
 		return;
@@ -96,7 +96,7 @@ void CGoomba::SetState(int state)
 	case GOOMBA_STATE_DIE_BY_COLLISION:
 		die_start = GetTickCount64();
 		//y += (GOOMBA_BBOX_HEIGHT - GOOMBA_BBOX_HEIGHT_DIE) / 2;
-		vx = GOOMBA_VX_DIE_SPEED;
+		vx = GOOMBA_VX_DIE_SPEED * nx;
 		vy = -GOOMBA_DYING_SPEED;
 		ay = GOOMBA_GRAVITY_DYING;
 		break;
@@ -251,7 +251,7 @@ void CRedGoomba::SetState(int state)
 	case GOOMBA_STATE_DIE_BY_COLLISION:
 		die_start = GetTickCount64();
 		//y += (GOOMBA_BBOX_HEIGHT - GOOMBA_BBOX_HEIGHT_DIE) / 2;
-		vx = GOOMBA_VX_DIE_SPEED;
+		vx = GOOMBA_VX_DIE_SPEED * nx;
 		vy = -GOOMBA_DYING_SPEED;
 		ay = GOOMBA_GRAVITY_DYING;
 		break;

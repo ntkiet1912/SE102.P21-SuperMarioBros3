@@ -84,10 +84,9 @@ void CGoalRouletteIcon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// need to seperate it into a small function because it causes this error below
 	// Exception thrown at 0x793B896F (d3dx9d_43.dll) in 05-SceneManager.exe:
 	// 0xC0000005: Access violation reading location 0x00000080.
-	if(GetTickCount64() - deleteTime < 1000)
+	if(GetTickCount64() - deleteTime < 5000)
 	{
-		isDeleted = true;
-
+		CGameObject::Delete();
 	}
 	CGameObject::Update(dt, coObjects);
 	CCollision::GetInstance()->Process(this, dt, coObjects);

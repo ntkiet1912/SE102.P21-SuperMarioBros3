@@ -156,6 +156,7 @@
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="ButtonBrick.cpp" />
     <ClCompile Include="DamageEffect.cpp" />
+    <ClCompile Include="CollisionEffect.cpp" />
     <ClCompile Include="DataManager.cpp" />
     <ClCompile Include="DeadZone.cpp" />
     <ClCompile Include="Decoration.cpp" />
@@ -165,6 +166,7 @@
     <ClCompile Include="EnemyInfo.cpp" />
     <ClCompile Include="FireBullet.cpp" />
     <ClCompile Include="FirePiranha.cpp" />
+    <ClCompile Include="FlyingGround.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -188,6 +190,7 @@
     <ClCompile Include="ScoreEffect.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Sprites.cpp" />
+    <ClCompile Include="Tail.cpp" />
     <ClCompile Include="Textures.cpp" />
     <ClCompile Include="UpgradeMarioLevel.cpp" />
     <ClCompile Include="Utils.cpp" />
@@ -206,6 +209,7 @@
     <ClInclude Include="Button.h" />
     <ClInclude Include="ButtonBrick.h" />
     <ClInclude Include="DamageEffect.h" />
+    <ClInclude Include="CollisionEffect.h" />
     <ClInclude Include="DataManager.h" />
     <ClInclude Include="DeadZone.h" />
     <ClInclude Include="Decoration.h" />
@@ -215,6 +219,7 @@
     <ClInclude Include="EnemyInfo.h" />
     <ClInclude Include="FireBullet.h" />
     <ClInclude Include="FirePiranha.h" />
+    <ClInclude Include="FlyingGround.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="GameObject.h" />
@@ -235,6 +240,7 @@
     <ClInclude Include="ScoreEffect.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Sprites.h" />
+    <ClInclude Include="Tail.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Textures.h" />
     <ClInclude Include="UpgradeMarioLevel.h" />

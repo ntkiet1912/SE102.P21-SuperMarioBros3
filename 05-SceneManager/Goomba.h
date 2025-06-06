@@ -7,9 +7,9 @@
 #define GOOMBA_FLYING_SPEED 0.25f
 #define GOOMBA_BOUNCE_SPEED 0.13f
 
-#define GOOMBA_VX_DIE_SPEED 0.1f
+#define GOOMBA_VX_DIE_SPEED 0.05f
 #define GOOMBA_DYING_SPEED 0.2f
-#define GOOMBA_GRAVITY_DYING 0.0003f
+#define GOOMBA_GRAVITY_DYING 0.0006f
 
 
 #define GOOMBA_BBOX_WIDTH 16
@@ -18,6 +18,7 @@
 #define GOOMBA_BBOX_WING_HEIGHT 20
 
 #define GOOMBA_DIE_TIMEOUT 500
+#define TIME_EFFECT_TIMEOUT 500
 
 #define GOOMBA_STATE_WALKING 100
 #define GOOMBA_STATE_DIE 200
@@ -35,6 +36,7 @@
 #define ID_ANI_RED_GOOMBA_YESWING_FLYING 5103
 #define ID_ANI_RED_GOOMBA_DIE 5108
 #define ID_ANI_RED_GOOMBA_DIE_BY_COLLISION 5109
+#define ID_ANI_GOOMBA_TIME_EFFECT 5110
 
 class CGoomba : public CGameObject
 {
@@ -43,7 +45,7 @@ protected:
 	float ay; 
 
 	ULONGLONG die_start;
-
+	ULONGLONG time_effect;
 	virtual void GetBoundingBox(float &left, float &top, float &right, float &bottom);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects);
 	virtual void Render();

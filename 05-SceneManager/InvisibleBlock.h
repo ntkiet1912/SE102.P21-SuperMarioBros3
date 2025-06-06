@@ -14,10 +14,10 @@ public:
 		: CGameObject(x, y), length(length), cellWidth(cellWidth), cellHeight(cellHeight) {
 		this->isBlock = isBlock;
 	}
-	void Render();
+	virtual void Render() ;
 	void Update(DWORD dt) {}
 	void GetBoundingBox(float& l, float& t, float& r, float& b);
-	void RenderBoundingBox();
-	int IsDirectionColliable(float nx, float ny);
+	virtual void RenderBoundingBox();
+	virtual int IsDirectionColliable(float nx, float ny);
 	
 };

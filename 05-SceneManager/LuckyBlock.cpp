@@ -13,7 +13,7 @@ void CLuckyBlock::Render()
 	else
 		aniId = ID_ANI_LUCKY_BLOCK_NORMAL;
 	CAnimations::GetInstance()->Get(aniId)->Render(x, y);
-	//RenderBoundingBox();
+	RenderBoundingBox();
 }
 void CLuckyBlock::OnNoCollision(DWORD dt)
 {
@@ -85,7 +85,12 @@ void CLuckyBlock::spawnItem()
 	switch (containItemIndex)
 	{
 	case ITEM_UPGRADELEVEL:
-		if (mario->getLevel() == 1)
+		if (mario->getLevel() > 1)
+		{
+			item = new CLeaf(x, y - 8);
+
+		}
+		else
 		{
 			// mushroom always want to move to the opposite side of Mario 
 			// so new variable spawnAndMoveToLeft is added
@@ -98,10 +103,6 @@ void CLuckyBlock::spawnItem()
 				item = new CMushroomUpgradingMarioLevel(x, y, false);
 
 			}
-		}
-		else if (mario->getLevel() > 1)
-		{
-			item = new CLeaf(x, y - 8);
 		}
 		break;
 	case ITEM_COIN:

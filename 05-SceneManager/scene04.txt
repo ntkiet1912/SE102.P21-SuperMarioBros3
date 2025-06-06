@@ -1,6 +1,7 @@
 # list of object assets to load in this scene
 [ASSETS]
 mario.txt
+mario_with_tail.txt
 background_scene04.txt
 goldenBrick.txt
 coin.txt

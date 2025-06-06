@@ -40,7 +40,7 @@ public:
 	virtual void Delete() { isDeleted = true;  }
 	bool IsDeleted() { return isDeleted; }
 
-	void RenderBoundingBox();
+	virtual void RenderBoundingBox();
 
 	CGameObject();
 	CGameObject(float x, float y) :CGameObject() { this->x = x; this->y = y; }
@@ -71,9 +71,12 @@ public:
 	~CGameObject();
 
 	static bool IsDeleted(const LPGAMEOBJECT &o) { return o->isDeleted; }
+	void setNx(int nx) { this->nx = nx; }
 	int getNx() { return nx; }
 	float getX() { return x; }
 	float getY() { return y; }
 	void setX(float x) { this->x = x; }
 	void setY(float y) { this->y = y; }
+	float getVx() { return vx; }
+	float getVy() { return vy; }
 };

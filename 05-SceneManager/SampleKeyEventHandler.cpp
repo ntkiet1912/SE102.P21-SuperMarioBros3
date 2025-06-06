@@ -29,6 +29,7 @@ void CSampleKeyHandler::OnKeyDown(int KeyCode)
 		break;
 	case DIK_S:
 		mario->SetState(MARIO_STATE_JUMP);
+		mario->canFly = true;
 		break;
 	case DIK_1:
 		mario->SetLevel(MARIO_LEVEL_SMALL);
@@ -48,6 +49,10 @@ void CSampleKeyHandler::OnKeyDown(int KeyCode)
 
 	case DIK_A:
 		mario->setCanHold(true);
+		if (mario->getLevel() == 3 && !mario->getIsSitting())
+		{
+			mario->SetState(MARIO_STATE_TAIL_ATTACK);
+		}
 		break;
 
 	}
@@ -63,6 +68,7 @@ void CSampleKeyHandler::OnKeyUp(int KeyCode)
 	{
 	case DIK_S:
 		mario->SetState(MARIO_STATE_RELEASE_JUMP);
+		mario->canFly = false;
 		break;
 	case DIK_DOWN:
 		mario->SetState(MARIO_STATE_SIT_RELEASE);
@@ -82,6 +88,10 @@ void CSampleKeyHandler::KeyState(BYTE* states)
 	if (((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer() == NULL) return;
 	LPGAME game = CGame::GetInstance();
 	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
+	if (!mario->getIsActive())
+	{
+		return;
+	}
 	if (mario->GetState() == MARIO_ENDING_SCENE) return;
 	if (game->IsKeyDown(DIK_UP)) {
 			mario->isAbleToRise = true;
