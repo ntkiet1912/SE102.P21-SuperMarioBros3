@@ -30,7 +30,13 @@ buttonBrick.txt
 # type	x	y	extra_settings per object type
 # type: 0 = Mario , 1 = Brick, 2 = Goomba, 3 = Koopas , 6 = Decoration
 # See OBJECT_TYPE constants in AssetIDs.h
+
+
+#Mario
+0	2400	-150
+
 #Decoration	
+
 6	25	178	3	0	0	0	-16	0	-32	73000	73000	71000
 6	41	178	4	0	0	0	-16	0	-32	0	-48	77000	76000	75000	71000
 6	57	178	4	0	0	0	-16	0	-32	0	-48	77000	75000	74000	72000
@@ -266,16 +272,14 @@ buttonBrick.txt
 30	2242	162
 30	2258	178
 
+
+
 #BIG_PIPE
 40	2408	-120	12	0
 8	2401	178	2	16	16	2	0	0	0	-16	113000	113000
 8	2417	178	2	16	16	2	0	0	0	-16	114000	114000
 40	2480	162	2
-#Mario
-0	0	350
 
-#Portal
-50	40	300	60	370	7
 #InvisibleBlock
 10	712	179	3	16	16	1
 10	616	162	7	16	16	0

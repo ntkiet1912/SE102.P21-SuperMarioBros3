@@ -111,7 +111,12 @@ void CSampleKeyHandler::KeyState(BYTE* states)
 	}
 	else
 	{
-		mario->SetState(MARIO_STATE_IDLE);
-		mario->setCanSit(true);
+		if (mario != nullptr) {
+			mario->SetState(MARIO_STATE_IDLE);
+			mario->setCanSit(true);
+		}
+		else {
+			OutputDebugString(L"mario is nullptr!\n");
+		}
 	}
 }

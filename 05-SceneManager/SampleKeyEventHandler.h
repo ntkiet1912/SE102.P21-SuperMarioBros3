@@ -9,4 +9,5 @@ public:
 	virtual void OnKeyDown(int KeyCode);
 	virtual void OnKeyUp(int KeyCode);
 	CSampleKeyHandler(LPSCENE s) :CSceneKeyHandler(s) {};
+
 };

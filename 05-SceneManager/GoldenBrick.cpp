@@ -33,6 +33,7 @@ void CGoldenBrick::Render()
 	int aniId = ID_ANI_GOLDEN_BRICK_NORMAL;
 	if (state == GOLDEN_BRICK_STATE_GOLD) aniId = ID_ANI_GOLDEN_BRICK_GOLD;
 	CAnimations::GetInstance()->Get(aniId)->Render(x, y);
+	//RenderBoundingBox();
 }
 
 int CGoldenBrick::IsBlocking()
