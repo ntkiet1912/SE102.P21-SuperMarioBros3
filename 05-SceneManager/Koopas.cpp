@@ -12,7 +12,7 @@
 #include "Block.h"
 #include "DataManager.h"
 #include "DeadZone.h"
-
+#include "GameManager.h"
 
 CKoopas::CKoopas(float x, float y, int isRed, int yesWing) : CGameObject(x, y)
 {
@@ -59,6 +59,11 @@ void CKoopas::OnNoCollision(DWORD dt)
 	y += vy * dt;
 
 };
+
+
+void CKoopas::GetStomped() {
+	CGameManager::GetInstance()->StomKoopa(x, y - KOOPAS_BBOX_HEIGHT);
+}
 
 void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 {
@@ -109,6 +114,7 @@ void CKoopas::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 	if (e->nx != 0) {
 		goomba->SetState(GOOMBA_STATE_DIE_BY_COLLISION);
 		CDataManager::GetInstance()->AddScore(1000);
+		goomba->GetStomped();
 	}
 }
 
@@ -119,6 +125,7 @@ void CKoopas::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 	{
 		koopas->SetState(KOOPAS_STATE_DIE);
 		CDataManager::GetInstance()->AddScore(1000);
+		koopas->GetStomped();
 		if (e->nx > 0)
 			koopas->vx = -KOOPAS_VX_DIE_SPEED;
 		else

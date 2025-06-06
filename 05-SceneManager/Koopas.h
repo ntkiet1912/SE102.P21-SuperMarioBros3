@@ -99,5 +99,5 @@ public:
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	CKoopas(float x, float y, int isRed, int yesWing);
 	virtual void SetState(int state);
-
+	virtual void GetStomped();
 };

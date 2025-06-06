@@ -15,13 +15,7 @@
 #define ID_ANI_SCORE_8000 78000
 #define ID_ANI_ONEUP_EFFECT 70001
 
-#define ID_ANI_GOAL_CARD_MUSHROOM_EFFECT 130000000
-#define ID_ANI_GOAL_CARD_TREE_EFFECT 130000002
-#define ID_ANI_GOAL_CARD_STAR_EFFECT 130000004
-
-#define ID_ANI_TEXT_1 140000000
-#define ID_ANI_TEXT_2 140000001
-#define DOUBLE_SCORE_TIME_OUT 500
+#define DOUBLE_SCORE_TIME_OUT 2000
 CGameManager* CGameManager::instance = nullptr;
 CGameManager* CGameManager::GetInstance()
 {
@@ -87,7 +81,7 @@ void CGameManager::StomKoopa(float x, float y)
 		AddScoreEffect(x, y, lastScoreKoopa);
 		break;
 	}
-
+	objects.push_back(new CScoreEffect(x, y, GetIdAniScore(lastScoreKoopa)));
 	lastTimeStomKoopa = GetTickCount64();
 }
 
@@ -95,6 +89,7 @@ void CGameManager::StomGoomba(float x, float y)
 {
 	ULONGLONG deltaTime = ((CPlayScene*)CGame::GetInstance()->GetCurrentScene())->GetDeltaTime(lastTimeStomGoomba);
 	if (deltaTime < DOUBLE_SCORE_TIME_OUT) {
+		DebugOut(L"Stom Goomba: %d\n", lastScoreGoomba);
 		lastScoreGoomba *= 2;
 	}
 	else {
@@ -109,21 +104,6 @@ void CGameManager::Update(DWORD dt)
 	for (int i = 0; i < objects.size(); i++) {
 		objects[i]->Update(dt, NULL);
 	}
-	/*if (winTime >= 0) {
-		winTime -= dt;
-		if (winTime < 1000 && text1 == NULL) {
-			text1 = new CTextEffect(2710, 270, ID_ANI_TEXT_1);
-		}
-		if (winTime < 0 && text2 == NULL) {
-			text2 = new CTextEffect(2710, 300, ID_ANI_TEXT_2);
-		}
-		if (winTime < 0 && card == NULL)
-		{
-			card = new CTextEffect(2773, 300, 140000002 + idCard);
-			CPlayHUD::GetInstance()->AddCard(idCard);
-		}
-
-	}*/
 	PurgeDeletedObjects();
 
 }

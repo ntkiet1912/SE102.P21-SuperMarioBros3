@@ -6,6 +6,7 @@
 #include "CollisionEffect.h"
 #include "PlayScene.h"
 #include "FirePiranha.h"
+#include "GameManager.h"
 
 void CTail::GetBoundingBox(float& l, float& t, float& r, float& b)
 {
@@ -70,6 +71,7 @@ void CTail::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 	if (goomba->GetState() != GOOMBA_STATE_DIE || goomba->GetState() != GOOMBA_STATE_DIE_BY_COLLISION)
 	{
 		goomba->SetState(GOOMBA_STATE_DIE_BY_COLLISION);
+		goomba->GetStomped();
 	}
 	effectSpawn(goomba);
 }
@@ -87,6 +89,7 @@ void CTail::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 	else
 		koopa->setNx(1);
 	koopa->SetState(KOOPAS_STATE_SHELL_UPSIDE_DOWN);
+	CGameManager::GetInstance()->AddScoreEffect(x, y - KOOPAS_BBOX_HEIGHT, 100);
 	//koopa->SetState(KOOPAS_STATE_SHELL);
 	effectSpawn(koopa);
 }
@@ -94,6 +97,7 @@ void CTail::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 void CTail::OnCollisionWithFirePiranha(LPCOLLISIONEVENT e)
 {
 	CFirePiranha* fp = dynamic_cast<CFirePiranha*>(e->obj);
+	CGameManager::GetInstance()->AddScoreEffect(x, y - 16, 100);
 	fp->Delete();
 	effectSpawn(fp);
 }

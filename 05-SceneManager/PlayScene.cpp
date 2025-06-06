@@ -26,7 +26,7 @@
 #include "WarpPipe.h"
 #include "BackgroundTile.h"
 #include "DeadZone.h"
-
+#include "GameManager.h"
 #include "SampleKeyEventHandler.h"
 
 using namespace std;
@@ -649,7 +649,7 @@ void CPlayScene::Update(DWORD dt)
 		}
 	}
 
-
+	CGameManager::GetInstance()->Update(dt);
 	// Cập nhật HUD
 	CPlayHUD::GetInstance()->SetTime(timeRemaining);
 
@@ -680,6 +680,7 @@ void CPlayScene::Render()
 			pipes[i]->Render();
 	}
 	player->Render();
+	CGameManager::GetInstance()->Render();
 	CPlayHUD::GetInstance()->Render();
 }
 

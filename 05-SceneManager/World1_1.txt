@@ -33,7 +33,7 @@ buttonBrick.txt
 
 
 #Mario
-0	2400	-150
+0	100	50
 
 #Decoration	
 

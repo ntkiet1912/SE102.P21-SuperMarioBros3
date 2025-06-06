@@ -22,6 +22,7 @@
 #include "ButtonBrick.h"	
 #include "DeadZone.h"
 #include "WarpPipe.h"
+#include "GameManager.h"
 
 float speedMeter = 0.0f;
 const float SPEED_METER_MAX = 1.0f; 
@@ -289,7 +290,7 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		if (e->obj->GetState() == GOLDEN_BRICK_STATE_GOLD) {
 			e->obj->Delete();
 			CDataManager::GetInstance()->AddCoin(1);
-			CDataManager::GetInstance()->AddCoin(100);
+			CDataManager::GetInstance()->AddScore(50);
 			CPlayHUD::GetInstance()->SetCoin(CDataManager::GetInstance()->GetCoin());
 			CPlayHUD::GetInstance()->SetScore(CDataManager::GetInstance()->GetScore());
 		}
@@ -359,10 +360,12 @@ void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 		if (redGoomba && redGoomba->GetState() == GOOMBA_STATE_YES_WING)
 		{
 			redGoomba->SetState(GOOMBA_STATE_NO_WING);
+			redGoomba->GetStomped();
 		}
 		else
 		{
 			goomba->SetState(GOOMBA_STATE_DIE);
+			goomba->GetStomped();
 			CDataManager::GetInstance()->AddScore(1000);
 			CPlayHUD::GetInstance()->SetScore(CDataManager::GetInstance()->GetScore());
 		}
@@ -418,20 +421,23 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 		{
 			checkNx(this, koopas);
 			koopas->SetState(KOOPAS_STATE_SHELL_MOVING);
-			CDataManager::GetInstance()->AddScore(1000);
+			CDataManager::GetInstance()->AddScore(200);
+			CGameManager::GetInstance()->AddScoreEffect(koopasX, koopasY - KOOPAS_BBOX_HEIGHT, 200);
 
 		}
 		else if (koopas->GetState() == KOOPAS_STATE_WING)
 		{
 			checkNx(this, koopas);
 			koopas->SetState(KOOPAS_STATE_WALKING);
-			CDataManager::GetInstance()->AddScore(1000);
+			CDataManager::GetInstance()->AddScore(100);
+			CGameManager::GetInstance()->AddScoreEffect(koopasX, koopasY - KOOPAS_BBOX_HEIGHT, 100);
 
 		}
 		else
 		{
 			koopas->SetState(KOOPAS_STATE_SHELL);
-			CDataManager::GetInstance()->AddScore(1000);
+			CDataManager::GetInstance()->AddScore(100);
+			CGameManager::GetInstance()->AddScoreEffect(koopasX, koopasY - KOOPAS_BBOX_HEIGHT, 100);
 		}
 		return;
 	}
@@ -486,19 +492,20 @@ void CMario::OnCollisionWithLuckyBlock(LPCOLLISIONEVENT e)
 
 void CMario::OnCollisionWithUpgradingItem(LPCOLLISIONEVENT e)
 {
-	CDataManager::GetInstance()->AddScore(1000);
 
 	if (dynamic_cast<CMushroom1UP*>(e->obj))
 	{
 		DebugOut(L"Life++\n");
+		CGameManager::GetInstance()->AddOneUpEffect(x, y - 16);	
 	}
 	else if (level == 1 && dynamic_cast<CMushroomUpgradingMarioLevel*>(e->obj))
 	{
 		levelUp();
+		CGameManager::GetInstance()->AddScoreEffect(x, y - 16, 1000);
 	}
 	else if (level >= 2 && dynamic_cast<CLeaf*>(e->obj))
 	{
-		if (level == 3)	CDataManager::GetInstance()->AddScore(1000);
+		if (level == 3)	CGameManager::GetInstance()->AddScoreEffect(x, y - 16, 1000);
 		else levelUp();
 	}
 	e->obj->Delete();
