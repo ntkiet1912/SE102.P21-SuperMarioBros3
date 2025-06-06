@@ -42,7 +42,7 @@
 
 #define ID_ANI_MARIO_WALKING_RIGHT 500
 #define ID_ANI_MARIO_WALKING_LEFT 501
-
+#define ID_ANI_MARIO_WARPING 550
 #define ID_ANI_MARIO_RUNNING_RIGHT 600
 #define ID_ANI_MARIO_RUNNING_LEFT 601 
 
@@ -76,6 +76,7 @@
 #define ID_ANI_MARIO_SMALL_WALKING_LEFT 1201
 
 #define ID_ANI_MARIO_SMALL_RUNNING_RIGHT 1300
+#define ID_ANI_MARIO_SMALL_WARPING 1350
 #define ID_ANI_MARIO_SMALL_RUNNING_LEFT 1301
 
 #define ID_ANI_MARIO_SMALL_BRACE_RIGHT 1400
@@ -101,6 +102,7 @@
 #define ID_ANI_MARIO_WITH_TAIL_IDLE_LEFT -401
 
 #define ID_ANI_MARIO_WITH_TAIL_WALKING_RIGHT -500
+#define ID_ANI_MARIO_WITH_TAIL_WARPING -550
 #define ID_ANI_MARIO_WITH_TAIL_WALKING_LEFT -501
 
 #define ID_ANI_MARIO_WITH_TAIL_RUNNING_RIGHT -600
@@ -173,10 +175,10 @@ class CMario : public CGameObject
 	ULONGLONG untouchable_start;
 	BOOLEAN isOnPlatform;
 	int coin; 
-	
+	float warpTime;
 	ULONGLONG kick_start;
 	bool kick_flag;
-
+	
 	bool canHold;
 	bool isHolding;
 	CKoopas* heldKoopas;
@@ -200,6 +202,9 @@ class CMario : public CGameObject
 	int GetAniIdWithTail();
 
 public:
+	bool isAbleToRise;
+	bool isAbleToDive;
+	float vwarp;
 	CMario(float x, float y) : CGameObject(x, y)
 	{
 		isSitting = false;
@@ -211,7 +216,8 @@ public:
 		untouchable = 0;
 		untouchable_start = -1;
 		isOnPlatform = false;
-
+		isAbleToRise = false;
+		isAbleToDive = false;
 		kick_flag = false;
 		kick_start = -1;
 		
@@ -257,4 +263,10 @@ public:
 	bool getCanSit() { return canSit; }
 	bool getIsUntouchable() { return untouchable; }
 	bool getIsSitting() { return isSitting; }
+
+	void Warp(float v, int time) {
+			warpTime = time;
+		vwarp = v;
+	}
+
 };

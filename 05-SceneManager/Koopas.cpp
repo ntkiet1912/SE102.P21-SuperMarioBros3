@@ -11,6 +11,7 @@
 #include "InvisibleBlock.h"
 #include "Block.h"
 #include "DataManager.h"
+#include "DeadZone.h"
 
 
 CKoopas::CKoopas(float x, float y, int isRed, int yesWing) : CGameObject(x, y)
@@ -106,6 +107,13 @@ void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithKoopas(e);
 	else if (dynamic_cast<CLuckyBlock*>(e->obj))
 		OnCollisionWithLuckyBlock(e);
+	else if (dynamic_cast<CDeadZone*>(e->obj)) {
+		if (yesWing)
+			SetState(KOOPAS_STATE_WING);
+		else
+			SetState(KOOPAS_STATE_WALKING_LEFT);
+			return;
+	}
 
 }
 

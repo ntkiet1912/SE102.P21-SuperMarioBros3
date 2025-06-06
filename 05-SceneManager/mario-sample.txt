@@ -1,5 +1,5 @@
 [SETTINGS]
-start	6
+start	4
 width	256
 height	226
 
@@ -9,9 +9,10 @@ height	226
 0	intro.txt
 1	scene01.txt
 2	scene02.txt
+4	scene04.txt
 5	scene0005.txt
 6	World1_1.txt
-
+7 	hidden.txt
 
 # id	file 
 [TEXTURES]
@@ -25,5 +26,5 @@ height	226
 60	textures\misc2.png
 70	textures\hud.png
 71	textures\hud2.png
- 
+80	textures\objects.png
 -10	textures\Goal_Roulette.png

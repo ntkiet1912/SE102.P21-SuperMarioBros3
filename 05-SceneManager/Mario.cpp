@@ -12,17 +12,26 @@
 #include "FirePiranha.h"
 #include "FireBullet.h"
 #include "Koopas.h"
-
+#include "GoldenBrick.h"
 #include "Collision.h"
 #include "LuckyBlock.h"
 #include "UpgradeMarioLevel.h"
 #include "GoalRoulette.h"
+#include "ButtonBrick.h"	
+#include "DeadZone.h"
+#include "WarpPipe.h"
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	// Update heldKoopas' position
 	// move to here to optimize koopas' shell movement more smooth 
 	// but can't be like real game 100%
+	if (warpTime > 0) {
+			y += vwarp * dt;
+		warpTime -= dt;
+		return;
+	}
+
 	if (heldKoopas && canHold && isHolding)
 	{
 		PositionHeldKoopas(heldKoopas);
@@ -105,6 +114,10 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 	{
 		vy = 0;
 		if (e->ny < 0) isOnPlatform = true;
+		if (dynamic_cast<CWarpPipe*>(e->obj)) {
+			((CWarpPipe*)e->obj)->HandleWithMario(e, this);
+			return;
+		}
 	}
 	else
 		if (e->nx != 0 && e->obj->IsBlocking())
@@ -132,6 +145,36 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithUpgradingItem(e);
 	else if (dynamic_cast<CGoalRouletteIcon*>(e->obj))
 		OnCollisionWithGoalRouletteIcon(e);
+	else if (dynamic_cast<CGoldenBrick*>(e->obj)) {
+			if (e->ny > 0) {
+				CGoldenBrick* goldenBrick = dynamic_cast<CGoldenBrick*>(e->obj);
+				if (goldenBrick->GetState() == GOLDEN_BRICK_STATE_NORMAL) {
+					if (level == MARIO_LEVEL_SMALL) goldenBrick->HitByMario();
+					else goldenBrick->Break();
+				}
+			}
+
+		if (e->obj->GetState() == GOLDEN_BRICK_STATE_GOLD) {
+			e->obj->Delete();
+			CDataManager::GetInstance()->AddCoin(1);
+			CDataManager::GetInstance()->AddCoin(100);
+			CPlayHUD::GetInstance()->SetCoin(CDataManager::GetInstance()->GetCoin());
+			CPlayHUD::GetInstance()->SetScore(CDataManager::GetInstance()->GetScore());
+		}
+	}
+	else if (dynamic_cast<CButtonBrick*>(e->obj)) {
+			CButtonBrick* buttonBrick = dynamic_cast<CButtonBrick*>(e->obj);
+		if (e->ny > 0) {
+			buttonBrick->SetState(BUTTON_BRICK_STATE_MOVE_UP);
+		}
+	}
+	else if (dynamic_cast<CButton*>(e->obj)) {
+			if (e->ny < 0 && e->obj->GetState() == BUTTON_STATE_NORMAL)
+				e->obj->SetState(BUTTON_STATE_PRESSED);
+	}
+	else if (dynamic_cast<CDeadZone*>(e->obj)) {
+			SetState(MARIO_STATE_DIE);
+	}
 }
 
 void CMario::OnCollisionWithFirePiranha(LPCOLLISIONEVENT e)
@@ -420,7 +463,7 @@ void CMario::OnCollisionWithGoalRouletteIcon(LPCOLLISIONEVENT e)
 int CMario::GetAniIdSmall()
 {
 	int aniId = -1;
-
+	if (warpTime > 0) return ID_ANI_MARIO_SMALL_WARPING;
 	if (state == MARIO_ENDING_SCENE)
 	{
 		aniId = ID_ANI_MARIO_SMALL_WALKING_RIGHT;
@@ -518,6 +561,7 @@ int CMario::GetAniIdSmall()
 int CMario::GetAniIdBig()
 {
 	int aniId = -1;
+	if (warpTime > 0) return ID_ANI_MARIO_WARPING;
 	if (state == MARIO_ENDING_SCENE)
 	{
 		aniId = ID_ANI_MARIO_WALKING_RIGHT;
@@ -615,6 +659,7 @@ int CMario::GetAniIdBig()
 int CMario::GetAniIdWithTail()
 {
 	int aniId = -1;
+	if (warpTime > 0) return ID_ANI_MARIO_WITH_TAIL_WARPING;
 	if (state == MARIO_ENDING_SCENE)
 	{
 		aniId = ID_ANI_MARIO_WITH_TAIL_WALKING_RIGHT;

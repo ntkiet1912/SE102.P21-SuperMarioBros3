@@ -13,10 +13,12 @@ using namespace std;
 #include "Texture.h"
 #include "KeyEventHandler.h"
 #include "Scene.h"
+#include "GameObject.h"
 
 #define MAX_FRAME_RATE 100
 #define KEYBOARD_BUFFER_SIZE 1024
 #define KEYBOARD_STATE_SIZE 256
+#define MAX_TIME_PLAYSCENE 300
 
 
 
@@ -59,6 +61,9 @@ class CGame
 
 	void _ParseSection_SETTINGS(string line);
 	void _ParseSection_SCENES(string line);
+
+	float time = MAX_TIME_PLAYSCENE;
+		LPGAMEOBJECT player;
 
 public:
 	// Init DirectX, Sprite Handler
@@ -114,6 +119,17 @@ public:
 
 	void _ParseSection_TEXTURES(string line);
 
+
+	float GetGameTime() { return time; }
+		void SetGameTime(float time) {
+		this->time = time;
+	}
+	LPGAMEOBJECT GetPlayer() {
+		return player;
+	}
+	void SetPlayer(LPGAMEOBJECT player) {
+		this->player = player;
+	}
 
 	~CGame();
 };

@@ -1,6 +1,7 @@
 #include "Coin.h"
 #include "debug.h"
 
+
 void CCoin::Render()
 {
 	CAnimations* animations = CAnimations::GetInstance();

@@ -39,9 +39,13 @@ void CSampleKeyHandler::OnKeyDown(int KeyCode)
 	case DIK_0:
 		mario->SetState(MARIO_STATE_DIE);
 		break;
+	case DIK_F3:
+		mario->SetPosition(2279, 80);
+		break;
 	case DIK_R: // reset
 		//Reload();
 		break;
+
 	case DIK_A:
 		mario->setCanHold(true);
 		break;
@@ -75,9 +79,18 @@ void CSampleKeyHandler::OnKeyUp(int KeyCode)
 
 void CSampleKeyHandler::KeyState(BYTE* states)
 {
+	if (((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer() == NULL) return;
 	LPGAME game = CGame::GetInstance();
 	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
 	if (mario->GetState() == MARIO_ENDING_SCENE) return;
+	if (game->IsKeyDown(DIK_UP)) {
+			mario->isAbleToRise = true;
+	}
+	else mario->isAbleToRise = false;
+	if (game->IsKeyDown(DIK_DOWN)) {
+			mario->isAbleToDive = true;
+	}
+	else mario->isAbleToDive = false;
 	if (game->IsKeyDown(DIK_RIGHT))
 	{
 		if (game->IsKeyDown(DIK_A))
@@ -98,7 +111,12 @@ void CSampleKeyHandler::KeyState(BYTE* states)
 	}
 	else
 	{
-		mario->SetState(MARIO_STATE_IDLE);
-		mario->setCanSit(true);
+		if (mario != nullptr) {
+			mario->SetState(MARIO_STATE_IDLE);
+			mario->setCanSit(true);
+		}
+		else {
+			OutputDebugString(L"mario is nullptr!\n");
+		}
 	}
 }

@@ -2,6 +2,7 @@
 #include "Mario.h"
 #include "PlayScene.h"
 #include "UpgradeMarioLevel.h"
+#include "DeadZone.h"
 CGoomba::CGoomba(float x, float y) :CGameObject(x, y)
 {
 	this->ax = 0;
@@ -35,7 +36,10 @@ void CGoomba::OnCollisionWith(LPCOLLISIONEVENT e)
 {
 	if (!e->obj->IsBlocking()) return;
 	if (dynamic_cast<CGoomba*>(e->obj)) return;
-
+	else if (dynamic_cast<CDeadZone*>(e->obj)) {
+		SetState(GOOMBA_STATE_DIE);
+		return;
+	}
 	if (e->ny != 0)
 	{
 		vy = 0;

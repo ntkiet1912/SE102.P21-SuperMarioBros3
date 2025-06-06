@@ -19,6 +19,12 @@
 #include "PlayHUD.h"
 #include "DataManager.h"
 #include "GoalRoulette.h"
+#include "GoldenBrick.h"
+#include "BigPipe.h"
+#include "ButtonBrick.h"
+#include "WarpPipe.h"
+#include "BackgroundTile.h"
+#include "DeadZone.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -36,9 +42,11 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 #define SCENE_SECTION_ASSETS	1
 #define SCENE_SECTION_OBJECTS	2
 
+#define SCENE_SECTION_SETTING 3
 #define ASSETS_SECTION_UNKNOWN -1
 #define ASSETS_SECTION_SPRITES 1
 #define ASSETS_SECTION_ANIMATIONS 2
+#define ASSETS_SECTION_TILES 3
 
 #define MAX_SCENE_LINE 1024
 
@@ -97,6 +105,18 @@ void CPlayScene::_ParseSection_ANIMATIONS(string line)
 	CAnimations::GetInstance()->Add(ani_id, ani);
 }
 
+
+void CPlayScene::_ParseSection_TILES(string line)
+{
+	vector<string> tokens = split(line);
+	if (tokens.size() < 3) return; // skip invalid lines
+	int ID = atoi(tokens[0].c_str());
+	int x = atoi(tokens[1].c_str());
+	int y = atoi(tokens[2].c_str());
+	CBackgroundTile* tile = new CBackgroundTile(CSprites::GetInstance()->Get(ID), x, y);
+	tiles.push_back(tile);
+}
+
 /*
 	Parse a line in section [OBJECTS]
 */
@@ -119,6 +139,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		if (player != NULL)
 		{
 			DebugOut(L"[ERROR] MARIO object was created before!\n");
+			objects.push_back(player);
 			return;
 		}
 		obj = new CMario(x, y);
@@ -126,6 +147,35 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 		DebugOut(L"[INFO] Player object has been created!\n");
 		break;
+	case OBJECT_TYPE_DEAD_ZONE:
+		obj = new CDeadZone();
+		break;
+	case OBJECT_TYPE_BIG_PIPE:
+	{
+
+		if (tokens.size() < 4) return;
+		int height = atoi(tokens[3].c_str());
+		if (tokens.size() == 5) {
+				obj = new CWarpPipe(x, y, height, atoi(tokens[4].c_str()));
+		}
+		else if (tokens.size() == 4) {
+			obj = new CBigPipe(x, y, height);
+		}
+		else if (tokens.size() == 7) {
+			int headId = atoi(tokens[4].c_str());
+			int bodyId = atoi(tokens[5].c_str());
+			obj = new CWarpPipe(x, y, height, headId, bodyId, atoi(tokens[6].c_str()));
+		}
+		else {
+			int headId = atoi(tokens[4].c_str());
+			int bodyId = atoi(tokens[5].c_str());
+			obj = new CBigPipe(x, y, height, headId, bodyId);
+		}
+		pipes.push_back(obj);
+		break;
+	}
+	case OBJECT_TYPE_BUTTON_BRICK: obj = new CButtonBrick(x, y); break;
+	case OBJECT_TYPE_GOLDEN_BRICK: obj = new CGoldenBrick(x, y); break;
 	case OBJECT_TYPE_GOOMBA:
 	{
 		obj = new CGoomba(x, y);
@@ -291,6 +341,50 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 	objects.push_back(obj);
 }
+void CPlayScene::_ParseSection_SETTING(string line)
+{
+	vector<string> tokens = split(line);
+	if (tokens.size() < 4) return;
+	cminX = atoi(tokens[0].c_str());
+	cmaxX = atoi(tokens[1].c_str());
+	cminY = atoi(tokens[2].c_str());
+	cmaxY = atoi(tokens[3].c_str());
+}
+void CPlayScene::MarioPause(float time)
+{
+	marioPause_start = GetTickCount64();
+	marioPause_time = time;
+	isMarioPaused = true;
+}
+
+void CPlayScene::GamePause()
+{
+	gamePause_time = GetTickCount64();
+	isGamePaused = true;
+
+}
+
+void CPlayScene::GameResume()
+{
+	gameResume_time = GetTickCount64();
+	isGamePaused = false;
+}
+void CPlayScene::GameOver()
+{
+	isGameOver = true;
+}
+
+ULONGLONG CPlayScene::GetDeltaTime(ULONGLONG start)
+{
+	ULONGLONG result = GetTickCount64() - start;
+	if (start < marioPause_start) result -= marioPause_time;
+	if (start < gameResume_time) {
+		if (start > gamePause_time) result -= (gameResume_time - start);
+		else result -= (gameResume_time - gamePause_time);;
+	}
+	return result;
+}
+
 
 void CPlayScene::LoadAssets(LPCWSTR assetFile)
 {
@@ -310,6 +404,7 @@ void CPlayScene::LoadAssets(LPCWSTR assetFile)
 
 		if (line == "[SPRITES]") { section = ASSETS_SECTION_SPRITES; continue; };
 		if (line == "[ANIMATIONS]") { section = ASSETS_SECTION_ANIMATIONS; continue; };
+		if (line == "[TILES]") { section = ASSETS_SECTION_TILES; continue; };
 		if (line[0] == '[') { section = SCENE_SECTION_UNKNOWN; continue; }
 
 		//
@@ -319,6 +414,7 @@ void CPlayScene::LoadAssets(LPCWSTR assetFile)
 		{
 		case ASSETS_SECTION_SPRITES: _ParseSection_SPRITES(line); break;
 		case ASSETS_SECTION_ANIMATIONS: _ParseSection_ANIMATIONS(line); break;
+		case ASSETS_SECTION_TILES: _ParseSection_TILES(line); break;
 		}
 	}
 
@@ -333,7 +429,7 @@ void CPlayScene::Load()
 	timeAccmulator = 0.0f;
 
 	DebugOut(L"[INFO] Start loading scene from : %s \n", sceneFilePath);
-
+	player = CGame::GetInstance()->GetPlayer();
 	ifstream f;
 	f.open(sceneFilePath);
 
@@ -348,6 +444,8 @@ void CPlayScene::Load()
 		if (line[0] == '#') continue;	// skip comment lines	
 		if (line == "[ASSETS]") { section = SCENE_SECTION_ASSETS; continue; };
 		if (line == "[OBJECTS]") { section = SCENE_SECTION_OBJECTS; continue; };
+		if (line == "[SETTING]") { section = SCENE_SECTION_SETTING; continue; };
+		
 		if (line[0] == '[') { section = SCENE_SECTION_UNKNOWN; continue; }
 
 		//
@@ -357,12 +455,14 @@ void CPlayScene::Load()
 		{
 		case SCENE_SECTION_ASSETS: _ParseSection_ASSETS(line); break;
 		case SCENE_SECTION_OBJECTS: _ParseSection_OBJECTS(line); break;
+		case SCENE_SECTION_SETTING: _ParseSection_SETTING(line); break;
 		}
 	}
 
 	f.close();
 
 	DebugOut(L"[INFO] Done loading scene  %s\n", sceneFilePath);
+	time = CGame::GetInstance()->GetGameTime();
 }
 
 // considered is one object inside the camera ? 
@@ -455,16 +555,15 @@ void CPlayScene::Update(DWORD dt)
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
 	if (player == NULL) return;
 
-	// Update camera to follow mario
+	// Update camera to follow marioAdd commentMore actions
 	float cx, cy;
 	player->GetPosition(cx, cy);
 
 	CGame* game = CGame::GetInstance();
-	cx -= game->GetBackBufferWidth() / 2;
+		cx -= game->GetBackBufferWidth() / 2;
 	cy -= game->GetBackBufferHeight() / 2;
-	if (cx < 0) cx = 0;
-	if (cx > 2495) cx = 2495;
-	CGame::GetInstance()->SetCamPos(cx, 0.0f /*cy*/);
+	CGame::GetInstance()->SetCamPos(cx, cy);
+
 
 	PurgeDeletedObjects();
 
@@ -483,6 +582,7 @@ void CPlayScene::Update(DWORD dt)
 			return;
 		}
 	}
+
 
 	// Cập nhật HUD
 	CPlayHUD::GetInstance()->SetTime(timeRemaining);
@@ -503,10 +603,15 @@ void CPlayScene::CleanUpDeletedObjects()
 }
 void CPlayScene::Render()
 {
+	for (int i = 0; i < tiles.size(); i++)
+		tiles[i]->Draw();
 	for (int i = 0; i < objects.size(); i++)
 	{
 		if (dynamic_cast<CMario*>(objects[i])) continue;
 		objects[i]->Render();	
+	}
+	for (int i = 0; i < pipes.size(); i++) {
+			pipes[i]->Render();
 	}
 	player->Render();
 	CPlayHUD::GetInstance()->Render();
@@ -537,11 +642,20 @@ void CPlayScene::Clear()
 */
 void CPlayScene::Unload()
 {
-	for (int i = 0; i < objects.size(); i++)
+	for (int i = 1; i < objects.size(); i++)
 		delete objects[i];
 
+	for (int i = 0; i < tiles.size(); i++) 
+		delete tiles[i];
+		tiles.clear();
+
+	pipes.clear();
 	objects.clear();
+	CGame::GetInstance()->SetPlayer(player);
 	player = NULL;
+
+	CPlayHUD::GetInstance()->Clear();
+	 CGame::GetInstance()->SetGameTime(time);
 
 	DebugOut(L"[INFO] Scene %d unloaded! \n", id);
 }
