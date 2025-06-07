@@ -51,10 +51,18 @@ void CGoalRouletteIcon::spawnGoalRouletteObjects()
 {
 	CPlayScene* scene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
 	vector<LPGAMEOBJECT>& objects = scene->GetObjects();
-
-	objects.push_back(new CGoalRoulette(2510, 70, iconType));
-	objects.push_back(new CGoalRoulette(2438, 48, COURSECLEAR_GOALROULETTE));
-	objects.push_back(new CGoalRoulette(2428, 62, YOUGOTACARD_GOALROULETTE));
+	if (scene->getID() == 6)
+	{
+		objects.push_back(new CGoalRoulette(2910, 70, iconType));
+		objects.push_back(new CGoalRoulette(2838, 48, COURSECLEAR_GOALROULETTE));
+		objects.push_back(new CGoalRoulette(2828, 62, YOUGOTACARD_GOALROULETTE));
+	}
+	else
+	{
+		objects.push_back(new CGoalRoulette(2600, 70, iconType));
+		objects.push_back(new CGoalRoulette(2530, 48, COURSECLEAR_GOALROULETTE));
+		objects.push_back(new CGoalRoulette(2520, 62, YOUGOTACARD_GOALROULETTE));
+	}
 }
 
 void CGoalRouletteIcon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -84,10 +92,10 @@ void CGoalRouletteIcon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// need to seperate it into a small function because it causes this error below
 	// Exception thrown at 0x793B896F (d3dx9d_43.dll) in 05-SceneManager.exe:
 	// 0xC0000005: Access violation reading location 0x00000080.
-	if(GetTickCount64() - deleteTime < 5000)
-	{
-		CGameObject::Delete();
-	}
+	//if(GetTickCount64() - deleteTime < 5000)
+	//{
+	//	CGameObject::Delete();
+	//}
 	CGameObject::Update(dt, coObjects);
 	CCollision::GetInstance()->Process(this, dt, coObjects);
 }

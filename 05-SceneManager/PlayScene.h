@@ -76,6 +76,7 @@ public:
 	vector<LPGAMEOBJECT>& GetObjects() { return objects; }
 	void setMaxCx(float x) { maxCx= x; }
 	float getMaxCx() { return maxCx; }
+	int getID() { return id; }
 };
 
 typedef CPlayScene* LPPLAYSCENE;
