@@ -491,7 +491,7 @@ void CMario::OnCollisionWithPortal(LPCOLLISIONEVENT e)
 {
 	CPortal* p = (CPortal*)e->obj;
 	CGame::GetInstance()->InitiateSwitchScene(p->GetSceneId());
-	SetPosition(1880, 50);
+	SetPosition(50, 20);
 	SetState(MARIO_STATE_IDLE);
 }
 

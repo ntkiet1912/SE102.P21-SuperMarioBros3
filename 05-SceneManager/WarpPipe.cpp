@@ -14,7 +14,9 @@ void CWarpPipe::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 		if (state == PIPE_STATE_DOWN) {
 			int nextSceneid = ((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetNextSceneID();
-			if (nextSceneid == 4) {
+			int currentID = ((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->getID();
+
+			if (nextSceneid == 4 && currentID == 4) {
 				CGame::GetInstance()->InitiateSwitchScene(8);
 				mario->SetPosition(2136, 20);
 

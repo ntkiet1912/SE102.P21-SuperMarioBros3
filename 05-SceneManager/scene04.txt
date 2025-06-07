@@ -24,8 +24,7 @@ HUD.txt
 # See OBJECT_TYPE constants in AssetIDs.h
 
 #Mario 
-0	600	-100
-0	1890	100
+0	50	20
 
 #Invisible_Block
 10	0	82	14	16	16	1
