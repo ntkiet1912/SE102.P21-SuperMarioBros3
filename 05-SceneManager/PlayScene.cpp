@@ -26,8 +26,10 @@
 #include "WarpPipe.h"
 #include "BackgroundTile.h"
 #include "DeadZone.h"
-
+#include "GameManager.h"
 #include "SampleKeyEventHandler.h"
+#include "Piranha.h"
+#include "Piranha_Pipe.h"
 
 using namespace std;
 
@@ -151,6 +153,19 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case OBJECT_TYPE_DEAD_ZONE:
 		obj = new CDeadZone();
 		break;
+	case OBJECT_TYPE_PIRANHA:
+	{
+		if (tokens.size() < 5) return;
+		int height = atoi(tokens[3].c_str());
+		int pipeHeight = atoi(tokens[4].c_str());
+		LPPIRANHAPIPE pipe = new CPiranha_Pipe(
+			x, y + height * PIRANHA_CELL_HEIGHT / 2 + PIPE_CELL_HEIGHT / 2, pipeHeight, NULL
+		);
+		obj = new CPiranha(x, y, height, pipe);
+		pipe->piranhaPlant = (LPPIRANHAPLANT)obj;
+		y += height * PIRANHA_CELL_HEIGHT;
+		break;
+	}
 	case OBJECT_TYPE_BIG_PIPE:
 	{
 
@@ -186,7 +201,12 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	}
 	case OBJECT_TYPE_BRICK: obj = new CBrick(x, y); break;
 	case OBJECT_TYPE_COIN: obj = new CCoin(x, y); break;
-	case OBJECT_TYPE_FIRE_PIRANHA: obj = new CFirePiranha(x, y); break;
+	case OBJECT_TYPE_FIRE_PIRANHA: {
+		if (tokens.size() < 4) return;
+		int objectID = atoi(tokens[3].c_str());
+		obj = new CFirePiranha(x, y, objectID);
+		break;
+	}
 	case OBJECT_TYPE_PLATFORM:
 	{
 
@@ -574,7 +594,7 @@ void CPlayScene::Update(DWORD dt)
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
 	if (player == NULL) return;
 
-	// Update camera to follow marioAdd commentMore actions
+	// Update camera to follow mario
 	float cx, cy;
 	CGame* game = CGame::GetInstance();
 	player->GetPosition(cx, cy);
@@ -626,7 +646,7 @@ void CPlayScene::Update(DWORD dt)
 		cy -= game->GetBackBufferHeight() / 2;
 		if (cx < 0) cx = 0;
 		if (cx + game->GetBackBufferWidth()/1.5 > maxCx)    cx = maxCx - game->GetBackBufferWidth() / 1.5;
-		CGame::GetInstance()->SetCamPos(cx, 0.0f);
+		CGame::GetInstance()->SetCamPos(cx, cy);
 	}
 
 
@@ -649,7 +669,7 @@ void CPlayScene::Update(DWORD dt)
 		}
 	}
 
-
+	CGameManager::GetInstance()->Update(dt);
 	// Cập nhật HUD
 	CPlayHUD::GetInstance()->SetTime(timeRemaining);
 
@@ -680,6 +700,7 @@ void CPlayScene::Render()
 			pipes[i]->Render();
 	}
 	player->Render();
+	CGameManager::GetInstance()->Render();
 	CPlayHUD::GetInstance()->Render();
 }
 

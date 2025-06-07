@@ -1,0 +1,7 @@
+# id	left	top	right	bottom	texture_id
+[SPRITES]
+401000	15	349	30	372	90
+402000	65	349	80	372	90
+
+[ANIMATIONS]
+400000	401000	150	402000	150

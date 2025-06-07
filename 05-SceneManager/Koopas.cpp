@@ -12,7 +12,10 @@
 #include "Block.h"
 #include "DataManager.h"
 #include "DeadZone.h"
-
+#include "GameManager.h"
+#include "GoldenBrick.h"
+#include "ButtonBrick.h"
+#include "Piranha.h"
 
 CKoopas::CKoopas(float x, float y, int isRed, int yesWing) : CGameObject(x, y)
 {
@@ -60,6 +63,11 @@ void CKoopas::OnNoCollision(DWORD dt)
 
 };
 
+
+void CKoopas::GetStomped() {
+	CGameManager::GetInstance()->StomKoopa(x, y - KOOPAS_BBOX_HEIGHT);
+}
+
 void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 {
 	if (state == KOOPAS_STATE_WING)
@@ -100,6 +108,39 @@ void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 			OnCollisionWithKoopas(e);
 		else if (dynamic_cast<CLuckyBlock*>(e->obj))
 			OnCollisionWithLuckyBlock(e);
+		else if (dynamic_cast<CGoldenBrick*>(e->obj))
+			OnCollisionWithGoldenBrick(e);
+		else if (dynamic_cast<CButtonBrick*>(e->obj))
+			OnCollisionWithButtonBrick(e);
+		else if (dynamic_cast<CPiranha*>(e->obj))
+			OnCollisionWithPiranha(e);
+	}
+}
+
+void CKoopas::OnCollisionWithPiranha(LPCOLLISIONEVENT e)
+{
+	CPiranha* piranha = dynamic_cast<CPiranha*>(e->obj);
+	if (piranha && piranha->GetState() != PIRANHA_DIE_STATE)
+	{
+		piranha->HitByKoopa();
+	}
+}
+
+void CKoopas::OnCollisionWithButtonBrick(LPCOLLISIONEVENT e)
+{
+	if (e->nx != 0)
+	{
+		CButtonBrick* buttonBrick = dynamic_cast<CButtonBrick*>(e->obj);
+		if (buttonBrick->GetState() == BUTTON_BRICK_STATE_NORMAL)
+			buttonBrick->SetState(BUTTON_BRICK_STATE_MOVE_UP);
+	}
+}
+void CKoopas::OnCollisionWithGoldenBrick(LPCOLLISIONEVENT e)
+{
+	CGoldenBrick* gb = dynamic_cast<CGoldenBrick*>(e->obj);
+	if (e->nx != 0)
+	{
+		gb->Break();
 	}
 }
 
@@ -109,6 +150,7 @@ void CKoopas::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 	if (e->nx != 0) {
 		goomba->SetState(GOOMBA_STATE_DIE_BY_COLLISION);
 		CDataManager::GetInstance()->AddScore(1000);
+		goomba->GetStomped();
 	}
 }
 
@@ -119,6 +161,7 @@ void CKoopas::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 	{
 		koopas->SetState(KOOPAS_STATE_DIE);
 		CDataManager::GetInstance()->AddScore(1000);
+		koopas->GetStomped();
 		if (e->nx > 0)
 			koopas->vx = -KOOPAS_VX_DIE_SPEED;
 		else

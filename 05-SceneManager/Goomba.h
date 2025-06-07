@@ -55,8 +55,10 @@ protected:
 	virtual void OnNoCollision(DWORD dt);
 	virtual void OnCollisionWith(LPCOLLISIONEVENT e);
 
+
 public: 	
 	CGoomba(float x, float y);
+	virtual void GetStomped();
 	virtual void SetState(int state);
 };
 
@@ -79,5 +81,5 @@ public:
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	virtual void Render();
 	virtual void SetState(int state);
-
+	virtual void GetStomped() override;
 };

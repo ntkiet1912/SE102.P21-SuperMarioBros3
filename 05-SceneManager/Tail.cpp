@@ -6,6 +6,10 @@
 #include "CollisionEffect.h"
 #include "PlayScene.h"
 #include "FirePiranha.h"
+#include "GameManager.h"
+#include "GoldenBrick.h"
+#include "ButtonBrick.h"
+#include "Piranha.h"
 
 void CTail::GetBoundingBox(float& l, float& t, float& r, float& b)
 {
@@ -48,9 +52,17 @@ void CTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				OnCollisionWithLuckyBlock(e);
 			else if (dynamic_cast<CFirePiranha*>(e->obj))
 				OnCollisionWithFirePiranha(e);
+			else if (dynamic_cast<CGoldenBrick*>(e->obj))
+				OnCollisionWithGoldenBrick(e);
+			else if (dynamic_cast<CButtonBrick*>(e->obj))
+				OnCollisionWithButtonBrick(e);
+			else if (dynamic_cast<CPiranha*>(e->obj))
+				OnCollisionWithPiranha(e);
 		}
 	}
 }
+
+
 void CTail::effectSpawn(LPGAMEOBJECT e)
 {
 	// spawn a flash effect 
@@ -59,6 +71,36 @@ void CTail::effectSpawn(LPGAMEOBJECT e)
 	CCollisionEffect* effect = new CCollisionEffect(ex, ey);
 	CPlayScene* currentScene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
 	currentScene->AddObject(effect);
+}
+
+void CTail::OnCollisionWithPiranha(LPCOLLISIONEVENT e)
+{
+	CPiranha* piranha = dynamic_cast<CPiranha*>(e->obj);
+	if (piranha && piranha->GetState() != PIRANHA_DIE_STATE)
+	{
+		piranha->HitByTail();
+		effectSpawn(piranha);
+	}
+}
+
+void CTail::OnCollisionWithGoldenBrick(LPCOLLISIONEVENT e)
+{
+	if (e->nx != 0)
+	{
+		CGoldenBrick* goldenBrick = dynamic_cast<CGoldenBrick*>(e->obj);
+		if (goldenBrick->GetState() == GOLDEN_BRICK_STATE_NORMAL) {
+			goldenBrick->Break();
+		}
+	}
+}
+void CTail::OnCollisionWithButtonBrick(LPCOLLISIONEVENT e)
+{
+	if (e->nx != 0)
+	{
+		CButtonBrick* buttonBrick = dynamic_cast<CButtonBrick*>(e->obj);
+		if (buttonBrick->GetState() == BUTTON_BRICK_STATE_NORMAL)
+			buttonBrick->SetState(BUTTON_BRICK_STATE_MOVE_UP);
+	}
 }
 void CTail::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 {
@@ -70,6 +112,7 @@ void CTail::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 	if (goomba->GetState() != GOOMBA_STATE_DIE || goomba->GetState() != GOOMBA_STATE_DIE_BY_COLLISION)
 	{
 		goomba->SetState(GOOMBA_STATE_DIE_BY_COLLISION);
+		goomba->GetStomped();
 	}
 	effectSpawn(goomba);
 }
@@ -87,6 +130,7 @@ void CTail::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 	else
 		koopa->setNx(1);
 	koopa->SetState(KOOPAS_STATE_SHELL_UPSIDE_DOWN);
+	CGameManager::GetInstance()->AddScoreEffect(x, y - KOOPAS_BBOX_HEIGHT, 100);
 	//koopa->SetState(KOOPAS_STATE_SHELL);
 	effectSpawn(koopa);
 }
@@ -94,6 +138,7 @@ void CTail::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 void CTail::OnCollisionWithFirePiranha(LPCOLLISIONEVENT e)
 {
 	CFirePiranha* fp = dynamic_cast<CFirePiranha*>(e->obj);
+	CGameManager::GetInstance()->AddScoreEffect(x, y - 16, 100);
 	fp->Delete();
 	effectSpawn(fp);
 }

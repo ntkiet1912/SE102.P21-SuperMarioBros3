@@ -1,6 +1,6 @@
 #include "Coin.h"
 #include "debug.h"
-
+#include "GameManager.h"
 
 void CCoin::Render()
 {
@@ -33,9 +33,11 @@ void CCoinFromLuckyBlock::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	else if (reachedMaxY && y > spawnY)
 	{
 		this->Delete();
+		CGameManager::GetInstance()->AddScoreEffect(x, y - COIN_BBOX_HEIGHT / 2, 100);
 	}
 	CGameObject::Update(dt, coObjects);
 	CCollision::GetInstance()->Process(this, dt, coObjects);
+	
 }
 void CCoinFromLuckyBlock::Render()
 {

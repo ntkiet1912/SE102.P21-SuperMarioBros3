@@ -29,4 +29,7 @@ public:
     void OnCollisionWithLuckyBlock(LPCOLLISIONEVENT e);
     void OnCollisionWithKoopas(LPCOLLISIONEVENT e);
     void OnCollisionWithFirePiranha(LPCOLLISIONEVENT e);
+    void OnCollisionWithGoldenBrick(LPCOLLISIONEVENT e);
+    void OnCollisionWithButtonBrick(LPCOLLISIONEVENT e);
+    void OnCollisionWithPiranha(LPCOLLISIONEVENT e);
 };

@@ -91,6 +91,9 @@ protected:
 	//void OnCollisionWithPlatform(LPCOLLISIONEVENT e);
 	void OnCollisionWithKoopas(LPCOLLISIONEVENT e);
 	void OnCollisionWithLuckyBlock(LPCOLLISIONEVENT e);
+	void OnCollisionWithGoldenBrick(LPCOLLISIONEVENT e);
+	void OnCollisionWithButtonBrick(LPCOLLISIONEVENT e);
+	void OnCollisionWithPiranha(LPCOLLISIONEVENT e);
 	bool IsTherePlatformAhead(vector<LPGAMEOBJECT>* coObjects);
 
 public:
@@ -99,5 +102,5 @@ public:
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	CKoopas(float x, float y, int isRed, int yesWing);
 	virtual void SetState(int state);
-
+	virtual void GetStomped();
 };

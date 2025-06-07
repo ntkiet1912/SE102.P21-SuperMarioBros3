@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObject.h"
+#include "Mario.h"
 
 #define ID_ANI_FIRE_BULLET 25000
 
@@ -13,7 +14,9 @@ class CFireBullet : public CGameObject
 {
 protected:
     float vx, vy;
+    CMario* mario;
     DWORD createTime;
+    
 
 public:
     CFireBullet(float x, float y, float targetX, float targetY);

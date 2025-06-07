@@ -84,6 +84,9 @@
 #define ID_ANI_MARIO_RUNNING_HOLDSHELL_LEFT 1025
 #define ID_ANI_MARIO_RUNNING_HOLDSHELL_RIGHT 1026
 // SMALL MARIO
+#define ID_ANI_MARIO_SMALL_RUNNING_FULL_RIGHT 1090
+#define ID_ANI_MARIO_SMALL_RUNNING_FULL_LEFT 1091
+
 #define ID_ANI_MARIO_SMALL_IDLE_RIGHT 1100
 #define ID_ANI_MARIO_SMALL_IDLE_LEFT 1102
 
@@ -199,6 +202,10 @@
 #define TRANSFORMATION_RACOON_DURATION 450
 #define TAIL_TRANSFORMATION_DURATION 750
 
+#define MARIO_CHARGE_POWER_UP_TIME 1800
+#define MARIO_DRAIN_POWER_UP_TIME 500
+#define MARIO_FULL_TIME 5000
+
 #define TAIL_ATTACK_DURATION 300
 
 class CMario : public CGameObject
@@ -216,6 +223,13 @@ class CMario : public CGameObject
 	float warpTime;
 	ULONGLONG kick_start;
 	bool kick_flag;
+
+	float flyTime;
+	float drainTime;
+	float chargeTime;
+	float powerFullTime;
+	int chargeAble;
+	bool isFlyAble;
 	
 	bool canHold;
 	bool isHolding;
@@ -246,6 +260,7 @@ class CMario : public CGameObject
 	void OnCollisionWithFirePiranha(LPCOLLISIONEVENT e);
 	void OnCollisionWithFireBullet(LPCOLLISIONEVENT e);
 	void OnCollisionWithKoopas(LPCOLLISIONEVENT e);
+	void OnCollisionWithPiranha(LPCOLLISIONEVENT e);
 	void kickShell(CKoopas*& koopas);
 
 	void OnCollisionWithLuckyBlock(LPCOLLISIONEVENT e);
@@ -260,6 +275,7 @@ class CMario : public CGameObject
 	void tailUpdate(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void holdingKoopas();
 	void liftUpdate(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
+	void HanldePowerUp(DWORD dt);
 public:
 	bool isAbleToRise;
 	bool isAbleToDive;
@@ -273,7 +289,7 @@ public:
 		ax = 0.0f;
 		ay = MARIO_GRAVITY;
 
-		level = 3;
+		level = 1;
 		untouchable = 0;
 		untouchable_start = -1;
 		isOnPlatform = false;
@@ -301,6 +317,13 @@ public:
 		currentFlyingGround = nullptr;
 		isFlying = false;
 		isRunning = false;
+
+		drainTime = 0;
+		chargeTime = 0;
+		powerFullTime = 0;
+		chargeAble = 0;
+		flyTime = 0;
+		isFlyAble = true;
 	}
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();

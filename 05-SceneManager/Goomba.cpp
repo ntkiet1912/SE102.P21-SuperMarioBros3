@@ -3,6 +3,7 @@
 #include "PlayScene.h"
 #include "UpgradeMarioLevel.h"
 #include "DeadZone.h"
+#include "GameManager.h"
 CGoomba::CGoomba(float x, float y) :CGameObject(x, y)
 {
 	this->ax = 0;
@@ -105,7 +106,12 @@ void CGoomba::SetState(int state)
 		break;
 	}
 }
-
+void CGoomba::GetStomped()
+{
+	/*if (state == GOOMBA_STATE_DIE) return;
+	SetState(GOOMBA_STATE_DIE);*/
+	CGameManager::GetInstance()->StomGoomba(x, y - GOOMBA_BBOX_HEIGHT);
+}
 ////////////////////////////RED GOOMBA/////////////////////////////////
 
 CRedGoomba::CRedGoomba(float x, float y) : CGoomba(x, y)
@@ -124,6 +130,9 @@ CRedGoomba::CRedGoomba(float x, float y) : CGoomba(x, y)
 
 	detect_start = GetTickCount64();
 	state = GOOMBA_STATE_YES_WING;
+}
+void CRedGoomba::GetStomped() {
+	CGameManager::GetInstance()->StomGoomba(x, y - GOOMBA_BBOX_HEIGHT);
 }
 void CRedGoomba::Render()
 {
@@ -152,6 +161,7 @@ void CRedGoomba::Render()
 	CAnimations::GetInstance()->Get(aniId)->Render(x, y);
 	//RenderBoundingBox();
 }
+
 void CRedGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	vy += ay * dt;

@@ -17,6 +17,9 @@
 #define PIRANHA_STATE_FIRE_DOWN_LEFT	300
 #define PIRANHA_STATE_FIRE_DOWN_RIGHT 400
 
+#define ID_RED_FIREPIRANHA 101
+#define ID_GREEN_FIREPIRANHA 102
+
 class CFirePiranha : public CGameObject
 {
 protected:
@@ -24,6 +27,8 @@ protected:
 	float targetY;
 	ULONGLONG stateTimer;
 	int direction;
+	int objectID;
+	int spriteID; // ID for the sprite to use
 	int facingVertical;
 	bool hasFired = false;
 
@@ -38,6 +43,6 @@ protected:
 	int IsBlocking() { return 0; }
 	int IsCollidable() { return 1; }
 public:
-	CFirePiranha(float x, float y);
+	CFirePiranha(float x, float y, int objectID);
 	virtual void SetState(int state);
 };
