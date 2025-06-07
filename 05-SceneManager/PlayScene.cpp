@@ -594,7 +594,7 @@ void CPlayScene::Update(DWORD dt)
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
 	if (player == NULL) return;
 
-	// Update camera to follow marioAdd commentMore actions
+	// Update camera to follow mario
 	float cx, cy;
 	CGame* game = CGame::GetInstance();
 	player->GetPosition(cx, cy);
@@ -646,7 +646,7 @@ void CPlayScene::Update(DWORD dt)
 		cy -= game->GetBackBufferHeight() / 2;
 		if (cx < 0) cx = 0;
 		if (cx + game->GetBackBufferWidth()/1.5 > maxCx)    cx = maxCx - game->GetBackBufferWidth() / 1.5;
-		CGame::GetInstance()->SetCamPos(cx, 0.0f);
+		CGame::GetInstance()->SetCamPos(cx, cy);
 	}
 
 
