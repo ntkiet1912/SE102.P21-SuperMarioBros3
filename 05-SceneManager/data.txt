@@ -1,3 +1,2 @@
-
-Score: 24400
-Coin: 39
+Score: 0
+Coin: 0
