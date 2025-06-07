@@ -633,7 +633,7 @@ void CPlayScene::Update(DWORD dt)
 		static float autoCamX = 0.0f;
 		autoCamX += 0.02f * dt;
 		float minCamX = -20;
-		float maxCamX = cx + game->GetBackBufferWidth()/1.75;
+		float maxCamX = cx + game->GetBackBufferWidth() / 1.75;
 		//cy -= game->GetBackBufferHeight() / 2;
 		if (!isLoadWall)
 		{
@@ -657,17 +657,15 @@ void CPlayScene::Update(DWORD dt)
 				blockingWall[i]->SetPosition(autoCamX + (0.02f * dt), y);
 			else
 			{
-				blockingWall[i]->SetPosition(x +(0.02f * dt), y);
+				blockingWall[i]->SetPosition(x + (0.02f * dt), y);
 			}
 		}
-		if (autoCamX +game->GetBackBufferWidth() / 1.5 > cmaxX) autoCamX = cmaxX - game->GetBackBufferWidth() / 1.5;
+		if (autoCamX + game->GetBackBufferWidth() / 1.5 > cmaxX) autoCamX = cmaxX - game->GetBackBufferWidth() / 1.5;
 
 		CGame::GetInstance()->SetCamPos(autoCamX, -50.0f);
 	}
 	else if(id == 6)
 	{
-
-
 		float px, py;
 		player->GetPosition(cx, cy);
 		player->GetPosition(px, py);
@@ -685,7 +683,9 @@ void CPlayScene::Update(DWORD dt)
 		{
 			cy = 0;
 		}
+		if (cy < -200) cy = -200;
 		cy = cy * 0.9f + targetCamY * 0.1f;
+
 		CGame::GetInstance()->SetCamPos(cx, cy);
 	}
 	else
@@ -695,6 +695,8 @@ void CPlayScene::Update(DWORD dt)
 		player->GetPosition(px, py);
 		cx -= game->GetBackBufferWidth() / 2;
 		cy -= game->GetBackBufferHeight() / 2;
+		maxCx = 2584;
+		if (cx + game->GetBackBufferWidth() / 1.5 > maxCx)  cx = maxCx - game->GetBackBufferWidth() / 1.5;
 		CGame::GetInstance()->SetCamPos(cx, 0);
 	}
 

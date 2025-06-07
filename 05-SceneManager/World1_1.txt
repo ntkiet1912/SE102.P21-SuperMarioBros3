@@ -35,10 +35,10 @@ background_01.txt
 
 
 #Mario
-0	2500	100
+0	50	100
 
 #Portal
-50	2850	168	2866	192	4
+50	3000	168	3016	192	4
 
 #Decoration	
 
