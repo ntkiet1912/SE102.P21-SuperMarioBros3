@@ -27,6 +27,8 @@ buttonBrick.txt
 piranha.txt
 damageEffect.txt
 background_01.txt
+boomerangbro.txt
+boomerang.txt
 #
 [OBJECTS]
 # type	x	y	extra_settings per object type
@@ -320,6 +322,10 @@ background_01.txt
 8	2417	178	2	16	16	2	0	0	0	-16	114000	114000
 40	2480	162	2
 
+
+
+#Mario
+0	2000	120
 
 
 #InvisibleBlock

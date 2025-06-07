@@ -151,6 +151,8 @@
     <ClCompile Include="BackgroundTile.cpp" />
     <ClCompile Include="BigPipe.cpp" />
     <ClCompile Include="Block.cpp" />
+    <ClCompile Include="Boomerang.cpp" />
+    <ClCompile Include="BoomerangBro.cpp" />
     <ClCompile Include="BlockingWall.cpp" />
     <ClCompile Include="Brick.cpp" />
     <ClCompile Include="BrokenBrickEffect.cpp" />
@@ -207,6 +209,8 @@
     <ClInclude Include="BackgroundTile.h" />
     <ClInclude Include="BigPipe.h" />
     <ClInclude Include="Block.h" />
+    <ClInclude Include="Boomerang.h" />
+    <ClInclude Include="BoomerangBro.h" />
     <ClInclude Include="BlockingWall.h" />
     <ClInclude Include="Brick.h" />
     <ClInclude Include="BrokenBrickEffect.h" />
