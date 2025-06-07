@@ -34,7 +34,7 @@ damageEffect.txt
 
 
 #Mario
-0	2100	50
+0	100	50
 
 #Decoration	
 
@@ -218,7 +218,8 @@ damageEffect.txt
 4	1238	20	
 4	140	140
 #FIRE_PIRANHA
-9	378	155
+9	378	155	0
+9	2010	160	1
 
 #LUCKY_BLOCK
 -1	200	130	2

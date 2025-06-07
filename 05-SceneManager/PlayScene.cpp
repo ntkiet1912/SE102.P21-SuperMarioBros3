@@ -201,7 +201,12 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	}
 	case OBJECT_TYPE_BRICK: obj = new CBrick(x, y); break;
 	case OBJECT_TYPE_COIN: obj = new CCoin(x, y); break;
-	case OBJECT_TYPE_FIRE_PIRANHA: obj = new CFirePiranha(x, y); break;
+	case OBJECT_TYPE_FIRE_PIRANHA: {
+		if (tokens.size() < 4) return;
+		int objectID = atoi(tokens[3].c_str());
+		obj = new CFirePiranha(x, y, objectID);
+		break;
+	}
 	case OBJECT_TYPE_PLATFORM:
 	{
 

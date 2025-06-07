@@ -8,7 +8,7 @@
 #include "AssetIDs.h"
 #include "FireBullet.h"
 
-CFirePiranha::CFirePiranha(float x, float y) : CGameObject(x, y)
+CFirePiranha::CFirePiranha(float x, float y , int objectID) : CGameObject(x, y)
 {
 	startY = y;
 	targetY = y - PIRANHA_MAX_RISE;
@@ -17,6 +17,11 @@ CFirePiranha::CFirePiranha(float x, float y) : CGameObject(x, y)
 	state = -1; 
 	hasFired = false; 
 	stateTimer = GetTickCount64();
+	this->objectID = objectID;
+	if (this->objectID == 0)
+		spriteID = ID_RED_FIREPIRANHA; // Red Fire Piranha
+	else if (this->objectID == 1)
+		spriteID = ID_GREEN_FIREPIRANHA; // Green Fire Piranha
 }
 
 void CFirePiranha::GetBoundingBox(float& left, float& top, float& right, float& bottom)
@@ -172,7 +177,7 @@ void CFirePiranha::Render()
 
 	if (spriteId != -1)
 	{
-		CSprites::GetInstance()->Get(spriteId)->Draw(x, y);
+		CSprites::GetInstance()->Get(spriteId + spriteID)->Draw(x, y);
 	}
 	RenderBoundingBox();
 }
