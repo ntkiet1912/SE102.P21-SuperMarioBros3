@@ -11,6 +11,8 @@ bush.txt
 koopas.txt
 damageEffect.txt
 scoreEffect.txt
+boomerangbro.txt
+boomerang.txt
 HUD.txt
 goalRoulette.txt
 #
@@ -40,7 +42,8 @@ goalRoulette.txt
 
 40	2136	176	2
 
-
+#Boomerang Bro
+11	2100	176
  
 #Bush
 6	2050	192	1	0	0	71000

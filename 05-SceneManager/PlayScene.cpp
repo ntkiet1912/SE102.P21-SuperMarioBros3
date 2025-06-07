@@ -27,6 +27,8 @@
 #include "BackgroundTile.h"
 #include "DeadZone.h"
 #include "GameManager.h"
+#include "BoomerangBro.h"
+
 #include "SampleKeyEventHandler.h"
 #include "Piranha.h"
 #include "Piranha_Pipe.h"
@@ -192,6 +194,12 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	}
 	case OBJECT_TYPE_BUTTON_BRICK: obj = new CButtonBrick(x, y); break;
 	case OBJECT_TYPE_GOLDEN_BRICK: obj = new CGoldenBrick(x, y); break;
+	case OBJECT_TYPE_BOOMERANG_BRO:
+	{
+		obj = new CBoomerangBro(x, y);
+		//objects.push_back(obj);
+		break;
+	}
 	case OBJECT_TYPE_GOOMBA:
 	{
 		obj = new CGoomba(x, y);
