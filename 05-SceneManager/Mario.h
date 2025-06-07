@@ -343,6 +343,8 @@ public:
 
 
 	void OnCollisionWithUpgradingItem(LPCOLLISIONEVENT e);
+	void OnCollisionWithBoomerangBro(LPCOLLISIONEVENT e);
+	void OnCollisionWithBoomerang(LPCOLLISIONEVENT e);
 	void OnCollisionWithBrickWall(LPCOLLISIONEVENT e);
 	void OnCollisionWithFlyingGround(LPCOLLISIONEVENT e);
 	void getDmg();

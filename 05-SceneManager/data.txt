@@ -1,2 +1,2 @@
-Score: 0
-Coin: 0
+Score: 40000
+Coin: 136

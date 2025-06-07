@@ -24,6 +24,8 @@
 #include "WarpPipe.h"
 #include "GameManager.h"
 #include "Piranha.h"
+#include "BoomerangBro.h"
+#include "Boomerang.h"
 
 float speedMeter = 0.0f;
 const float SPEED_METER_MAX = 1.0f; 
@@ -284,15 +286,15 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithBrickWall(e);
 	else if (dynamic_cast<CFlyingGround*>(e->obj))
 		OnCollisionWithFlyingGround(e);
-	else if (dynamic_cast<CGoldenBrick*>(e->obj)) 
+	else if (dynamic_cast<CGoldenBrick*>(e->obj))
 	{
-			if (e->ny > 0) {
-				CGoldenBrick* goldenBrick = dynamic_cast<CGoldenBrick*>(e->obj);
-				if (goldenBrick->GetState() == GOLDEN_BRICK_STATE_NORMAL) {
-					if (level == MARIO_LEVEL_SMALL) goldenBrick->HitByMario();
-					else goldenBrick->Break();
-				}
+		if (e->ny > 0) {
+			CGoldenBrick* goldenBrick = dynamic_cast<CGoldenBrick*>(e->obj);
+			if (goldenBrick->GetState() == GOLDEN_BRICK_STATE_NORMAL) {
+				if (level == MARIO_LEVEL_SMALL) goldenBrick->HitByMario();
+				else goldenBrick->Break();
 			}
+		}
 
 		if (e->obj->GetState() == GOLDEN_BRICK_STATE_GOLD) {
 			e->obj->Delete();
@@ -303,21 +305,36 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		}
 	}
 	else if (dynamic_cast<CButtonBrick*>(e->obj)) {
-			CButtonBrick* buttonBrick = dynamic_cast<CButtonBrick*>(e->obj);
+		CButtonBrick* buttonBrick = dynamic_cast<CButtonBrick*>(e->obj);
 		if (e->ny > 0) {
 			buttonBrick->SetState(BUTTON_BRICK_STATE_MOVE_UP);
 		}
 	}
 	else if (dynamic_cast<CButton*>(e->obj)) {
-			if (e->ny < 0 && e->obj->GetState() == BUTTON_STATE_NORMAL)
-				e->obj->SetState(BUTTON_STATE_PRESSED);
+		if (e->ny < 0 && e->obj->GetState() == BUTTON_STATE_NORMAL)
+			e->obj->SetState(BUTTON_STATE_PRESSED);
 	}
 	else if (dynamic_cast<CDeadZone*>(e->obj)) {
-			SetState(MARIO_STATE_DIE);
+		SetState(MARIO_STATE_DIE);
 	}
 	else if (dynamic_cast<CPiranha*>(e->obj))
 		OnCollisionWithPiranha(e);
+	else if (dynamic_cast<CBoomerangBro*>(e->obj))
+		OnCollisionWithBoomerangBro(e);
+	else if (dynamic_cast<CBoomerang*>(e->obj))
+		OnCollisionWithBoomerang(e);
 };
+void CMario::OnCollisionWithBoomerangBro(LPCOLLISIONEVENT e)
+{
+	CBoomerangBro* bb = dynamic_cast<CBoomerangBro*>(e->obj);
+	if (e->ny < 0) bb->Delete();
+	else getDmg();
+}
+void CMario::OnCollisionWithBoomerang(LPCOLLISIONEVENT e)
+{
+	getDmg();
+	e->obj->Delete();
+}
 void CMario::OnCollisionWithPiranha(LPCOLLISIONEVENT e)
 {
 	getDmg();
