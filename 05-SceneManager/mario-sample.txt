@@ -13,7 +13,7 @@ height	226
 5	scene0005.txt
 6	World1_1.txt
 7 	hidden.txt
-
+8	end_scene4.txt
 # id	file 
 [TEXTURES]
 -100	textures\bbox.png

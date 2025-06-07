@@ -231,6 +231,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		float r = (float)atof(tokens[3].c_str());
 		float b = (float)atof(tokens[4].c_str());
 		int scene_id = atoi(tokens[5].c_str());
+		nextSceneId = scene_id;
 		obj = new CPortal(x, y, r, b, scene_id);
 		break;
 	}
@@ -627,77 +628,79 @@ void CPlayScene::Update(DWORD dt)
 	CGame* game = CGame::GetInstance();
 	player->GetPosition(cx, cy);
 
-	if (id == 4)
+	//if (id == 4)
+	//{
+	//	static bool isLoadWall = false;
+	//	static float autoCamX = 0.0f;
+	//	autoCamX += 0.02f * dt;
+	//	float minCamX = -20;
+	//	float maxCamX = cx + game->GetBackBufferWidth() / 1.75;
+	//	//cy -= game->GetBackBufferHeight() / 2;
+	//	if (!isLoadWall)
+	//	{
+	//		for (int i = -5; i < 15; i++)
+	//		{
+	//			CBlockingWall* wall = new CBlockingWall(minCamX, 17 * i);
+	//			AddObject(wall);
+	//			blockingWall.push_back(wall);
+
+	//			wall = new CBlockingWall(maxCamX, 17 * i);
+	//			AddObject(wall);
+	//			blockingWall.push_back(wall);
+	//		}
+	//		isLoadWall = true;
+	//	}
+	//	for (size_t i = 0; i < blockingWall.size(); i++)
+	//	{
+	//		float x, y;
+	//		blockingWall[i]->GetPosition(x, y);
+	//		if (i % 2 == 0)
+	//			blockingWall[i]->SetPosition(autoCamX + (0.02f * dt), y);
+	//		else
+	//		{
+	//			blockingWall[i]->SetPosition(x + (0.02f * dt), y);
+	//		}
+	//	}
+	//	if (autoCamX + game->GetBackBufferWidth() / 1.5 > cmaxX) autoCamX = cmaxX - game->GetBackBufferWidth() / 1.5;
+
+	//	CGame::GetInstance()->SetCamPos(autoCamX, -50.0f);
+	//}
+	//else if (id == 6)
+	//{
+	//	float px, py;
+	//	player->GetPosition(cx, cy);
+	//	player->GetPosition(px, py);
+	//	cx -= game->GetBackBufferWidth() / 2;
+	//	cy -= game->GetBackBufferHeight() / 2;
+	//	if (cx + game->GetBackBufferWidth() / 1.5 > maxCx)  cx = maxCx - game->GetBackBufferWidth() / 1.5;
+	//	float targetCamY = 0;
+	//	if (py < 40)
+	//	{
+	//		targetCamY = py - game->GetBackBufferHeight() / 2;
+	//		if (targetCamY < -200.0f) targetCamY = -200.0f;
+	//		if (targetCamY > 0.0f) targetCamY = 0.0f;
+	//	}
+	//	else
+	//	{
+	//		cy = 0;
+	//	}
+	//	if (cy < -200) cy = -200;
+	//	cy = cy * 0.9f + targetCamY * 0.1f;
+
+	//	CGame::GetInstance()->SetCamPos(cx, cy);
+	//}
+	//else
 	{
-		static bool isLoadWall = false;
-		static float autoCamX = 0.0f;
-		autoCamX += 0.02f * dt;
-		float minCamX = -20;
-		float maxCamX = cx + game->GetBackBufferWidth()/1.75;
-		//cy -= game->GetBackBufferHeight() / 2;
-		if (!isLoadWall)
-		{
-			for (int i = -5; i < 15; i++)
-			{
-				CBlockingWall* wall = new CBlockingWall(minCamX, 17 * i);
-				AddObject(wall);
-				blockingWall.push_back(wall);
-
-				wall = new CBlockingWall(maxCamX, 17 * i);
-				AddObject(wall);
-				blockingWall.push_back(wall);
-			}
-			isLoadWall = true;
-		}
-		for (size_t i = 0; i < blockingWall.size(); i++)
-		{
-			float x, y;
-			blockingWall[i]->GetPosition(x, y);
-			if (i % 2 == 0)
-				blockingWall[i]->SetPosition(autoCamX + (0.02f * dt), y);
-			else
-			{
-				blockingWall[i]->SetPosition(x +(0.02f * dt), y);
-			}
-		}
-		if (autoCamX +game->GetBackBufferWidth() / 1.5 > cmaxX) autoCamX = cmaxX - game->GetBackBufferWidth() / 1.5;
-
-		CGame::GetInstance()->SetCamPos(autoCamX, -50.0f);
-	}
-	else if(id == 6)
-	{
-
-
 		float px, py;
 		player->GetPosition(cx, cy);
 		player->GetPosition(px, py);
 		cx -= game->GetBackBufferWidth() / 2;
 		cy -= game->GetBackBufferHeight() / 2;
+		maxCx = 2980;
 		if (cx + game->GetBackBufferWidth() / 1.5 > maxCx)  cx = maxCx - game->GetBackBufferWidth() / 1.5;
-		float targetCamY = 0;
-		if (py < 40)
-		{
-			targetCamY = py - game->GetBackBufferHeight() / 2;
-			if (targetCamY < -200.0f) targetCamY = -200.0f;
-			if (targetCamY > 0.0f) targetCamY = 0.0f;
-		}
-		else
-		{
-			cy = 0;
-		}
-		cy = cy * 0.9f + targetCamY * 0.1f;
-		CGame::GetInstance()->SetCamPos(cx, cy);
-	}
-	else
-	{
-		float px, py;
-		player->GetPosition(cx, cy);
-		player->GetPosition(px, py);
-		cx -= game->GetBackBufferWidth() / 2;
-		cy -= game->GetBackBufferHeight() / 2;
 		CGame::GetInstance()->SetCamPos(cx, 0);
 	}
-
+	
 
 
 	PurgeDeletedObjects();

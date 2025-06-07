@@ -48,7 +48,12 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	{
 		//vy = 0;
 		if (isOnPlatform)
+		{
 			vx = MARIO_WALKING_SPEED;
+			
+		}
+			
+
 		else
 			vx = 0;
 	}
@@ -486,6 +491,8 @@ void CMario::OnCollisionWithPortal(LPCOLLISIONEVENT e)
 {
 	CPortal* p = (CPortal*)e->obj;
 	CGame::GetInstance()->InitiateSwitchScene(p->GetSceneId());
+	SetPosition(1880, 50);
+	SetState(MARIO_STATE_IDLE);
 }
 
 void CMario::OnCollisionWithLuckyBlock(LPCOLLISIONEVENT e)

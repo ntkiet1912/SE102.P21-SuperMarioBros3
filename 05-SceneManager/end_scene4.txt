@@ -1,0 +1,51 @@
+# list of object assets to load in this scene
+[ASSETS]
+mario.txt
+mario_with_tail.txt
+background_scene04.txt
+goldenBrick.txt
+coin.txt
+pipe.txt
+ground.txt
+bush.txt
+koopas.txt
+damageEffect.txt
+scoreEffect.txt
+HUD.txt
+#
+[SETTING]
+0	1900	-50	0
+#
+[OBJECTS]
+# type	x	y	extra_settings per object type
+# type: 0 = Mario , 1 = Brick, 2 = Goomba, 3 = Koopas , 6 = Decoration
+# See OBJECT_TYPE constants in AssetIDs.h
+
+#Mario 
+0	1890	100
+
+#ground 
+5	1998	208	16	15	24	61000	62000	63000
+#Invisible_Block
+10	0	82	14	16	16	1
+10	1912	136	8	16	16	1
+10	1920	100	3	16	5	0
+10	1965	112	1	16	160	1
+10	1985	-50	1	16	600	1
+#Portal
+50	2970	168	2996	192	4
+
+#WarpPipe
+
+40	2136	176	2
+
+
+ 
+#Bush
+6	2050	192	1	0	0	71000
+6	2066	192	3	0	0	0	-16	0	-32	75000	73000	71000
+6	2082	192	3	0	0	0	-16	0	-32	77000	76000	72000
+6	2098	192	2	0	0	0	-16	74000	72000
+
+
+

@@ -9,6 +9,9 @@ pipe.txt
 ground.txt
 bush.txt
 koopas.txt
+damageEffect.txt
+scoreEffect.txt
+HUD.txt
 #
 [SETTING]
 0	1900	-50	0
@@ -19,7 +22,7 @@ koopas.txt
 # See OBJECT_TYPE constants in AssetIDs.h
 
 #Mario 
-0	50	20
+0	1890	100
 
 #ground 
 5	1998	208	16	15	24	61000	62000	63000
@@ -144,6 +147,9 @@ koopas.txt
 30	1712	128
 30	1728	128
 30	1744	128
+
+#Portal
+50	2970	168	2996	192	4
 
 #WarpPipe
 40	1880	72	4	0

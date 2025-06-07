@@ -1,6 +1,7 @@
 #include "WarpPipe.h"
 #include "Game.h"
 #include "PlayScene.h"
+#include "Portal.h"
 
 
 void CWarpPipe::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -12,8 +13,17 @@ void CWarpPipe::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		mario->SetState(MARIO_STATE_RELEASE_JUMP);
 
 		if (state == PIPE_STATE_DOWN) {
-			CGame::GetInstance()->InitiateSwitchScene(7);
-			mario->SetPosition(143, 0);
+			int nextSceneid = ((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetNextSceneID();
+			if (nextSceneid == 4) {
+				CGame::GetInstance()->InitiateSwitchScene(8);
+				mario->SetPosition(2136, 20);
+
+			}
+			else {
+				CGame::GetInstance()->InitiateSwitchScene(7);
+				mario->SetPosition(143, 0);
+			}
+			
 		}
 		else {
 			CGame::GetInstance()->InitiateSwitchScene(6);

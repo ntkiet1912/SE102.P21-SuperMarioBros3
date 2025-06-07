@@ -28,6 +28,7 @@ protected:
 	bool isGamePaused = false;
 	bool isGameOver = false;
 	bool isFollowing = false;
+	int nextSceneId = -1;
 	float time = 0;
 	vector<LPGAMEOBJECT> objects;
 	vector<LPGAMEOBJECT> pipes;
@@ -64,7 +65,7 @@ public:
 	virtual void GameOver();
 	virtual ULONGLONG GetDeltaTime(ULONGLONG start);
 	LPGAMEOBJECT GetPlayer() { return player; }
-
+	int GetNextSceneID() { return nextSceneId; }
 	void Clear();
 	void CleanUpDeletedObjects();
 	void PurgeDeletedObjects();
