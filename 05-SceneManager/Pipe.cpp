@@ -37,7 +37,7 @@ void CPipe::Render()
 		float yy = y + positions[i].second;
 		s->Get(sprites[i])->Draw(xx, yy);
 	}
-	CPipe::RenderBoundingBox();
+	//CPipe::RenderBoundingBox();
 }
 void CPipe::GetBoundingBox(float& l, float& t, float& r, float& b)
 {
