@@ -28,6 +28,8 @@
 #include "DeadZone.h"
 #include "GameManager.h"
 #include "SampleKeyEventHandler.h"
+#include "Piranha.h"
+#include "Piranha_Pipe.h"
 
 using namespace std;
 
@@ -151,6 +153,19 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case OBJECT_TYPE_DEAD_ZONE:
 		obj = new CDeadZone();
 		break;
+	case OBJECT_TYPE_PIRANHA:
+	{
+		if (tokens.size() < 5) return;
+		int height = atoi(tokens[3].c_str());
+		int pipeHeight = atoi(tokens[4].c_str());
+		LPPIRANHAPIPE pipe = new CPiranha_Pipe(
+			x, y + height * PIRANHA_CELL_HEIGHT / 2 + PIPE_CELL_HEIGHT / 2, pipeHeight, NULL
+		);
+		obj = new CPiranha(x, y, height, pipe);
+		pipe->piranhaPlant = (LPPIRANHAPLANT)obj;
+		y += height * PIRANHA_CELL_HEIGHT;
+		break;
+	}
 	case OBJECT_TYPE_BIG_PIPE:
 	{
 

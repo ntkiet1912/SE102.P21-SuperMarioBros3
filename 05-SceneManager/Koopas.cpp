@@ -15,6 +15,7 @@
 #include "GameManager.h"
 #include "GoldenBrick.h"
 #include "ButtonBrick.h"
+#include "Piranha.h"
 
 CKoopas::CKoopas(float x, float y, int isRed, int yesWing) : CGameObject(x, y)
 {
@@ -111,7 +112,17 @@ void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 			OnCollisionWithGoldenBrick(e);
 		else if (dynamic_cast<CButtonBrick*>(e->obj))
 			OnCollisionWithButtonBrick(e);
-		
+		else if (dynamic_cast<CPiranha*>(e->obj))
+			OnCollisionWithPiranha(e);
+	}
+}
+
+void CKoopas::OnCollisionWithPiranha(LPCOLLISIONEVENT e)
+{
+	CPiranha* piranha = dynamic_cast<CPiranha*>(e->obj);
+	if (piranha && piranha->GetState() != PIRANHA_DIE_STATE)
+	{
+		piranha->HitByKoopa();
 	}
 }
 

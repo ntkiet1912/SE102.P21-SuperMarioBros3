@@ -9,6 +9,7 @@
 #include "GameManager.h"
 #include "GoldenBrick.h"
 #include "ButtonBrick.h"
+#include "Piranha.h"
 
 void CTail::GetBoundingBox(float& l, float& t, float& r, float& b)
 {
@@ -55,9 +56,13 @@ void CTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				OnCollisionWithGoldenBrick(e);
 			else if (dynamic_cast<CButtonBrick*>(e->obj))
 				OnCollisionWithButtonBrick(e);
+			else if (dynamic_cast<CPiranha*>(e->obj))
+				OnCollisionWithPiranha(e);
 		}
 	}
 }
+
+
 void CTail::effectSpawn(LPGAMEOBJECT e)
 {
 	// spawn a flash effect 
@@ -67,6 +72,17 @@ void CTail::effectSpawn(LPGAMEOBJECT e)
 	CPlayScene* currentScene = (CPlayScene*)CGame::GetInstance()->GetCurrentScene();
 	currentScene->AddObject(effect);
 }
+
+void CTail::OnCollisionWithPiranha(LPCOLLISIONEVENT e)
+{
+	CPiranha* piranha = dynamic_cast<CPiranha*>(e->obj);
+	if (piranha && piranha->GetState() != PIRANHA_DIE_STATE)
+	{
+		piranha->HitByTail();
+		effectSpawn(piranha);
+	}
+}
+
 void CTail::OnCollisionWithGoldenBrick(LPCOLLISIONEVENT e)
 {
 	if (e->nx != 0)

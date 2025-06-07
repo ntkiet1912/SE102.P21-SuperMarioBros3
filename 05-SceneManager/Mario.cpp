@@ -23,6 +23,7 @@
 #include "DeadZone.h"
 #include "WarpPipe.h"
 #include "GameManager.h"
+#include "Piranha.h"
 
 float speedMeter = 0.0f;
 const float SPEED_METER_MAX = 1.0f; 
@@ -141,6 +142,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	tailUpdate(dt, coObjects);
 	holdingKoopas();
 	liftUpdate(dt, coObjects);
+
 	//DebugOut(L"[CMario] isOnPlatform: %d\n", isOnPlatform);
 	//DebugOut(L"[CMario] state: %d\n", state);
 
@@ -308,8 +310,13 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 	}
 	else if (dynamic_cast<CBrick*>(e->obj))
 		OnCollisionWithBrickWall(e);
+	else if (dynamic_cast<CPiranha*>(e->obj))
+		OnCollisionWithPiranha(e);
 };
-
+void CMario::OnCollisionWithPiranha(LPCOLLISIONEVENT e)
+{
+	getDmg();
+}
 void CMario::OnCollisionWithFirePiranha(LPCOLLISIONEVENT e) {
 	getDmg();
 }

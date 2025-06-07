@@ -24,7 +24,8 @@ goalRoulette.txt
 scoreEffect.txt
 goldenBrick.txt
 buttonBrick.txt
-
+piranha.txt
+damageEffect.txt
 #
 [OBJECTS]
 # type	x	y	extra_settings per object type
@@ -228,6 +229,10 @@ buttonBrick.txt
 -1	730	162	1
 -1	778	130	2
 -1	1616	146	1
+
+#Piranha
+41	1946	142	3	4	110101	110102
+
 #Pipe
 8	370	178	3	16	16	3	0	0	0	-16	0	-32	113000	113000	111000
 8	386	178	3	16	16	3	0	0	0	-16	0	-32	114000	114000	112000
@@ -243,6 +248,7 @@ buttonBrick.txt
 2	850	120
 2	890	120
 -2	950	120
+
 #Koopas
 3	620	120	1	0
 
@@ -282,6 +288,8 @@ buttonBrick.txt
 8	2401	178	2	16	16	2	0	0	0	-16	113000	113000
 8	2417	178	2	16	16	2	0	0	0	-16	114000	114000
 40	2480	162	2
+
+
 
 #InvisibleBlock
 10	712	179	3	16	16	1

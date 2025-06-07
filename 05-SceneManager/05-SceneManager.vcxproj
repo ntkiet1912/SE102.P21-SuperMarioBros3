@@ -182,6 +182,8 @@
     <ClCompile Include="Mario.cpp" />
     <ClCompile Include="Pipe.cpp" />
     <ClCompile Include="Pipe.h" />
+    <ClCompile Include="Piranha.cpp" />
+    <ClCompile Include="Piranha_Pipe.cpp" />
     <ClCompile Include="Platform.cpp" />
     <ClCompile Include="PlayHUD.cpp" />
     <ClCompile Include="PlayScene.cpp" />
@@ -231,6 +233,8 @@
     <ClInclude Include="LoadHUD.h" />
     <ClInclude Include="LuckyBlock.h" />
     <ClInclude Include="Mario.h" />
+    <ClInclude Include="Piranha.h" />
+    <ClInclude Include="Piranha_Pipe.h" />
     <ClInclude Include="Platform.h" />
     <ClInclude Include="PlayHUD.h" />
     <ClInclude Include="PlayScene.h" />

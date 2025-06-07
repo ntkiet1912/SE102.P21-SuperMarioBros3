@@ -93,6 +93,7 @@ protected:
 	void OnCollisionWithLuckyBlock(LPCOLLISIONEVENT e);
 	void OnCollisionWithGoldenBrick(LPCOLLISIONEVENT e);
 	void OnCollisionWithButtonBrick(LPCOLLISIONEVENT e);
+	void OnCollisionWithPiranha(LPCOLLISIONEVENT e);
 	bool IsTherePlatformAhead(vector<LPGAMEOBJECT>* coObjects);
 
 public:

@@ -30,3 +30,4 @@ height	226
 -10	textures\Goal_Roulette.png
 -20	textures\effect.png
 80	textures\objects.png
+90	textures\enemies_2.png
