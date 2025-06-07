@@ -78,7 +78,7 @@ void CGoalRouletteIcon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// when out of map, appearing 2 sentences and 1 card
 	if (y < static_cast<float>(-GR_ICON_HEIGHT_BBOX) / 2)
 	{
-		deleteTime = GetTickCount64();
+		//deleteTime = GetTickCount64();
 		spawnGoalRouletteObjects();
 	}
 	// need to seperate it into a small function because it causes this error below

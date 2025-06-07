@@ -359,13 +359,21 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		int sprite_middle = atoi(tokens[7].c_str());
 		int sprite_end = atoi(tokens[8].c_str());
 
-		obj = new CFlyingGround(
-			x, y,
-			cell_width, cell_height, length,
-			sprite_begin, sprite_middle, sprite_end
-		);
+		//obj = new CFlyingGround(
+		//	x, y,
+		//	cell_width, cell_height, length,
+		//	sprite_begin, sprite_middle, sprite_end
+		//);
+		enemySpawns.push_back(new CEnemySpawnInfo(OBJECT_TYPE_FLYINGGROUND, x, y, cell_width, cell_height, length, sprite_begin, sprite_middle, sprite_end));
 		DebugOut(L"[DONE]\n");
+		return;
+		break;
+	}
 
+	case OBJECT_TYPE_GOLDENLUCKYBLOCK:
+	{
+		int containItemIndex = atoi(tokens[3].c_str());
+		obj = new GoldenLuckyBlock(x, y, containItemIndex);
 		break;
 	}
 	default:
@@ -470,10 +478,19 @@ void CPlayScene::Load()
 	player = CGame::GetInstance()->GetPlayer();
 	ifstream f;
 	f.open(sceneFilePath);
-	if (id == 6)
-		maxCx= 2480;
-	else if (id == 2)
-		maxCx = 1800;
+	switch (id)
+	{
+	case 6:
+		maxCx = 2885;
+		maxCy = -50;
+		break;
+	case 4: 
+		maxCx = 1900;
+		break;
+	default:
+		maxCx = 2885;
+		break;
+	}
 	// current resource section flag
 	int section = SCENE_SECTION_UNKNOWN;
 
@@ -544,8 +561,12 @@ void CPlayScene::Update(DWORD dt)
 	{
 		float x = enemySpawns[i]->x;
 		float y = enemySpawns[i]->y;
-
-		if (isInCamera(x, y, 100.0f))
+		float preSpawnX = 100.0f;
+		if (id == 4)
+		{
+			preSpawnX = 0;
+		}
+		if (isInCamera(x, y, preSpawnX))
 		{
 			if (!enemySpawns[i]->isSpawned)
 			{
@@ -561,6 +582,13 @@ void CPlayScene::Update(DWORD dt)
 				case OBJECT_TYPE_RED_GOOMBA:
 					enemy = new CRedGoomba(x, y);
 					break;
+				case OBJECT_TYPE_FLYINGGROUND:
+						enemy = new CFlyingGround(
+						x, y,
+						enemySpawns[i]->cellWidth, enemySpawns[i]->cellHeight, enemySpawns[i]->length,
+							enemySpawns[i]->spriteIdBegin, enemySpawns[i]->spriteIdMiddle, enemySpawns[i]->spriteIdEnd
+					);
+						break;
 				}
 				enemySpawns[i]->instance = enemy;
 				enemySpawns[i]->isSpawned = true;
@@ -599,54 +627,75 @@ void CPlayScene::Update(DWORD dt)
 	CGame* game = CGame::GetInstance();
 	player->GetPosition(cx, cy);
 
-	//if (id == 1)
-	//{
-	//	static bool isLoadWall = false;
-	//	static float autoCamX = 0.0f;
-	//	autoCamX += 0.01f * dt;
-	//	float minCamX = 20;
-	//	float maxCamX = cx + game->GetBackBufferWidth() - 40;
-	//	if (!isLoadWall)
-	//	{
-	//		for (size_t i = 0; i < 20; i++)
-	//		{
-	//			CBrick* brick = new CBrick(minCamX, 17 * i, -0.001f);
-	//			AddObject(brick);
-	//			blockingWall.push_back(brick);
-
-	//			//brick = new CBrick(minCamX , 17 * i);
-	//			//AddObject(brick);
-	//			//blockingWall.push_back(brick);
-
-	//			brick = new CBrick(maxCamX, 20 * i, 0.01f);
-	//			AddObject(brick);
-	//			blockingWall.push_back(brick);
-	//		}
-	//		isLoadWall = true;
-	//	}
-	//	for (size_t i = 0; i < blockingWall.size(); i++)
-	//	{
-	//		float x, y;
-	//		blockingWall[i]->GetPosition(x, y);
-	//		if (i % 2 == 0)
-	//			blockingWall[i]->SetPosition(x + (0.01f * dt), y);
-	//		else
-	//		{
-	//			blockingWall[i]->SetPosition(x , y);
-	//		}
-	//	}
-	//	if (autoCamX > 2495) autoCamX = 2495;
-
-	//	CGame::GetInstance()->SetCamPos(autoCamX, 0.0f);
-	//}
-	//else
+	if (id == 4)
 	{
+		static bool isLoadWall = false;
+		static float autoCamX = 0.0f;
+		autoCamX += 0.02f * dt;
+		float minCamX = -20;
+		float maxCamX = cx + game->GetBackBufferWidth()/1.75;
+		//cy -= game->GetBackBufferHeight() / 2;
+		if (!isLoadWall)
+		{
+			for (int i = -5; i < 15; i++)
+			{
+				CBlockingWall* wall = new CBlockingWall(minCamX, 17 * i);
+				AddObject(wall);
+				blockingWall.push_back(wall);
+
+				wall = new CBlockingWall(maxCamX, 17 * i);
+				AddObject(wall);
+				blockingWall.push_back(wall);
+			}
+			isLoadWall = true;
+		}
+		for (size_t i = 0; i < blockingWall.size(); i++)
+		{
+			float x, y;
+			blockingWall[i]->GetPosition(x, y);
+			if (i % 2 == 0)
+				blockingWall[i]->SetPosition(autoCamX + (0.02f * dt), y);
+			else
+			{
+				blockingWall[i]->SetPosition(x +(0.02f * dt), y);
+			}
+		}
+		if (autoCamX +game->GetBackBufferWidth() / 1.5 > cmaxX) autoCamX = cmaxX - game->GetBackBufferWidth() / 1.5;
+
+		CGame::GetInstance()->SetCamPos(autoCamX, -50.0f);
+	}
+	else if(id == 6)
+	{
+
+
+		float px, py;
 		player->GetPosition(cx, cy);
+		player->GetPosition(px, py);
 		cx -= game->GetBackBufferWidth() / 2;
 		cy -= game->GetBackBufferHeight() / 2;
-		if (cx < 0) cx = 0;
-		if (cx + game->GetBackBufferWidth()/1.5 > maxCx)    cx = maxCx - game->GetBackBufferWidth() / 1.5;
+		if (cx + game->GetBackBufferWidth() / 1.5 > maxCx)  cx = maxCx - game->GetBackBufferWidth() / 1.5;
+		float targetCamY = 0;
+		if (py < 40)
+		{
+			targetCamY = py - game->GetBackBufferHeight() / 2;
+			if (targetCamY < -200.0f) targetCamY = -200.0f;
+			if (targetCamY > 0.0f) targetCamY = 0.0f;
+		}
+		else
+		{
+			cy = 0;
+		}
+		cy = cy * 0.9f + targetCamY * 0.1f;
 		CGame::GetInstance()->SetCamPos(cx, cy);
+	}
+	else
+	{
+		float px, py;
+		player->GetPosition(cx, cy);
+		player->GetPosition(px, py);
+		cx -= game->GetBackBufferWidth() / 2;
+		cy -= game->GetBackBufferHeight() / 2;
+		CGame::GetInstance()->SetCamPos(cx, 0);
 	}
 
 

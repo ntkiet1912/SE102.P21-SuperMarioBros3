@@ -9,6 +9,9 @@
 #define LUCKYBLOCK_BBOX_WIDTH 16
 #define LUCKYBLOCK_BBOX_HEIGHT 16
 
+#define ID_ANI_GOLDEN_BRICK_NORMAL 7001
+#define ID_ANI_GOLDEN_BRICK_GOLD 7002
+
 #define LUCKYBOX_VY 0.17f
 #define LUCKYBLOCK_NORMAL 2000
 #define LUCKYBLOCK_EMPTY 2001
@@ -60,3 +63,24 @@ public:
 
 };
 
+class GoldenLuckyBlock : public CLuckyBlock
+{
+protected:
+	int coinCount;
+public:
+	GoldenLuckyBlock(float x, float y, int containItem) : CLuckyBlock(x, y, containItem)
+	{
+		coinCount = 5;
+	}
+	virtual void Render()
+	{
+		int aniId;
+		if (isEmpty)
+			aniId = ID_ANI_LUCKY_BLOCK_EMPTY;
+		else
+			aniId = ID_ANI_GOLDEN_BRICK_NORMAL;
+		CAnimations::GetInstance()->Get(aniId)->Render(x, y);
+	}
+	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
+	int getCoinCount() { return coinCount; }
+};
