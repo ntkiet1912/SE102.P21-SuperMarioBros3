@@ -1,2 +1,2 @@
-Score: 59100
-Coin: 376
+Score: 188000
+Coin: 547

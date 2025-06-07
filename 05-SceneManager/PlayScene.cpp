@@ -349,6 +349,13 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		return;
 		break;
 	}
+
+	case OBJECT_TYPE_GOLDENLUCKYBLOCK:
+	{
+		int containItemIndex = atoi(tokens[3].c_str());
+		obj = new GoldenLuckyBlock(x, y, containItemIndex);
+		break;
+	}
 	default:
 		DebugOut(L"[ERROR] Invalid object type: %d\n", object_type);
 		return;
@@ -455,6 +462,7 @@ void CPlayScene::Load()
 	{
 	case 6:
 		maxCx = 2885;
+		maxCy = -50;
 		break;
 	case 4: 
 		maxCx = 1900;
@@ -605,17 +613,17 @@ void CPlayScene::Update(DWORD dt)
 		static float autoCamX = 0.0f;
 		autoCamX += 0.02f * dt;
 		float minCamX = -20;
-		float maxCamX = cx + game->GetBackBufferWidth() - 60;
+		float maxCamX = cx + game->GetBackBufferWidth()/1.75;
 		//cy -= game->GetBackBufferHeight() / 2;
 		if (!isLoadWall)
 		{
-			for (size_t i = 0; i < 20; i++)
+			for (int i = -5; i < 15; i++)
 			{
-				CBlockingWall* wall = new CBlockingWall(minCamX, 20 * i);
+				CBlockingWall* wall = new CBlockingWall(minCamX, 17 * i);
 				AddObject(wall);
 				blockingWall.push_back(wall);
 
-				wall = new CBlockingWall(maxCamX, 20 * i);
+				wall = new CBlockingWall(maxCamX, 17 * i);
 				AddObject(wall);
 				blockingWall.push_back(wall);
 			}
@@ -632,18 +640,48 @@ void CPlayScene::Update(DWORD dt)
 				blockingWall[i]->SetPosition(x +(0.02f * dt), y);
 			}
 		}
-		if (autoCamX > +game->GetBackBufferWidth() / 1.5 > maxCx) autoCamX = maxCx - game->GetBackBufferWidth() / 1.5;
+		if (autoCamX +game->GetBackBufferWidth() / 1.5 > cmaxX) autoCamX = cmaxX - game->GetBackBufferWidth() / 1.5;
 
 		CGame::GetInstance()->SetCamPos(autoCamX, -50.0f);
 	}
-	else
+	else if(id == 6)
 	{
+
+
+		float px, py;
 		player->GetPosition(cx, cy);
+		player->GetPosition(px, py);
 		cx -= game->GetBackBufferWidth() / 2;
 		cy -= game->GetBackBufferHeight() / 2;
-		if (cx < 0) cx = 0;
-		if (cx + game->GetBackBufferWidth()/1.5 > maxCx)  cx = maxCx - game->GetBackBufferWidth() / 1.5;
+		//if (cy > 0) cy = 0;
+		//else if (cy < 0 && cy > -200) cy = py - game->GetBackBufferHeight() / 2;
+		//else if (cy < -200) cy = -200;
+		if (cx + game->GetBackBufferWidth()/1.5 > cmaxX)  cx = cmaxX - game->GetBackBufferWidth() / 1.5;
+		//CGame::GetInstance()->SetCamPos(cx, cy);
+
+		float targetCamY = 0;
+		if (py < 50)
+		{
+			targetCamY = py - game->GetBackBufferHeight() / 2;
+			if (targetCamY < -200.0f) targetCamY = -200.0f;
+			if (targetCamY > 0.0f) targetCamY = 0.0f;
+		}
+		else
+		{
+			cy = 0;
+		}
+		cy = cy * 0.9f + targetCamY * 0.1f;
+
 		CGame::GetInstance()->SetCamPos(cx, cy);
+	}
+	else
+	{
+		float px, py;
+		player->GetPosition(cx, cy);
+		player->GetPosition(px, py);
+		cx -= game->GetBackBufferWidth() / 2;
+		cy -= game->GetBackBufferHeight() / 2;
+		CGame::GetInstance()->SetCamPos(cx, 0);
 	}
 
 

@@ -50,6 +50,7 @@ protected:
 	float timeAccmulator = 0.0f;
 	float timeDecrementInterval = 0.5f;
 	float maxCx = 0;
+	float maxCy = 0;
 public: 
 	CPlayScene(int id, LPCWSTR filePath);
 

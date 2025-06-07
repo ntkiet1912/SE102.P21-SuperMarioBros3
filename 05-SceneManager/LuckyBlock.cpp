@@ -1,4 +1,4 @@
-#include "LuckyBlock.h"
+﻿#include "LuckyBlock.h"
 #include "debug.h"
 #include "Mario.h"
 #include "PlayScene.h"
@@ -139,4 +139,66 @@ void CLuckyBlock::spawnItem()
 		}
 		else objects.push_back(item);
 	}
+}
+
+/*******************************************************************/
+void GoldenLuckyBlock::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
+{
+	vy += ay * dt;
+	if (isHit)
+	{
+		// being hit, fly up 
+		if (!isEmpty && y > maxY)
+		{
+			vy = -LUCKYBOX_VY;
+			if (containItemIndex == ITEM_COIN)
+			{
+				coinCount--;
+				if (coinCount <= 0)
+				{
+					isEmpty = true;
+				}
+			}
+			else
+			{
+				isEmpty = true;
+			}
+
+			CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
+
+			if ((this->containItemIndex == ITEM_UPGRADELEVEL && mario->getLevel() == 1) || this->containItemIndex == ITEM_1UP)
+			{
+				flagForMushroom = true;
+			}
+			if (!flagForMushroom)
+			{
+				spawnItem();
+			}
+		}
+		// reach maxY, go back to original pos
+		else if (y < maxY)
+		{
+			vy = LUCKYBOX_VY;
+		}
+		// go to original pos now
+		else if (y >= initY)
+		{
+			isHit = false;
+			isReturnToOriginalPos = true;
+		}
+	}
+	if (isReturnToOriginalPos)
+	{
+		isReturnToOriginalPos = false;
+		vy = 0;
+		// avoiding out of bound and drop out of world
+		SetPosition(this->getX(), this->initY);
+		if (flagForMushroom)
+		{
+			flagForMushroom = false;
+			spawnItem();
+		}
+	}
+	CGameObject::Update(dt, coObjects);
+	CCollision::GetInstance()->Process(this, dt, coObjects);
 }
